@@ -14,7 +14,6 @@
     setTimeout(function() {
 
     // Add event listener on select box
-    //var editorToolbar = document.getElementById("the_form");
 
     var tinyMCE = unsafeWindow.tinyMCE.getInstanceById("htmlData_text"); // Get Editor instance
 
@@ -35,6 +34,7 @@
 <option value="Groups">Groups</option>\
 <option value="Adobe Connect">Adobe Connect</option>\
 <option value="Checklist">Checklist</option>\
+<option value="Next">Checklist</option>\
 </select>';
 
     var editorTable = document.querySelector("#htmlData_text_toolbar2 tr"); // Get parent node to add cloned node to
@@ -203,6 +203,20 @@ function addIconHTML() {
 	</tbody>\
 	</table>', {format: 'raw'});
 	}
+	
+	else if(document.getElementById("htmlData_text_iconselect").value == "Next") {
+	tinyMCE.setContent('\<table id="icon_table" border="0" cellspacing="1" cellpadding="5">\
+	<tbody>\
+	<tr>\
+	<td valign="top" width="100">\
+	<img style="vertical-align: middle;" title="folder" src=\"https://s3.amazonaws.com/vivomedia.fiu.edu/a561914c-6532-4890-85d8-b026b56c7f88/source.png" alt="folder" width="100" height="100" />\
+	</td>\
+	<td id="second_td" valign="left">\
+	</td>\
+	</tr>\
+	</tbody>\
+	</table>', {format: 'raw'});
+	}
 
 	// Get td element
 	var secondColumn = tinyMCE.dom.get("second_td");
@@ -211,6 +225,6 @@ function addIconHTML() {
 	secondColumn.innerHTML = currContent;
 
 }
-  }, 1500);
+  }, 2000);
     }
 })();
