@@ -34,7 +34,7 @@
 <option value="Groups">Groups</option>\
 <option value="Adobe Connect">Adobe Connect</option>\
 <option value="Checklist">Checklist</option>\
-<option value="Next">Checklist</option>\
+<option value="Next">Next</option>\
 </select>';
 
     var editorTable = document.querySelector("#htmlData_text_toolbar2 tr"); // Get parent node to add cloned node to
