@@ -69,7 +69,7 @@ function addIconHTML() {
 	<tbody>\
 	<tr>\
 	<td valign="top" width="100">\
-	<img style="vertical-align: middle;" title="folder" src=\"http://vivomedia.fiu.edu/5617d8b83f4fd/New%20Icon%20Set%203/bluefolder.png" alt="folder" width="100" height="100" />\
+	<img style="vertical-align: middle;" alt="icon" src=\"http://vivomedia.fiu.edu/5617d8b83f4fd/New%20Icon%20Set%203/bluefolder.png" width="100" height="100" />\
 	</td>\
 	<td id="second_td" valign="left">\
 	</td>\
@@ -83,7 +83,7 @@ function addIconHTML() {
 	<tbody>\
 	<tr>\
 	<td valign="top" width="100">\
-	<img style="vertical-align: middle;" title="folder" src=\"https://s3.amazonaws.com/vivomedia.fiu.edu/465b2b5d-9184-4da2-adbf-982d810083cb/source.png" alt="folder" width="100" height="100" />\
+	<img style="vertical-align: middle;" alt="icon" src=\"https://s3.amazonaws.com/vivomedia.fiu.edu/465b2b5d-9184-4da2-adbf-982d810083cb/source.png" width="100" height="100" />\
 	</td>\
 	<td id="second_td" valign="left">\
 	</td>\
@@ -97,7 +97,7 @@ function addIconHTML() {
 	<tbody>\
 	<tr>\
 	<td valign="top" width="100">\
-	<img style="vertical-align: middle;" title="folder" src=\"http://vivomedia.fiu.edu/5617d8b83f4fd/New%20Icon%20Set%203/bluevideo.png" alt="folder" width="100" height="100" />\
+	<img style="vertical-align: middle;" alt="icon" src=\"http://vivomedia.fiu.edu/5617d8b83f4fd/New%20Icon%20Set%203/bluevideo.png" width="100" height="100" />\
 	</td>\
 	<td id="second_td" valign="left">\
 	</td>\
@@ -111,7 +111,7 @@ function addIconHTML() {
 	<tbody>\
 	<tr>\
 	<td valign="top" width="100">\
-	<img style="vertical-align: middle;" title="folder" src=\"http://vivomedia.fiu.edu/5617d8b83f4fd/New%20Icon%20Set%203/bluelink.png" alt="folder" width="100" height="100" />\
+	<img style="vertical-align: middle;" alt="icon" src=\"http://vivomedia.fiu.edu/5617d8b83f4fd/New%20Icon%20Set%203/bluelink.png" width="100" height="100" />\
 	</td>\
 	<td id="second_td" valign="left">\
 	</td>\
@@ -125,7 +125,7 @@ function addIconHTML() {
 	<tbody>\
 	<tr>\
 	<td valign="top" width="100">\
-	<img style="vertical-align: middle;" title="folder" src=\"https://s3.amazonaws.com/vivomedia.fiu.edu/ec48bea4-eea3-4abd-9efa-c727e8aecbe6/source.png" alt="folder" width="100" height="100" />\
+	<img style="vertical-align: middle;" alt="icon" src=\"https://s3.amazonaws.com/vivomedia.fiu.edu/ec48bea4-eea3-4abd-9efa-c727e8aecbe6/source.png" width="100" height="100" />\
 	</td>\
 	<td id="second_td" valign="left">\
 	</td>\
@@ -139,7 +139,7 @@ function addIconHTML() {
 	<tbody>\
 	<tr>\
 	<td valign="top" width="100">\
-	<img style="vertical-align: middle;" title="folder" src=\"http://vivomedia.fiu.edu/5617d8b83f4fd/New%20Icon%20Set%203/blueassessment.png" alt="folder" width="100" height="100" />\
+	<img style="vertical-align: middle;" alt="icon" src=\"http://vivomedia.fiu.edu/5617d8b83f4fd/New%20Icon%20Set%203/blueassessment.png" width="100" height="100" />\
 	</td>\
 	<td id="second_td" valign="left">\
 	</td>\
@@ -153,7 +153,7 @@ function addIconHTML() {
 	<tbody>\
 	<tr>\
 	<td valign="top" width="100">\
-	<img style="vertical-align: middle;" title="folder" src=\"http://vivomedia.fiu.edu/5617d8b83f4fd/New%20Icon%20Set%203/bluediscussion.png" alt="folder" width="100" height="100" />\
+	<img style="vertical-align: middle;" alt="icon" src=\"http://vivomedia.fiu.edu/5617d8b83f4fd/New%20Icon%20Set%203/bluediscussion.png" width="100" height="100" />\
 	</td>\
 	<td id="second_td" valign="left">\
 	</td>\
@@ -167,7 +167,7 @@ function addIconHTML() {
 	<tbody>\
 	<tr>\
 	<td valign="top" width="100">\
-	<img style="vertical-align: middle;" title="folder" src=\"http://vivomedia.fiu.edu/5617d8b83f4fd/New%20Icon%20Set%203/group.png" alt="folder" width="100" height="100" />\
+	<img style="vertical-align: middle;" alt="icon" src=\"http://vivomedia.fiu.edu/5617d8b83f4fd/New%20Icon%20Set%203/group.png" width="100" height="100" />\
 	</td>\
 	<td id="second_td" valign="left">\
 	</td>\
@@ -181,7 +181,7 @@ function addIconHTML() {
 	<tbody>\
 	<tr>\
 	<td valign="top" width="100">\
-	<img style="vertical-align: middle;" title="folder" src=\"https://s3.amazonaws.com/vivomedia.fiu.edu/4c60d63b-6445-4d00-99b0-224fdbb7d7bf/source.png" alt="folder" width="100" height="100" />\
+	<img style="vertical-align: middle;" alt="icon" src=\"https://s3.amazonaws.com/vivomedia.fiu.edu/4c60d63b-6445-4d00-99b0-224fdbb7d7bf/source.png" width="100" height="100" />\
 	</td>\
 	<td id="second_td" valign="left">\
 	</td>\
@@ -195,7 +195,7 @@ function addIconHTML() {
 	<tbody>\
 	<tr>\
 	<td valign="top" width="100">\
-	<img style="vertical-align: middle;" title="folder" src=\"http://vivomedia.fiu.edu/5617d8b83f4fd/New%20Icon%20Set%203/bluechecklist.png" alt="folder" width="100" height="100" />\
+	<img style="vertical-align: middle;" alt="icon" src=\"http://vivomedia.fiu.edu/5617d8b83f4fd/New%20Icon%20Set%203/bluechecklist.png" width="100" height="100" />\
 	</td>\
 	<td id="second_td" valign="left">\
 	</td>\
@@ -209,7 +209,7 @@ function addIconHTML() {
 	<tbody>\
 	<tr>\
 	<td valign="top" width="100">\
-	<img style="vertical-align: middle;" title="folder" src=\"https://s3.amazonaws.com/vivomedia.fiu.edu/a561914c-6532-4890-85d8-b026b56c7f88/source.png" alt="folder" width="100" height="100" />\
+	<img style="vertical-align: middle;" alt="icon" src=\"https://s3.amazonaws.com/vivomedia.fiu.edu/a561914c-6532-4890-85d8-b026b56c7f88/source.png" width="100" height="100" />\
 	</td>\
 	<td id="second_td" valign="left">\
 	</td>\
