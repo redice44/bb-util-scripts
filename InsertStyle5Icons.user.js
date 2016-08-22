@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Bb Insert Knowledge Center Icons
-// @version      1.0
+// @version      1.1
 // @description  Adds a Knowledge Center icon based on user selection from select box added to TinyMCE editor tools.
 // @author       Daniel Victoriano
 // @match        https://fiu.blackboard.com/*
