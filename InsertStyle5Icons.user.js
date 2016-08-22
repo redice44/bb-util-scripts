@@ -27,6 +27,7 @@
 <option value="Content Folder">Content Folder</option>\
 <option value="Chapter Resources">Chapter Resources</option>\
 <option value="Videos">Videos</option>\
+<option value="Presentation">Presentation</option>\
 <option value="Supplemental">Supplemental</option>\
 <option value="Assignment">Assignment</option>\
 <option value="Assessment">Assessment</option>\
@@ -77,7 +78,7 @@ function addIconHTML() {
 	</tbody>\
 	</table>', {format: 'raw'});
 	}
-	
+
 	else if(document.getElementById("htmlData_text_iconselect").value == "Chapter Resources") {
 	tinyMCE.setContent('\<table id="icon_table" border="0" cellspacing="1" cellpadding="5">\
 	<tbody>\
@@ -98,6 +99,20 @@ function addIconHTML() {
 	<tr>\
 	<td valign="top" width="100">\
 	<img style="vertical-align: middle;" alt="icon" src=\"http://vivomedia.fiu.edu/5617d8b83f4fd/New%20Icon%20Set%203/bluevideo.png" width="100" height="100" />\
+	</td>\
+	<td id="second_td" valign="left">\
+	</td>\
+	</tr>\
+	</tbody>\
+	</table>', {format: 'raw'});
+	}
+	
+	if(document.getElementById("htmlData_text_iconselect").value == "Presentation") {
+	tinyMCE.setContent('\<table id="icon_table" border="0" cellspacing="1" cellpadding="5">\
+	<tbody>\
+	<tr>\
+	<td valign="top" width="100">\
+	<img style="vertical-align: middle;" alt="icon" src=\"https://s3.amazonaws.com/vivomedia.fiu.edu/43316968-c806-44a5-99eb-efe9aea03da9/source.png" width="100" height="100" />\
 	</td>\
 	<td id="second_td" valign="left">\
 	</td>\
