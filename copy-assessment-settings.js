@@ -1,3 +1,14 @@
+// ==UserScript==
+// @name         Copy Assessment Settings
+// @version      1.0.0
+// @description  Saves and applies Assessment settings. Does not work with exceptions (i.e. DRC groups), or "On Specific Date" option in feedback/results.
+// @author       Daniel Victoriano
+// @match        https://fiu.blackboard.com/webapps/assessment/*
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
 // Add "Save Settings" and "Apply Settings" buttons
 var header = document.getElementById("pageTitleHeader");
 header.insertAdjacentHTML('beforeend', '<button id="save_settings" class="button-1" style="width: 120px; height: 30px; font-size: 14px; padding: 0px; margin-right: 15px;">Save Settings</button>');
@@ -236,6 +247,7 @@ if (localStorage.due_date_in_use === "false") {
 	if (document.querySelector('input[name = "due_date_in_use"]').checked) {
 		document.querySelector("input[name = due_date_in_use]").click();
 	}
+}
 
 if (localStorage.whenToGiveFeedback0 !== undefined) {
 	
@@ -278,3 +290,4 @@ document.querySelector("[name=randomizeQuestionsIndicator]").checked = JSON.pars
 alert("Settings have been applied.");
 
 }
+})();
