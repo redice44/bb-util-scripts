@@ -3,7 +3,7 @@
 // @version      1.0.0
 // @description  Saves and applies Assessment settings. Does not work with exceptions (i.e. DRC groups), or "On Specific Date" option in feedback/results.
 // @author       Daniel Victoriano
-// @match        https://fiu.blackboard.com/webapps/assessment/*
+// @match        https://fiu.blackboard.com/webapps/assessment/do/content/assessment?action=MODIFY&course_id=*
 // ==/UserScript==
 
 (function() {
