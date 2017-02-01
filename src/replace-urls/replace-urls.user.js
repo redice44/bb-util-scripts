@@ -1,11 +1,13 @@
 // ==UserScript==
 // @name         Replace URLs
-// @namespace    github.com/tidusx18
-// @version      0.0.1
+// @namespace    https://github.com/redice44
+// @source       https://github.com/redice44/bb-util-scripts/raw/master/dist/chrome/replace-urls.user.js
+// @updateURL    https://github.com/redice44/bb-util-scripts/raw/master/dist/chrome/replace-urls.user.js
+// @supportURL   https://github.com/redice44/bb-util-scripts/issues
+// @version      0.1.0
 // @description  Replaces all matching URLs in TinyMCE HTML content and Web Link URL field (if present) with new URL.
 // @author       Daniel Victoriano <victorianowebdesign@gmail.com>
 // @match        https://fiu.blackboard.com/*
-// @updateURL    https://github.com/tidusx18/replace-urls/raw/master/replace-urls.user.js
 // @grant        unsafeWindow
 // ==/UserScript==
 
@@ -39,8 +41,8 @@ if (unsafeWindow.tinyMCE !== undefined && document.body.className == "ineditmode
     }
 
     if (webUrl !== null) {
-      if ( url.includes(oldUrl) ) {
-        url = url.replace(regex, newUrl);
+      if (webUrl.value.includes(oldUrl) ) {
+        var url = webUrl.value.replace(regex, newUrl);
         webUrl.value = url;
       }
     }
