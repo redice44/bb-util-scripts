@@ -76,6 +76,10 @@ body {
   padding: 5vw 1vw 0 1vw;
 }
 
+#content > section > article.user-script > p {
+  line-height: 24px;
+}
+
 #content > section > header > img {
   width: 125px;
   height: 125px;
@@ -89,6 +93,11 @@ header > h1 {
 
 header > h3 {
   font-size: 1.5em;
+}
+
+a > img.icon {
+  width: 24px;
+  height: 24px;
 }
 
 /* General Utility Classes */
