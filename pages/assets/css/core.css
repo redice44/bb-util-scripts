@@ -1,0 +1,98 @@
+/* Colors
+Base
+#9cf4df
+
+Soft Accent
+#A4C7F4
+
+Dark Grey
+#475451
+
+Light Grey
+#fafcfb
+*/
+
+*, *::after, *::before {
+  margin: 0;
+  border: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #fafcfb;
+
+  font-family: sans-serif;
+}
+
+/* Hero */
+
+#hero {
+  background-color: #9cf4df;
+  width: 100%;
+  height: 60vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#hero header {
+  text-align: center;
+}
+
+#hero > header > h1 {
+  font-size: 4em;
+}
+
+/* Content */
+
+#content {
+  padding: 0 10vw;
+  display: flex;
+  justify-content: center;
+}
+
+#content > section {
+  margin: 0 2.5vw;
+  padding: 5vw 2.5vw;
+  width: 40vw;
+  position: relative;
+  top: -5vw;
+
+  background-color: #fafcfb;
+  box-shadow: 0 0 20px rgba(71, 84, 81, 0.5);
+}
+
+#content > section > header {
+  padding: 0 5vw 5vw 5vw;
+  display: flex;
+  justify-content: center;
+
+  border-bottom: 2px solid #475451;
+}
+
+#content > section > article {
+  padding: 5vw 1vw 0 1vw;
+}
+
+#content > section > header > img {
+  width: 125px;
+  height: 125px;
+}
+
+/* General Formating */
+
+header > h1 {
+  font-size: 2em;  
+}
+
+header > h3 {
+  font-size: 1.5em;
+}
+
+/* General Utility Classes */
+
+.small-text {
+  font-size: 0.75em;
+}
