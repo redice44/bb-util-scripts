@@ -1,8 +1,11 @@
 // ==UserScript==
-// @name         Old ViVo Notification
-// @namespace    http://tampermonkey.net/
+// @name         Old Mediasites Link Detector
+// @namespace    https://github.com/redice44
+// @source       https://github.com/redice44/bb-util-scripts/dist/chrome/old-mediasites-link.user.js
+// @updateURL    https://github.com/redice44/bb-util-scripts/dist/chrome/old-mediasites-link.user.js
+// @supportURL   https://github.com/redice44/bb-util-scripts/issues
 // @version      0.1.0
-// @description  Alerts on old vivo links
+// @description  Detects old Mediasites links
 // @author       Matt Thomson <red.cataclysm@gmail.com>
 // @require      https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.6.15/browser-polyfill.min.js
 // @require      https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.6.15/browser.min.js
@@ -17,7 +20,7 @@ var inline_src = (<><![CDATA[
 // Your code here...
 let links = document.querySelectorAll('#content_listContainer a');
 let items = [];
-let linkFlag = 'vivoId=';
+let linkFlag = 'fiuonline.mediasite.com';
 
 for (let l of links) {
   if (l.href.includes(linkFlag)) {
