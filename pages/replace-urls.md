@@ -1,4 +1,4 @@
-# Update URLs
+# Replace URLs
 
 This script detects and updates old Mediasite links on edit pages.
 
