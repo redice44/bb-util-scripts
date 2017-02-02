@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Replace URLs
 // @namespace    https://github.com/redice44
-// @source       https://github.com/redice44/bb-util-scripts/raw/master/dist/chrome/replace-urls.user.js
-// @updateURL    https://github.com/redice44/bb-util-scripts/raw/master/dist/chrome/replace-urls.user.js
+// @source       https://github.com/redice44/bb-util-scripts/raw/master/dist/firefox/replace-urls.user.js
+// @updateURL    https://github.com/redice44/bb-util-scripts/raw/master/dist/firefox/replace-urls.user.js
 // @supportURL   https://github.com/redice44/bb-util-scripts/issues
 // @version      0.1.0
 // @description  Replaces all matching URLs in TinyMCE HTML content and Web Link URL field (if present) with new URL.
