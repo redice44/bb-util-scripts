@@ -42,6 +42,8 @@ function getEditNodes() {
   if (url.includes('/webapps/assignment/execute/manageAssignment?')) {
     return [id.assignment];
   }
+
+  return [];
 }
 
 (function() {
