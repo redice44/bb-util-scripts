@@ -12,11 +12,11 @@
 
 (function() {
 // Your code here...
-let links = document.querySelectorAll('#content_listContainer a');
-let items = [];
-let linkFlag = 'vivoId=';
+var links = document.querySelectorAll('#content_listContainer a');
+var items = [];
+var linkFlag = 'vivoId=';
 
-for (let l of links) {
+for (var l of links) {
   if (l.href.includes(linkFlag)) {
     items.push(l.innerText);
     l.setAttribute('style', 'background-color: #FF0000');
