@@ -64,6 +64,8 @@ function finishScan() {
   courseMap.elapsedTime = elapsedSec;
   setToStorage(courseId, courseMap);
   showCourse();
+  // Return to initial page and stop scanning
+  window.location = courseMap.nodes[0].url;
 }
 
 function showCourse() {
@@ -131,7 +133,7 @@ function updateNode(node) {
 function takeStep(courseMap, step) {
   step = getStep(courseMap);
   setToStorage(courseId, courseMap);
-  window.location = step.url;
+  window.location = step.url + '&scanning=true';
 }
 
 function updatePath(courseMap) {
@@ -205,7 +207,7 @@ function init() {
     });
     setToStorage(courseId, courseMap);
     // initiate walk
-    window.location.href = courseMap.nodes[0].url;
+    window.location = courseMap.nodes[0].url + '&scanning=true';
   }
 }
 
@@ -233,10 +235,38 @@ function storageAvailable() {
   }
 }
 
-(function() {
+function activate() {  
   if (storageAvailable()) {
     init();
   } else {
     alert('Please update your browser to Chrome 4 or Firefox 3.5 to use the Course Scanner Script.');
+  }
+}
+
+function addScanButton() {
+  const PRIMARY_BAR_ID = 'nav';
+  const primaryActionBar = document.getElementById(PRIMARY_BAR_ID);
+  let btn = document.createElement('li');
+  let title = document.createElement('h2');
+  let link = document.createElement('a');
+  let text = document.createTextNode('Scan Course');
+  // Blackboard class
+  btn.classList.add('mainButton');
+  link.setAttribute('href', '#');
+
+  link.appendChild(text);
+  title.appendChild(link);
+  btn.appendChild(title);
+
+  btn.addEventListener('click', activate);
+
+  primaryActionBar.appendChild(btn);
+}
+
+(function() {
+  if (window.location.href.includes('&scanning=true')) {
+    activate();
+  } else {
+    addScanButton();
   }
 })();
