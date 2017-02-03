@@ -55,6 +55,22 @@ function _makeLink(link) {
   };
 }
 
+function showCourse() {
+  var courseMap = getFromStorage(courseId);
+  showLevel(courseMap, 0);
+}
+
+function showLevel(parent, level) {
+  var title = parent.title || 'Root';
+  var spacing = ' '.repeat(level * 2);
+  console.log(spacing + level + ': ' + title);
+  if (parent.nodes) {
+    parent.nodes.forEach(function(child, i) {
+      showLevel(child, level + 1);
+    });
+  }
+}
+
 function parseContent() {
   var contentItems = document.getElementById('content_listContainer');
   var folders = [];
@@ -113,6 +129,8 @@ function nextStep(courseMap) {
       window.location = step.url;
     } else {
       console.log('Course Completed');
+      setToStorage(courseId, courseMap);
+      showCourse();
     }
   } else {
     // This page has not been scanned yet.
@@ -142,17 +160,18 @@ function nextStep(courseMap) {
         courseMap.max.pop();
         console.log('go up a level.');
       }
-      step = getStep(courseMap);
-      console.log(step);
-      setToStorage(courseId, courseMap);
-      window.location = step.url;
+      if (courseMap.path.length > 0) {
+        step = getStep(courseMap);
+        console.log(step);
+        setToStorage(courseId, courseMap);
+        window.location = step.url;
+      } else {
+        console.log('Course Completed');
+        setToStorage(courseId, courseMap);
+        showCourse();
+      }
     }
   }
-  
-
-  // Navigate to next step
-
-
 }
 
 function firstStep(courseMap) {
@@ -165,9 +184,12 @@ function init() {
 
   var courseMap = getFromStorage(courseId);
   if (courseMap) {
-    // console.log('found', courseMap);
-    nextStep(courseMap);
-    // continue 'walk'
+    if (courseMap.path.length > 0) {
+      // continue 'walk'
+      nextStep(courseMap);
+    } else {
+      console.log('Course already scanned.');
+    }
   } else {
     // Build course entry
     console.log('Building new course entry.');
