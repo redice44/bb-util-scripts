@@ -63,18 +63,22 @@ function finishScan() {
   var elapsedSec = Math.floor((Date.now() - courseMap.startTime) / 1000);
   courseMap.elapsedTime = elapsedSec;
   setToStorage(courseId, courseMap);
-  showCourse();
+  // showCourse();
   // Return to initial page and stop scanning
   window.location = courseMap.nodes[0].url;
 }
 
 function showCourse() {
   var courseMap = getFromStorage(courseId);
-  var elapsedSec = courseMap.elapsedTime;
-  var elapsedMin = Math.floor(elapsedSec / 60);
-  elapsedSec = elapsedSec % 60;
-  console.log('Total items scanned: ' + showLevel(courseMap, 0));
-  console.log('Time Elapsed: ' + elapsedMin + 'm ' + elapsedSec + 's');
+  if (courseMap) {
+    var elapsedSec = courseMap.elapsedTime;
+    var elapsedMin = Math.floor(elapsedSec / 60);
+    elapsedSec = elapsedSec % 60;
+    console.log('Total items scanned: ' + showLevel(courseMap, 0));
+    console.log('Time Elapsed: ' + elapsedMin + 'm ' + elapsedSec + 's');
+  } else {
+    console.log('No course scan');
+  }
 }
 
 function showLevel(parent, level) {
@@ -182,9 +186,6 @@ function nextStep(courseMap) {
 }
 
 function init() {
-  courseId = document.getElementById('course_id').value;
-  contentId = document.getElementById('content_id').value;
-
   var courseMap = getFromStorage(courseId);
   if (courseMap) {
     if (courseMap.path.length > 0) {
@@ -219,6 +220,10 @@ function setToStorage(key, value) {
   __storage__.setItem(key, JSON.stringify(value));
 }
 
+function delFromStorage(key) {
+  __storage__.removeItem(key);  
+}
+
 /*
   Availability code from: 
   https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API
@@ -235,12 +240,47 @@ function storageAvailable() {
   }
 }
 
-function activate() {  
-  if (storageAvailable()) {
-    init();
-  } else {
-    alert('Please update your browser to Chrome 4 or Firefox 3.5 to use the Course Scanner Script.');
-  }
+function addResetButton() {
+  const PRIMARY_BAR_ID = 'nav';
+  const primaryActionBar = document.getElementById(PRIMARY_BAR_ID);
+  let btn = document.createElement('li');
+  let title = document.createElement('h2');
+  let link = document.createElement('a');
+  let text = document.createTextNode('Reset Scan Results');
+  // Blackboard class
+  btn.classList.add('mainButton');
+  link.setAttribute('href', '#');
+
+  link.appendChild(text);
+  title.appendChild(link);
+  btn.appendChild(title);
+
+  btn.addEventListener('click', function(e) {
+    console.log('Removed Course Scan');
+    delFromStorage(courseId);
+  });
+
+  primaryActionBar.appendChild(btn);
+}
+
+function addResultsButton() {
+  const PRIMARY_BAR_ID = 'nav';
+  const primaryActionBar = document.getElementById(PRIMARY_BAR_ID);
+  let btn = document.createElement('li');
+  let title = document.createElement('h2');
+  let link = document.createElement('a');
+  let text = document.createTextNode('View Results');
+  // Blackboard class
+  btn.classList.add('mainButton');
+  link.setAttribute('href', '#');
+
+  link.appendChild(text);
+  title.appendChild(link);
+  btn.appendChild(title);
+
+  btn.addEventListener('click', showCourse);
+
+  primaryActionBar.appendChild(btn);
 }
 
 function addScanButton() {
@@ -258,15 +298,28 @@ function addScanButton() {
   title.appendChild(link);
   btn.appendChild(title);
 
-  btn.addEventListener('click', activate);
+  btn.addEventListener('click', init);
 
   primaryActionBar.appendChild(btn);
 }
 
+function addButtons() {
+  addScanButton();
+  addResultsButton();
+  addResetButton();
+}
+
 (function() {
-  if (window.location.href.includes('&scanning=true')) {
-    activate();
+  courseId = document.getElementById('course_id').value;
+  contentId = document.getElementById('content_id').value;
+
+  if (storageAvailable()) {
+    if (window.location.href.includes('&scanning=true')) {
+      init();
+    } else {
+      addButtons();
+    }
   } else {
-    addScanButton();
+    alert('Please update your browser to Chrome 4 or Firefox 3.5 to use the Course Scanner Script.');
   }
 })();
