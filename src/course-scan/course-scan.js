@@ -14,6 +14,9 @@ var __storage__;
 var courseId;
 var contentId;
 
+/*
+  Parses the Course Menu for content folders to parse through. 
+*/
 function getRoot() {
   var _root = [];
   var menuItems = document.getElementById('courseMenuPalette_contents');
@@ -57,7 +60,13 @@ function _makeLink(link) {
 
 function showCourse() {
   var courseMap = getFromStorage(courseId);
+  var elapsedSec = Math.floor((Date.now() - courseMap.startTime) / 1000);
+  var elapsedMin = Math.floor(elapsedSec / 60);
+  courseMap.elapsedTime = elapsedSec;
+  setToStorage(courseMap);
+  elapsedSec = elapsedSec % 60;
   showLevel(courseMap, 0);
+  console.log('Time Elapsed: ' + elapsedMin + ':' + elapsedSec);
 }
 
 function showLevel(parent, level) {
@@ -102,35 +111,58 @@ function getStep(courseMap) {
   return step;
 }
 
+function updateNode(node) {
+  node.scanned = true;
+}
+
+function takeStep(courseMap, step) {
+  step = getStep(courseMap);
+  setToStorage(courseId, courseMap);
+  window.location = step.url;
+}
+
+function updatePath(courseMap) {
+  if (courseMap.path[courseMap.path.length - 1] < courseMap.max[courseMap.path.length - 1]) {
+    // continue scanning laterally
+    courseMap.path[courseMap.path.length - 1]++;
+    console.log('continue scanning laterally');
+  } else if (courseMap.path.length > 0) {
+    // Completed the depth scan at this level. Go to parent
+    courseMap.path.pop();
+    courseMap.max.pop();
+    console.log('finished scanning page. go up a level');
+  }
+}
+
 function nextStep(courseMap) {
   // Get current page's node.
   var step = getStep(courseMap);
 
+  if (!step.nodes) 
+} else {
+    // This page has not been scanned yet.
+    step.nodes = parseContent();
+    if (step.nodes.length > 0) {
+      // has children
+      courseMap.path.push(0); // add another layer of depth;
+      courseMap.max.push(step.nodes.length - 1);
+      console.log('new scan with children. go down a level');
+    }
+  }
+
+  
+/*
   if (step.nodes) {
     // This page has been scanned already.
-    if (courseMap.path[courseMap.path.length-1] < courseMap.max[courseMap.path.length -1]) {
+    if (courseMap.path[courseMap.path.length - 1] < courseMap.max[courseMap.path.length - 1]) {
       // continue scanning laterally
-      courseMap.path[courseMap.path.length -1]++;
+      courseMap.path[courseMap.path.length - 1]++;
       console.log('continue scanning laterally');
-      step.scanned = true;
-      step = getStep(courseMap);
-      console.log(step);
-      setToStorage(courseId, courseMap);
-      window.location = step.url;
     } else if (courseMap.path.length > 0) {
       // Completed the depth scan at this level. Go to parent
       courseMap.path.pop();
       courseMap.max.pop();
-      step.scanned = true;
       console.log('finished scanning page. go up a level');
-      step = getStep(courseMap);
-      console.log(step);
-      setToStorage(courseId, courseMap);
-      window.location = step.url;
-    } else {
-      console.log('Course Completed');
-      setToStorage(courseId, courseMap);
-      showCourse();
     }
   } else {
     // This page has not been scanned yet.
@@ -139,43 +171,32 @@ function nextStep(courseMap) {
       // has children
       courseMap.path.push(0); // add another layer of depth;
       courseMap.max.push(step.nodes.length - 1);
-      // navigate to new layer
       console.log('new scan with children. go down a level');
-      step.scanned = true;
-      step = getStep(courseMap);
-      console.log(step);
-      setToStorage(courseId, courseMap);
-      window.location = step.url;
     } else {
       // leaf
-      // courseMap.path.pop();
       step.scanned = true;
       console.log('new scan but leaf.');
-      if (courseMap.path[courseMap.path.length -1] < courseMap.max[courseMap.path.length -1]) {
+      if (courseMap.path[courseMap.path.length - 1] < courseMap.max[courseMap.path.length - 1]) {
         // continue scanning laterally
-        courseMap.path[courseMap.path.length -1]++;
+        courseMap.path[courseMap.path.length - 1]++;
         console.log('continue scanning laterally');
       } else {
         courseMap.path.pop();
         courseMap.max.pop();
         console.log('go up a level.');
       }
-      if (courseMap.path.length > 0) {
-        step = getStep(courseMap);
-        console.log(step);
-        setToStorage(courseId, courseMap);
-        window.location = step.url;
-      } else {
-        console.log('Course Completed');
-        setToStorage(courseId, courseMap);
-        showCourse();
-      }
     }
   }
-}
-
-function firstStep(courseMap) {
-  window.location = courseMap.nodes[0].url;
+*/
+  if (courseMap.path.length > 0) {
+    updateNode(step);
+    takeStep(courseMap, step);
+  } else {
+    console.log('Course Completed');
+    updateNode(step);
+    setToStorage(courseId, courseMap);
+    showCourse();
+  }
 }
 
 function init() {
@@ -197,11 +218,12 @@ function init() {
     courseMap = Object.assign({}, {
       path: [0],
       max: [nodes.length - 1],
-      nodes: nodes
+      nodes: nodes,
+      startTime: Date.now()
     });
     setToStorage(courseId, courseMap);
     // initiate walk
-    firstStep(courseMap);
+    window.location.href = courseMap.nodes[0].url;
   }
 }
 
