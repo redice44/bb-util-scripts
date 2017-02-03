@@ -6,8 +6,6 @@
 // @description  Detects old vivo links
 // @author       Matt Thomson <red.cataclysm@gmail.com>
 // @match        https://fiu.blackboard.com/webapps/blackboard/content/listContentEditable.jsp?*
-// @resource     test https://github.com/redice44/bb-util-scripts/raw/master/src/resource/test.js
-// @grant        GM_getResourceText
 // ==/UserScript==
 
 var contentFolderController = '/webapps/blackboard/content/listContentEditable.jsp?';
@@ -280,18 +278,7 @@ function addResultsButton() {
   title.appendChild(link);
   btn.appendChild(title);
 
-  btn.addEventListener('click', function(e) {
-    var details = window.open('');
-    if (details) {
-      var html = details.document.body;
-      var parser = new DOMParser();
-      // html.appendChild();
-      var h = JSON.parse(GM_getResourceText('test'));
-      console.log(h);
-      console.log(parser.parseFromString(h.html, 'text/html'));
-    }
-    // showCourse();
-  });
+  btn.addEventListener('click', showCourse);
 
   primaryActionBar.appendChild(btn);
 }
