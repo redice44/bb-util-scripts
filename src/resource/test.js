@@ -1,4 +1,4 @@
-var __test__ = {
+{
   message: 'hello',
   value: 23,
   arr: [0, 1, 2, 2, 2],
