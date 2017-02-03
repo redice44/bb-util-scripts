@@ -58,35 +58,45 @@ function _makeLink(link) {
   };
 }
 
-function showCourse() {
+function finishScan() {
   var courseMap = getFromStorage(courseId);
   var elapsedSec = Math.floor((Date.now() - courseMap.startTime) / 1000);
-  var elapsedMin = Math.floor(elapsedSec / 60);
   courseMap.elapsedTime = elapsedSec;
-  setToStorage(courseMap);
+  setToStorage(courseId, courseMap);
+  showCourse();
+}
+
+function showCourse() {
+  var courseMap = getFromStorage(courseId);
+  var elapsedSec = courseMap.elapsedTime;
+  var elapsedMin = Math.floor(elapsedSec / 60);
   elapsedSec = elapsedSec % 60;
-  showLevel(courseMap, 0);
-  console.log('Time Elapsed: ' + elapsedMin + ':' + elapsedSec);
+  console.log('Total items scanned: ' + showLevel(courseMap, 0));
+  console.log('Time Elapsed: ' + elapsedMin + 'm ' + elapsedSec + 's');
 }
 
 function showLevel(parent, level) {
-  var title = parent.title || 'Root';
+  var title = parent.title || 'Course';
   var spacing = ' '.repeat(level * 2);
-  console.log(spacing + level + ': ' + title);
+  var total = parent.numItems;
+  console.log(spacing + level + ': ' + title + ' (' + parent.numItems + ' items scanned)');
   if (parent.nodes) {
     parent.nodes.forEach(function(child, i) {
-      showLevel(child, level + 1);
+      total += showLevel(child, level + 1);
     });
   }
+
+  return total;
 }
 
 function parseContent() {
   var contentItems = document.getElementById('content_listContainer');
   var folders = [];
 
+  // Incase of an empty folder
   if (contentItems) {
-    // Incase of an empty folder
-    contentItems = contentItems.querySelectorAll('li');
+    // So we only iterate over direct children
+    contentItems = document.querySelectorAll('#content_listContainer > li');
   } else {
     contentItems = [];
   }
@@ -98,7 +108,10 @@ function parseContent() {
     }
   });
 
-  return folders;
+  return {
+    numItems: contentItems.length,
+    folders: folders
+  };
 }
 
 function getStep(courseMap) {
@@ -138,56 +151,23 @@ function nextStep(courseMap) {
   // Get current page's node.
   var step = getStep(courseMap);
 
-  if (!step.nodes) 
-} else {
-    // This page has not been scanned yet.
-    step.nodes = parseContent();
-    if (step.nodes.length > 0) {
-      // has children
-      courseMap.path.push(0); // add another layer of depth;
-      courseMap.max.push(step.nodes.length - 1);
-      console.log('new scan with children. go down a level');
-    }
-  }
-
-  
-/*
   if (step.nodes) {
-    // This page has been scanned already.
-    if (courseMap.path[courseMap.path.length - 1] < courseMap.max[courseMap.path.length - 1]) {
-      // continue scanning laterally
-      courseMap.path[courseMap.path.length - 1]++;
-      console.log('continue scanning laterally');
-    } else if (courseMap.path.length > 0) {
-      // Completed the depth scan at this level. Go to parent
-      courseMap.path.pop();
-      courseMap.max.pop();
-      console.log('finished scanning page. go up a level');
-    }
+    updatePath(courseMap);
   } else {
     // This page has not been scanned yet.
-    step.nodes = parseContent(); // currenly only scanning for new folders.
+    var content = parseContent();
+    step.nodes = content.folders;
+    step.numItems = content.numItems;
     if (step.nodes.length > 0) {
       // has children
       courseMap.path.push(0); // add another layer of depth;
       courseMap.max.push(step.nodes.length - 1);
       console.log('new scan with children. go down a level');
     } else {
-      // leaf
-      step.scanned = true;
-      console.log('new scan but leaf.');
-      if (courseMap.path[courseMap.path.length - 1] < courseMap.max[courseMap.path.length - 1]) {
-        // continue scanning laterally
-        courseMap.path[courseMap.path.length - 1]++;
-        console.log('continue scanning laterally');
-      } else {
-        courseMap.path.pop();
-        courseMap.max.pop();
-        console.log('go up a level.');
-      }
+      updatePath(courseMap);
     }
   }
-*/
+
   if (courseMap.path.length > 0) {
     updateNode(step);
     takeStep(courseMap, step);
@@ -195,7 +175,7 @@ function nextStep(courseMap) {
     console.log('Course Completed');
     updateNode(step);
     setToStorage(courseId, courseMap);
-    showCourse();
+    finishScan();
   }
 }
 
@@ -210,6 +190,7 @@ function init() {
       nextStep(courseMap);
     } else {
       console.log('Course already scanned.');
+      showCourse();
     }
   } else {
     // Build course entry
@@ -219,7 +200,8 @@ function init() {
       path: [0],
       max: [nodes.length - 1],
       nodes: nodes,
-      startTime: Date.now()
+      startTime: Date.now(),
+      numItems: 0
     });
     setToStorage(courseId, courseMap);
     // initiate walk
