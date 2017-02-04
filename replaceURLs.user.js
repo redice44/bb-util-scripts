@@ -52,18 +52,30 @@ function getEditNodes() {
 (function() {
   'use strict';
 
+  var oldUrl = "";
+  var newUrl = "";
+  //var oldUrl = "fiuonline.mediasite.com";
+  //var newUrl = "fiuolmediasite.fiu.edu";
+
   // Grab the title div
   var header = document.getElementById("pageTitleDiv");
   var oldURLDefaultValue = "Old URL";
   var newURLDefaultValue = "New URL";
-  header.insertAdjacentHTML('beforeend', '<input id="oldUrlValue" type="text" name="oldURL" value=oldURLDefaultValue>');
-  header.insertAdjacentHTML('beforeend', '<input id="newUrlValue" type="text" name="newURL" value=oldURLDefaultValue>');
+  header.insertAdjacentHTML('beforeend', '<input id="oldUrlValue" type="text" name="oldURL" value=>');
+  header.insertAdjacentHTML('beforeend', '<input id="newUrlValue" type="text" name="newURL" value=>');
   header.insertAdjacentHTML('beforeend', '<button id="save_settings" class="button-1" style="width: 120px; height: 30px; font-size: 14px; right 10px; padding: 0px; margin-right: 15px;">Save</button>');
 
   document.getElementById("save_settings").addEventListener("click", saveURLInfo);
 
-  var oldUrl = "fiuonline.mediasite.com";
-  var newUrl = "fiuolmediasite.fiu.edu";
+  if (oldURL = "") {
+    document.getElementById("oldUrlValue").value = oldURLDefaultValue;
+  }
+  else document.getElementById("oldUrlValue").value = oldUrl;
+
+  if (newUrl = "") {
+    document.getElementById("newUrlValue").value = newURLDefaultValue;
+  }
+  else document.getElementById("newUrlValue").value = newUrl;
 
   var nodes = getEditNodes();
 
