@@ -48,6 +48,13 @@ function getEditNodes() {
 (function() {
   'use strict';
 
+  // Grab the title div
+  var header = document.getElementById("pageTitleDiv");
+  var oldURLDefaultValue = "Old URL";
+  var newURLDefaultValue = "New URL";
+  header.insertAdjacentHTML('beforeend', '<input id="oldUrlValue" type="text" name="oldURL" value=oldURLDefaultValue>');
+  header.insertAdjacentHTML('beforeend', '<input id="newUrlValue" type="text" name="newURL" value=oldURLDefaultValue>');
+
   var oldUrl = "fiuonline.mediasite.com";
   var newUrl = "fiuolmediasite.fiu.edu";
 
