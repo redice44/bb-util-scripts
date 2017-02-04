@@ -28,18 +28,12 @@ function saveURLInfo(oldUrl, newUrl){
 
 // Initiate Urls form saved session data
 function validateOldUrl(oUrl){
-
-  console.log('The link is originally');
-  console.log(oUrl);
-
   if (sessionStorage.getItem(oldURLSessionKey) == null || sessionStorage.getItem(oldURLSessionKey) == undefined) {
     oUrl = "";
     sessionStorage.setItem(oldURLSessionKey, oUrl);
   }
   else oUrl = sessionStorage.getItem(oldURLSessionKey);
 
-  console.log('The link is ');
-  console.log(oUrl);
   return oUrl;
 }
 
@@ -87,8 +81,8 @@ function getEditNodes() {
 
   var oldUrl = "";
   var newUrl = "";
-  validateOldUrl(oldUrl);
-  validateNewUrl(newUrl);
+  oldUrl = validateOldUrl(oldUrl);
+  newUrl = validateNewUrl(newUrl);
 
   //var oldUrl = "fiuonline.mediasite.com";
   //var newUrl = "fiuolmediasite.fiu.edu";
