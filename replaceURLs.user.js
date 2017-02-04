@@ -17,8 +17,26 @@ function updateUrl(target, oldUrl, newUrl) {
   return target.replace(new RegExp(oldUrl, 'g'), newUrl);
 }
 
+// Save URLs to session
 function saveURLInfo(){
   console.log('here');
+}
+
+// Initiate Urls form saved session data
+function validateUrlLinks(oURL, nURL){
+
+  if (sessionStorage.getIem(oldURLSessionKey) == null) {
+    oURL = "";
+    sessionStorage.setItem(oldURLSessionKey, oURL);
+  }
+  else oURL = sessionStorage.getIem(oldURLSessionKey);
+
+  if (sessionStorage.getIem(oldURLSessionKey) == null) {
+    nURL = "";
+    sessionStorage.setItem(oldURLSessionKey, nURL);
+  }
+  else nURL = sessionStorage.getIem(oldURLSessionKey);
+
 }
 
 function getEditNodes() {
@@ -52,8 +70,12 @@ function getEditNodes() {
 (function() {
   'use strict';
 
-  var oldUrl = "";
-  var newUrl = "";
+  var oldURLSessionKey = "oldUrlKey";
+  var newURLSessionKey = "newUrlKey";
+
+  var oldUrl;
+  var newUrl;
+
   //var oldUrl = "fiuonline.mediasite.com";
   //var newUrl = "fiuolmediasite.fiu.edu";
 
@@ -66,6 +88,8 @@ function getEditNodes() {
   header.insertAdjacentHTML('beforeend', '<button id="save_settings" class="button-1" style="width: 120px; height: 30px; font-size: 14px; right 10px; padding: 0px; margin-right: 15px;">Save</button>');
 
   document.getElementById("save_settings").addEventListener("click", saveURLInfo);
+
+  validateUrlLinks(oldUrl, newUrl);
 
   if (oldUrl == "") {
     document.getElementById("oldUrlValue").value = oldURLDefaultValue;
