@@ -13,7 +13,6 @@
 // @grant        none
 // ==/UserScript==
 
-
 var oldURLSessionKey = "oldUrlKey";
 var newURLSessionKey = "newUrlKey";
 
@@ -36,6 +35,8 @@ function validateOldUrl(oUrl){
   }
   else oUrl = sessionStorage.getItem(oldURLSessionKey);
 
+  console.log('The link is ');
+  console.log(oUrl);
   return oUrl;
 }
 
