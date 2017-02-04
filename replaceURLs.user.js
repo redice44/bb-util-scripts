@@ -28,17 +28,17 @@ function saveURLInfo(){
 // Initiate Urls form saved session data
 function validateUrlLinks(oURL, nURL){
 
-  if (sessionStorage.getIem(oldURLSessionKey) == null) {
+  if (sessionStorage.getItem(oldURLSessionKey) == null) {
     oURL = "";
     sessionStorage.setItem(oldURLSessionKey, oURL);
   }
-  else oURL = sessionStorage.getIem(oldURLSessionKey);
+  else oURL = sessionStorage.getItem(oldURLSessionKey);
 
-  if (sessionStorage.getIem(oldURLSessionKey) == null) {
+  if (sessionStorage.getItem(oldURLSessionKey) == null) {
     nURL = "";
     sessionStorage.setItem(oldURLSessionKey, nURL);
   }
-  else nURL = sessionStorage.getIem(oldURLSessionKey);
+  else nURL = sessionStorage.getItem(oldURLSessionKey);
 
 }
 
