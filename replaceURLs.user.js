@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         Replace URLs
+// @name         Replace URLs 2.0
 // @namespace    http://tampermonkey.net/
 //@updateURL     https://github.com/efranco5788/Replace_Old_URLs_2.0/blob/master/replaceURLs.user.js
 // @version      0.1.0
