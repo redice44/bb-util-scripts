@@ -28,25 +28,25 @@ function saveURLInfo(oldUrl, newUrl){
 }
 
 // Initiate Urls form saved session data
-function validateOldUrl(oldUrl){
+function validateOldUrl(oUrl){
 
   if (sessionStorage.getItem(oldURLSessionKey) == null) {
-    oldUrl = "";
-    sessionStorage.setItem(oldURLSessionKey, oldUrl);
+    oUrl = "";
+    sessionStorage.setItem(oldURLSessionKey, oUrl);
   }
-  else oldUrl = sessionStorage.getItem(oldURLSessionKey);
+  else oUrl = sessionStorage.getItem(oldURLSessionKey);
 
-  return oldUrl;
+  return oUrl;
 }
 
-function validateNewUrl(newUrl){
+function validateNewUrl(nUrl){
   if (sessionStorage.getItem(newURLSessionKey) == null) {
-    newUrl = "";
-    sessionStorage.setItem(newURLSessionKey, newUrl);
+    nUrl = "";
+    sessionStorage.setItem(newURLSessionKey, nUrl);
   }
-  else newUrl = sessionStorage.getItem(newURLSessionKey);
+  else nUrl = sessionStorage.getItem(newURLSessionKey);
 
-  return newUrl;
+  return nUrl;
 }
 
 
