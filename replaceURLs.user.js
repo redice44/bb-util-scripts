@@ -67,12 +67,12 @@ function getEditNodes() {
 
   document.getElementById("save_settings").addEventListener("click", saveURLInfo);
 
-  if (oldUrl = "") {
+  if (oldUrl == "") {
     document.getElementById("oldUrlValue").value = oldURLDefaultValue;
   }
   else document.getElementById("oldUrlValue").value = oldUrl;
 
-  if (newUrl = "") {
+  if (newUrl == "") {
     document.getElementById("newUrlValue").value = newURLDefaultValue;
   }
   else document.getElementById("newUrlValue").value = newUrl;
