@@ -29,7 +29,7 @@ function saveURLInfo(oldUrl, newUrl){
 // Initiate Urls form saved session data
 function validateOldUrl(oUrl){
 
-  if (sessionStorage.getItem(oldURLSessionKey) == null) {
+  if (sessionStorage.getItem(oldURLSessionKey) == null || sessionStorage.getItem(oldURLSessionKey) == undefined) {
     oUrl = "";
     sessionStorage.setItem(oldURLSessionKey, oUrl);
   }
