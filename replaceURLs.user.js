@@ -4,8 +4,7 @@
 //@updateURL     https://github.com/efranco5788/Replace_Old_URLs_2.0/blob/master/replaceURLs.user.js
 // @version      0.1.0
 // @description  Replaces all matching URLs in TinyMCE HTML content and Web Link URL field (if present) with new URL.
-// @author       Daniel Victoriano <victorianowebdesign@gmail.com>
-// @author       Matt Thomson <red.cataclysm@gmail.com>
+// @author       Emmanuel Franco
 // @match        https://fiu.blackboard.com/webapps/blackboard/execute/manageCourseItem?*
 // @match        https://fiu.blackboard.com/webapps/assessment/do/content/assessment?*
 // @match        https://fiu.blackboard.com/webapps/assessment/do/authoring/modifyAssessment*
