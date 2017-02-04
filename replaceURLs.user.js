@@ -26,7 +26,7 @@ function saveURLInfo(){
 }
 
 // Initiate Urls form saved session data
-function validateUrlLinks(oURL, nURL){
+function validateOldUrlLink(oURL){
 
   if (sessionStorage.getItem(oldURLSessionKey) == null) {
     oURL = "";
@@ -34,13 +34,19 @@ function validateUrlLinks(oURL, nURL){
   }
   else oURL = sessionStorage.getItem(oldURLSessionKey);
 
+  return oURL;
+}
+
+function validateNewUrlLink(nURL){
   if (sessionStorage.getItem(oldURLSessionKey) == null) {
     nURL = "";
     sessionStorage.setItem(oldURLSessionKey, nURL);
   }
   else nURL = sessionStorage.getItem(oldURLSessionKey);
 
+  return nURL
 }
+
 
 function getEditNodes() {
   var id = {
@@ -73,8 +79,8 @@ function getEditNodes() {
 (function() {
   'use strict';
 
-  var oldUrl;
-  var newUrl;
+  var oldUrl = validateOldUrlLink;
+  var newUrl = validateNewUrlLink;
 
   //var oldUrl = "fiuonline.mediasite.com";
   //var newUrl = "fiuolmediasite.fiu.edu";
@@ -88,8 +94,6 @@ function getEditNodes() {
   header.insertAdjacentHTML('beforeend', '<button id="save_settings" class="button-1" style="width: 120px; height: 30px; font-size: 14px; right 10px; padding: 0px; margin-right: 15px;">Save</button>');
 
   document.getElementById("save_settings").addEventListener("click", saveURLInfo);
-
-  validateUrlLinks(oldUrl, newUrl);
 
   if (oldUrl == "") {
     document.getElementById("oldUrlValue").value = oldURLDefaultValue;
