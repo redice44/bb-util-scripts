@@ -67,7 +67,7 @@ function getEditNodes() {
 
   document.getElementById("save_settings").addEventListener("click", saveURLInfo);
 
-  if (oldUrl = "") {
+  if (oldUl = "") {
     document.getElementById("oldUrlValue").value = oldURLDefaultValue;
   }
   else document.getElementById("oldUrlValue").value = oldUrl;
