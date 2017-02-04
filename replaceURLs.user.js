@@ -54,7 +54,7 @@ function getEditNodes() {
   var newURLDefaultValue = "New URL";
   header.insertAdjacentHTML('beforeend', '<input id="oldUrlValue" type="text" name="oldURL" value=oldURLDefaultValue>');
   header.insertAdjacentHTML('beforeend', '<input id="newUrlValue" type="text" name="newURL" value=oldURLDefaultValue>');
-  header.insertAdjacentHTML('beforeend', '<button id="save_settings" class="button-1" style="width: 120px; height: 30px; font-size: 14px; padding: 6px; margin-right: 15px;">Save</button>');
+  header.insertAdjacentHTML('beforeend', '<button id="save_settings" class="button-1" style="width: 120px; height: 30px; font-size: 14px; padding: 5px; margin-right: 15px;">Save</button>');
 
   var oldUrl = "fiuonline.mediasite.com";
   var newUrl = "fiuolmediasite.fiu.edu";
