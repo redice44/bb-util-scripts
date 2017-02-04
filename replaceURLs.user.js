@@ -24,8 +24,8 @@ function updateUrl(target, oldUrl, newUrl) {
 
 // Save URLs to session
 function saveURLInfo(){
-  sessionStorage.setItem(oldURLSessionKey, oURL);
-  sessionStorage.setItem(newURLSessionKey, nURL);
+  sessionStorage.setItem(oldURLSessionKey, oldUrl);
+  sessionStorage.setItem(newURLSessionKey, newUrl);
 }
 
 // Initiate Urls form saved session data
