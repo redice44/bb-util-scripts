@@ -13,6 +13,8 @@
 // @grant        none
 // ==/UserScript==
 
+var oldUrl;
+var newUrl;
 var oldURLSessionKey = "oldUrlKey";
 var newURLSessionKey = "newUrlKey";
 
@@ -22,7 +24,8 @@ function updateUrl(target, oldUrl, newUrl) {
 
 // Save URLs to session
 function saveURLInfo(){
-  console.log('here');
+  sessionStorage.setItem(oldURLSessionKey, oURL);
+  sessionStorage.setItem(newURLSessionKey, nURL);
 }
 
 // Initiate Urls form saved session data
@@ -38,11 +41,11 @@ function validateOldUrlLink(oURL){
 }
 
 function validateNewUrlLink(nURL){
-  if (sessionStorage.getItem(oldURLSessionKey) == null) {
+  if (sessionStorage.getItem(newURLSessionKey) == null) {
     nURL = "";
-    sessionStorage.setItem(oldURLSessionKey, nURL);
+    sessionStorage.setItem(newURLSessionKey, nURL);
   }
-  else nURL = sessionStorage.getItem(oldURLSessionKey);
+  else nURL = sessionStorage.getItem(newURLSessionKey);
 
   return nURL
 }
@@ -79,8 +82,8 @@ function getEditNodes() {
 (function() {
   'use strict';
 
-  var oldUrl = validateOldUrlLink(oldUrl);
-  var newUrl = validateNewUrlLink(newUrl);
+  oldUrl = validateOldUrlLink(oldUrl);
+  newUrl = validateNewUrlLink(newUrl);
 
   //var oldUrl = "fiuonline.mediasite.com";
   //var newUrl = "fiuolmediasite.fiu.edu";
