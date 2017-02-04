@@ -13,8 +13,7 @@
 // @grant        none
 // ==/UserScript==
 
-var oldUrl;
-var newUrl;
+
 var oldURLSessionKey = "oldUrlKey";
 var newURLSessionKey = "newUrlKey";
 
@@ -29,7 +28,7 @@ function saveURLInfo(oldUrl, newUrl){
 }
 
 // Initiate Urls form saved session data
-function validateUrlLinks(oldUrl, newUrl){
+function validateOldUrl(oldUrl){
 
   if (sessionStorage.getItem(oldURLSessionKey) == null) {
     oldUrl = "";
@@ -37,12 +36,17 @@ function validateUrlLinks(oldUrl, newUrl){
   }
   else oldUrl = sessionStorage.getItem(oldURLSessionKey);
 
+  return oldUrl;
+}
+
+function validateNewUrl(newUrl){
   if (sessionStorage.getItem(newURLSessionKey) == null) {
     newUrl = "";
     sessionStorage.setItem(newURLSessionKey, newUrl);
   }
   else newUrl = sessionStorage.getItem(newURLSessionKey);
 
+  return newUrl;
 }
 
 
@@ -77,7 +81,8 @@ function getEditNodes() {
 (function() {
   'use strict';
 
-  validateUrlLinks(oldUrl, newUrl);
+  var oldUrl = validateOldUrl(oldUrl);
+  var newUrl = validateNewUrl(newUrl);
 
   //var oldUrl = "fiuonline.mediasite.com";
   //var newUrl = "fiuolmediasite.fiu.edu";
