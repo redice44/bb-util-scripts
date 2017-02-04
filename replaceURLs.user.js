@@ -79,8 +79,8 @@ function getEditNodes() {
 (function() {
   'use strict';
 
-  var oldUrl = validateOldUrlLink;
-  var newUrl = validateNewUrlLink;
+  var oldUrl = validateOldUrlLink(oldUrl);
+  var newUrl = validateNewUrlLink(newUrl);
 
   //var oldUrl = "fiuonline.mediasite.com";
   //var newUrl = "fiuolmediasite.fiu.edu";
