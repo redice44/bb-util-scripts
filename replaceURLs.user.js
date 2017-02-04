@@ -13,8 +13,8 @@
 // @grant        none
 // ==/UserScript==
 
-var oldUrl;
-var newUrl;
+//var oldUrl;
+//var newUrl;
 var oldURLSessionKey = "oldUrlKey";
 var newURLSessionKey = "newUrlKey";
 
@@ -23,31 +23,26 @@ function updateUrl(target, oldUrl, newUrl) {
 }
 
 // Save URLs to session
-function saveURLInfo(){
+function saveURLInfo(oldUrl, newUrl){
   sessionStorage.setItem(oldURLSessionKey, oldUrl);
   sessionStorage.setItem(newURLSessionKey, newUrl);
 }
 
 // Initiate Urls form saved session data
-function validateOldUrlLink(oURL){
+function validateUrlLinks(oldUrl, newUrl){
 
   if (sessionStorage.getItem(oldURLSessionKey) == null) {
-    oURL = "";
-    sessionStorage.setItem(oldURLSessionKey, oURL);
+    oldUrl = "";
+    sessionStorage.setItem(oldURLSessionKey, oldUrl);
   }
-  else oURL = sessionStorage.getItem(oldURLSessionKey);
+  else oldUrl = sessionStorage.getItem(oldURLSessionKey);
 
-  return oURL;
-}
-
-function validateNewUrlLink(nURL){
   if (sessionStorage.getItem(newURLSessionKey) == null) {
-    nURL = "";
-    sessionStorage.setItem(newURLSessionKey, nURL);
+    newUrl = "";
+    sessionStorage.setItem(newURLSessionKey, newUrl);
   }
-  else nURL = sessionStorage.getItem(newURLSessionKey);
+  else newUrl = sessionStorage.getItem(newURLSessionKey);
 
-  return nURL
 }
 
 
@@ -82,8 +77,10 @@ function getEditNodes() {
 (function() {
   'use strict';
 
-  oldUrl = validateOldUrlLink(oldUrl);
-  newUrl = validateNewUrlLink(newUrl);
+  var oldUrl;
+  var newUrl;
+
+  validateUrlLinks(oldUrl, newUrl);
 
   //var oldUrl = "fiuonline.mediasite.com";
   //var newUrl = "fiuolmediasite.fiu.edu";
@@ -96,7 +93,7 @@ function getEditNodes() {
   header.insertAdjacentHTML('beforeend', '<input id="newUrlValue" type="text" name="newURL" value=>');
   header.insertAdjacentHTML('beforeend', '<button id="save_settings" class="button-1" style="width: 120px; height: 30px; font-size: 14px; right 10px; padding: 0px; margin-right: 15px;">Save</button>');
 
-  document.getElementById("save_settings").addEventListener("click", saveURLInfo);
+  document.getElementById("save_settings").addEventListener("click", saveURLInfo(oldUrl, newUrl));
 
   if (oldUrl == "") {
     document.getElementById("oldUrlValue").value = oldURLDefaultValue;
