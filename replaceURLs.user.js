@@ -13,8 +13,8 @@
 // @grant        none
 // ==/UserScript==
 
-//var oldUrl;
-//var newUrl;
+var oldUrl;
+var newUrl;
 var oldURLSessionKey = "oldUrlKey";
 var newURLSessionKey = "newUrlKey";
 
@@ -77,8 +77,8 @@ function getEditNodes() {
 (function() {
   'use strict';
 
-  var oldUrl;
-  var newUrl;
+  oldUrl;
+  newUrl;
 
   validateUrlLinks(oldUrl, newUrl);
 
