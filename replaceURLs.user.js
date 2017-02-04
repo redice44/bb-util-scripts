@@ -13,6 +13,9 @@
 // @grant        none
 // ==/UserScript==
 
+var oldURLSessionKey = "oldUrlKey";
+var newURLSessionKey = "newUrlKey";
+
 function updateUrl(target, oldUrl, newUrl) {
   return target.replace(new RegExp(oldUrl, 'g'), newUrl);
 }
@@ -69,9 +72,6 @@ function getEditNodes() {
 
 (function() {
   'use strict';
-
-  var oldURLSessionKey = "oldUrlKey";
-  var newURLSessionKey = "newUrlKey";
 
   var oldUrl;
   var newUrl;
