@@ -98,7 +98,7 @@ function getEditNodes() {
   header.insertAdjacentHTML('beforeend', '<input id="newUrlValue" type="text" name="newURL" value=>');
   header.insertAdjacentHTML('beforeend', '<button id="save_settings" class="button-1" style="width: 120px; height: 30px; font-size: 14px; right 10px; padding: 0px; margin-right: 15px;">Save</button>');
 
-  document.getElementById("save_settings").addEventListener("click", function{
+  document.getElementById("save_settings").addEventListener("click", function(){
     var old = document.getElementById("oldUrlValue").value;
     var newLink = document.getElementById("newUrlValue").value;
     sessionStorage.setItem(oldURLSessionKey, old);
