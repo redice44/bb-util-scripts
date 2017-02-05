@@ -149,6 +149,7 @@ function getEditNodes() {
 
   // Search for old url on page
   searchForOldUrl();
+  searchForNewUrl();
 
   if (oldUrl == "") {
     document.getElementById("oldUrlValue").value = oldURLDefaultValue;
