@@ -131,10 +131,10 @@ function getEditNodes() {
 
   // Grab the title div
   var header = document.getElementById("pageTitleDiv");
-  var oldURLDefaultValue = "Old URL";
-  var newURLDefaultValue = "New URL";
-  header.insertAdjacentHTML('beforeend', '<input id="oldUrlValue" type="text" name="oldURL" value=>');
-  header.insertAdjacentHTML('beforeend', '<input id="newUrlValue" type="text" name="newURL" value=>');
+  //var oldURLDefaultValue = "Old URL";
+  //var newURLDefaultValue = "New URL";
+  header.insertAdjacentHTML('beforeend', '<input id="oldUrlValue" type="text" name="oldURL" placeholder="Old URL">');
+  header.insertAdjacentHTML('beforeend', '<input id="newUrlValue" type="text" name="newURL" placeholder="New URL">');
   header.insertAdjacentHTML('beforeend', '<button id="save_settings" class="button-1" style="width: 120px; height: 30px; font-size: 14px; right 10px; padding: 0px; margin-right: 15px;">Save</button>');
 
   document.getElementById("save_settings").addEventListener("click", function(){
@@ -147,6 +147,7 @@ function getEditNodes() {
     location.reload();
   });
 
+  /*
   if (oldUrl == "") {
     document.getElementById("oldUrlValue").value = oldURLDefaultValue;
   }
@@ -156,7 +157,8 @@ function getEditNodes() {
     document.getElementById("newUrlValue").value = newURLDefaultValue;
   }
   else document.getElementById("newUrlValue").value = newUrl;
-
+  */
+  
   // Search for urls on page
   searchForOldUrl();
   searchForNewUrl();
