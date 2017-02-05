@@ -120,6 +120,7 @@ function getEditNodes() {
     location.reload();
   });
 
+  // Search for old url on page
   searchForOldUrl();
 
   if (oldUrl == "") {
