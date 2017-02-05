@@ -20,6 +20,13 @@ function updateUrl(target, oldUrl, newUrl) {
   return target.replace(new RegExp(oldUrl, 'g'), newUrl);
 }
 
+function saveURLInfo(){
+  document.getElementById("oldUrlValue").value = sessionStorage.getItem(oldURLSessionKey) ;
+  document.getElementById("newUrlValue").value = sessionStorage.getItem(newURLSessionKey);
+  console.log('saved');
+  location.reload();
+}
+
 // Searches area for old url
 function searchForOldUrl(){
   var oldUrl = sessionStorage.getItem(oldURLSessionKey);
@@ -142,10 +149,7 @@ function getEditNodes() {
     var newLink = document.getElementById("newUrlValue").value;
     sessionStorage.setItem(oldURLSessionKey, old);
     sessionStorage.setItem(newURLSessionKey, newLink);
-    document.getElementById("oldUrlValue").value = old;
-    document.getElementById("newUrlValue").value = newLink;
-    console.log('saved');
-    location.reload();
+    saveURLInfo();
   });
 
   // Search for urls on page
