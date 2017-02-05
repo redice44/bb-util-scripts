@@ -23,7 +23,9 @@ function updateUrl(target, oldUrl, newUrl) {
 // Searches area for old url
 function searchForOldUrl(){
   var oldUrl = sessionStorage.getItem(oldURLSessionKey);
-  if (!sessionStorage.getItem(oldURLSessionKey) == null || !sessionStorage.getItem(oldURLSessionKey) == undefined) {
+  console.log('checking for the url');
+  console.log(oldUrl);
+  if (sessionStorage.getItem(oldURLSessionKey) != null || sessionStorage.getItem(oldURLSessionKey) != undefined) {
     var links = document.querySelectorAll('#content_listContainer a');
     var items = [];
     var linkFlag = oldUrl;
