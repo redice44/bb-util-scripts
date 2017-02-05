@@ -20,33 +20,46 @@ function updateUrl(target, oldUrl, newUrl) {
   return target.replace(new RegExp(oldUrl, 'g'), newUrl);
 }
 
-// Save URLs to session
-function saveURLInfo(){
-  var old = document.getElementById("oldUrlValue").value;
-  var newLink = document.getElementById("newUrlValue").value;
-  sessionStorage.setItem(oldURLSessionKey, old);
-  sessionStorage.setItem(newURLSessionKey, newLink);
-  console.log(old);
-  console.log(newLink);
-  console.log('saved');
-}
+// Searches area for old url
+function searchForOldUrl(){
+  var oldUrl = sessionStorage.getItem(oldURLSessionKey);
+  if (!sessionStorage.getItem(oldURLSessionKey) == null || !sessionStorage.getItem(oldURLSessionKey) == undefined) {
+    var links = document.querySelectorAll('#content_listContainer a');
+    var items = [];
+    var linkFlag = oldUrl;
 
-// Initiate Urls form saved session data
+    for (var l of links) {
+      if (l.href.includes(linkFlag)) {
+        items.push(l.innerText);
+        l.setAttribute('style', 'background-color: #FF0000');
+      } // End of inner if statement
+    } // End of For loop
+
+    if (items.length > 0) {
+      alert ('There are ' + items.length + ' old link(s) on this page highlighted in red.');
+      // List out items in console
+      console.log(items);
+    }
+
+  }// End of outter if statement loop
+
+} // End of function
+
+// Validate Urls form saved session data
 function validateOldUrl(oUrl){
   if (sessionStorage.getItem(oldURLSessionKey) == null || sessionStorage.getItem(oldURLSessionKey) == undefined) {
     oUrl = "";
     sessionStorage.setItem(oldURLSessionKey, oUrl);
   }
-
   return oUrl;
 }
 
+// Validate Urls form saved session data
 function validateNewUrl(nUrl){
   if (sessionStorage.getItem(newURLSessionKey) == null) {
     nUrl = "";
     sessionStorage.setItem(newURLSessionKey, nUrl);
   }
-
   return nUrl;
 }
 
@@ -106,6 +119,7 @@ function getEditNodes() {
     console.log(old);
     console.log(newLink);
     console.log('saved');
+    searchForOldUrl();
   });
 
   if (oldUrl == "") {
