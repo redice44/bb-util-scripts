@@ -147,10 +147,6 @@ function getEditNodes() {
     location.reload();
   });
 
-  // Search for old url on page
-  searchForOldUrl();
-  searchForNewUrl();
-
   if (oldUrl == "") {
     document.getElementById("oldUrlValue").value = oldURLDefaultValue;
   }
@@ -160,6 +156,10 @@ function getEditNodes() {
     document.getElementById("newUrlValue").value = newURLDefaultValue;
   }
   else document.getElementById("newUrlValue").value = newUrl;
+
+  // Search for urls on page
+  searchForOldUrl();
+  searchForNewUrl();
 
   var nodes = getEditNodes();
 
