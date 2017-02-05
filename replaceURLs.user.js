@@ -48,7 +48,7 @@ function searchForOldUrl(){
 
 // Search for new URL
 function searchForNewUrl(){
-  var nUrl = sessionStorage.getItem(oldURLSessionKey);
+  var nUrl = sessionStorage.getItem(newURLSessionKey);
   console.log('checking for the url');
   console.log(nUrl);
   if (sessionStorage.getItem(newURLSessionKey) != null || sessionStorage.getItem(newURLSessionKey) != undefined) {
