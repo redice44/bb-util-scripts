@@ -99,7 +99,6 @@ function getEditNodes() {
   var newUrl = sessionStorage.getItem(newURLSessionKey);
   oldUrl = validateOldUrl(oldUrl);
   newUrl = validateNewUrl(newUrl);
-  searchForOldUrl();
   //var oldUrl = "fiuonline.mediasite.com";
   //var newUrl = "fiuolmediasite.fiu.edu";
 
@@ -120,6 +119,8 @@ function getEditNodes() {
     console.log('saved');
     location.reload();
   });
+
+  searchForOldUrl();
 
   if (oldUrl == "") {
     document.getElementById("oldUrlValue").value = oldURLDefaultValue;
