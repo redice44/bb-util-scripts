@@ -21,9 +21,12 @@ function updateUrl(target, oldUrl, newUrl) {
 }
 
 // Save URLs to session
-function saveURLInfo(oldUrl, newUrl){
-  sessionStorage.setItem(oldURLSessionKey, oldUrl);
-  sessionStorage.setItem(newURLSessionKey, newUrl);
+function saveURLInfo(){
+  var old = document.getElementById("oldUrlValue").value;
+  var newLink = document.getElementById("newUrlValue").value;
+  sessionStorage.setItem(oldURLSessionKey, old);
+  sessionStorage.setItem(newURLSessionKey, newLink);
+  console.log('saved');
 }
 
 // Initiate Urls form saved session data
@@ -32,7 +35,6 @@ function validateOldUrl(oUrl){
     oUrl = "";
     sessionStorage.setItem(oldURLSessionKey, oUrl);
   }
-  else oUrl = sessionStorage.getItem(oldURLSessionKey);
 
   return oUrl;
 }
@@ -42,7 +44,6 @@ function validateNewUrl(nUrl){
     nUrl = "";
     sessionStorage.setItem(newURLSessionKey, nUrl);
   }
-  else nUrl = sessionStorage.getItem(newURLSessionKey);
 
   return nUrl;
 }
@@ -79,8 +80,8 @@ function getEditNodes() {
 (function() {
   'use strict';
 
-  var oldUrl = "";
-  var newUrl = "";
+  var oldUrl = sessionStorage.getItem(oldURLSessionKey);
+  var newUrl = sessionStorage.getItem(newURLSessionKey);
   oldUrl = validateOldUrl(oldUrl);
   newUrl = validateNewUrl(newUrl);
 
@@ -95,7 +96,7 @@ function getEditNodes() {
   header.insertAdjacentHTML('beforeend', '<input id="newUrlValue" type="text" name="newURL" value=>');
   header.insertAdjacentHTML('beforeend', '<button id="save_settings" class="button-1" style="width: 120px; height: 30px; font-size: 14px; right 10px; padding: 0px; margin-right: 15px;">Save</button>');
 
-  document.getElementById("save_settings").addEventListener("click", saveURLInfo(oldUrl, newUrl));
+  document.getElementById("save_settings").addEventListener("click", saveURLInfo());
 
   if (oldUrl == "") {
     document.getElementById("oldUrlValue").value = oldURLDefaultValue;
