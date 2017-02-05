@@ -31,7 +31,8 @@ function searchForOldUrl(){
     var linkFlag = oldUrl;
 
     for (var l of links) {
-      if (l.href.includes(linkFlag)) {
+      //l.href.includes(linkFlag)
+      if (l.href.startsWith(linkFlag)) {
         items.push(l.innerText);
         l.setAttribute('style', 'background-color: #FF0000');
       } // End of inner if statement
@@ -57,7 +58,8 @@ function searchForNewUrl(){
     var linkFlag = nUrl;
 
     for (var l of links) {
-      if (l.href.includes(linkFlag)) {
+      // l.href.includes
+      if (l.href.startsWith(linkFlag)) {
         items.push(l.innerText);
         l.setAttribute('style', 'background-color: #00FF00');
       } // End of inner if statement
