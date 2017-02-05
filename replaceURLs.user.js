@@ -25,7 +25,7 @@ function searchForOldUrl(){
   var oldUrl = sessionStorage.getItem(oldURLSessionKey);
   console.log('checking for the url');
   console.log(oldUrl);
-  if (sessionStorage.getItem(oldURLSessionKey) != null || sessionStorage.getItem(oldURLSessionKey) != undefined) {
+  if (oldUrl) {
     var links = document.querySelectorAll('#content_listContainer a');
     var items = [];
     var linkFlag = oldUrl;
@@ -51,7 +51,7 @@ function searchForNewUrl(){
   var nUrl = sessionStorage.getItem(newURLSessionKey);
   console.log('checking for the url');
   console.log(nUrl);
-  if (sessionStorage.getItem(newURLSessionKey) != null || sessionStorage.getItem(newURLSessionKey) != undefined) {
+  if (nUrl) {
     var links = document.querySelectorAll('#content_listContainer a');
     var items = [];
     var linkFlag = nUrl;
