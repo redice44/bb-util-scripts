@@ -142,6 +142,8 @@ function getEditNodes() {
     var newLink = document.getElementById("newUrlValue").value;
     sessionStorage.setItem(oldURLSessionKey, old);
     sessionStorage.setItem(newURLSessionKey, newLink);
+    document.getElementById("oldUrlValue").value = old;
+    document.getElementById("newUrlValue").value = newUrl;
     console.log(old);
     console.log('saved');
     location.reload();
@@ -158,7 +160,7 @@ function getEditNodes() {
   }
   else document.getElementById("newUrlValue").value = newUrl;
   */
-  
+
   // Search for urls on page
   searchForOldUrl();
   searchForNewUrl();
