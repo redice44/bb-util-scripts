@@ -143,23 +143,10 @@ function getEditNodes() {
     sessionStorage.setItem(oldURLSessionKey, old);
     sessionStorage.setItem(newURLSessionKey, newLink);
     document.getElementById("oldUrlValue").value = old;
-    document.getElementById("newUrlValue").value = newUrl;
-    console.log(old);
+    document.getElementById("newUrlValue").value = newLink;
     console.log('saved');
     location.reload();
   });
-
-  /*
-  if (oldUrl == "") {
-    document.getElementById("oldUrlValue").value = oldURLDefaultValue;
-  }
-  else document.getElementById("oldUrlValue").value = oldUrl;
-
-  if (newUrl == "") {
-    document.getElementById("newUrlValue").value = newURLDefaultValue;
-  }
-  else document.getElementById("newUrlValue").value = newUrl;
-  */
 
   // Search for urls on page
   searchForOldUrl();
