@@ -44,8 +44,33 @@ function searchForOldUrl(){
     }
 
   }// End of outter if statement loop
-
 } // End of function
+
+// Search for new URL
+function searchForNewUrl(){
+  var nUrl = sessionStorage.getItem(oldURLSessionKey);
+  console.log('checking for the url');
+  console.log(nUrl);
+  if (sessionStorage.getItem(newURLSessionKey) != null || sessionStorage.getItem(newURLSessionKey) != undefined) {
+    var links = document.querySelectorAll('#content_listContainer a');
+    var items = [];
+    var linkFlag = nUrl;
+
+    for (var l of links) {
+      if (l.href.includes(linkFlag)) {
+        items.push(l.innerText);
+        l.setAttribute('style', 'background-color: #00FF00');
+      } // End of inner if statement
+    } // End of For loop
+
+    if (items.length > 0) {
+      alert ('There are ' + items.length + ' new link(s) on this page highlighted in green.');
+      // List out items in console
+      console.log(items);
+    }
+
+  }// End of outter if statement loop
+}
 
 // Validate Urls form saved session data
 function validateOldUrl(oUrl){
