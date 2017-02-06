@@ -4,7 +4,9 @@
 // @updateURL    https://github.com/efranco5788/Replace_Old_URLs_2.0/blob/master/replaceURLs.user.js
 // @version      0.1.0
 // @description  Replaces all matching URLs in TinyMCE HTML content and Web Link URL field (if present) with new URL.
-// @author       Emmanuel Franco
+// @author       Matt Thomson <red.cataclysm@gmail.com>
+// @author       Daniel Victoriano <victorianowebdesign@gmail.com>
+// @author       Emmanuel Franco <efranco5788@gmail.com>
 // @match        https://fiu.blackboard.com/webapps/blackboard/content/listContentEditable.jsp?*
 // @match        https://fiu.blackboard.com/webapps/blackboard/execute/manageCourseItem?*
 // @match        https://fiu.blackboard.com/webapps/assessment/do/content/assessment?*
@@ -131,8 +133,7 @@ function getEditNodes() {
 
   // Grab the title div
   var header = document.getElementById("pageTitleDiv");
-  //var oldURLDefaultValue = "Old URL";
-  //var newURLDefaultValue = "New URL";
+  
   header.insertAdjacentHTML('beforeend', '<input id="oldUrlValue" type="text" name="oldURL" placeholder="Old URL">');
   header.insertAdjacentHTML('beforeend', '<input id="newUrlValue" type="text" name="newURL" placeholder="New URL">');
   header.insertAdjacentHTML('beforeend', '<button id="save_settings" class="button-1" style="width: 120px; height: 30px; font-size: 14px; right 10px; padding: 0px; margin-right: 15px;">Save</button>');
