@@ -3,3 +3,13 @@
   border: 1px solid black;
   padding: 5px;
 }
+
+ul {
+  margin-left: 25px;
+  /*background-color: rgba(0, 0, 0, 0.2);*/
+}
+
+li {
+  padding: 10px;
+  list-style: none;
+}

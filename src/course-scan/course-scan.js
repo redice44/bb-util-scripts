@@ -6,6 +6,12 @@
 // @description  Detects old vivo links
 // @author       Matt Thomson <red.cataclysm@gmail.com>
 // @match        https://fiu.blackboard.com/webapps/blackboard/content/listContentEditable.jsp?*
+// @match        file:///*/results.html*
+// @match        https://redice44.github.io/bb-util-scripts/results.html*
+// @grant        GM_setValue
+// @grant        GM_getValue
+// @grant        GM_deleteValue
+// @grant        GM_listValues
 // ==/UserScript==
 
 var contentFolderController = '/webapps/blackboard/content/listContentEditable.jsp?';
@@ -68,8 +74,44 @@ function finishScan() {
   window.location = courseMap.nodes[0].url;
 }
 
-function showCourse() {
+function showCourse(courseId) {
   var courseMap = getFromStorage(courseId);
+  if (courseMap) {
+    var domNode = document.createElement('div');
+    domNode.appendChild(showLevel(courseMap));
+    document.getElementById('results').appendChild(domNode);
+  } else {
+    console.log('No course scan');
+  }
+}
+
+function showLevel(parent) {
+  var title = parent.title || 'Course';
+  var ul = document.createElement('ul');
+  var li = document.createElement('li');
+  var a = document.createElement('a');
+  a.appendChild(document.createTextNode(title));
+  a.setAttribute('target', '_blank');
+  if (parent.title) {
+    // Not root node
+    a.setAttribute('href', parent.url);
+  }
+  li.appendChild(a);
+  ul.appendChild(li);
+  if (parent.nodes) {
+    parent.nodes.forEach(function(child) {
+      ul.appendChild(showLevel(child));
+    });
+  }
+
+  return ul;
+}
+
+/*
+function showCourse(courseId) {
+  var courseMap = getFromStorage(courseId);
+  console.log(courseMap);
+  console.log(GM_listValues());
   if (courseMap) {
     var elapsedSec = courseMap.elapsedTime;
     var elapsedMin = Math.floor(elapsedSec / 60);
@@ -94,7 +136,7 @@ function showLevel(parent, level) {
 
   return total;
 }
-
+*/
 function parseContent() {
   var contentItems = document.getElementById('content_listContainer');
   var folders = [];
@@ -193,7 +235,7 @@ function init() {
       nextStep(courseMap);
     } else {
       console.log('Course already scanned.');
-      showCourse();
+      showCourse(courseId);
     }
   } else {
     // Build course entry
@@ -213,15 +255,20 @@ function init() {
 }
 
 function getFromStorage(key) {
-  return JSON.parse(__storage__.getItem(key));
+  // return JSON.parse(__storage__.getItem(key));
+  // console.log('get: ', key,GM_getValue(key, null));
+  // return JSON.parse(GM_getValue(key, null));
+  return GM_getValue(key, null);
 }
 
 function setToStorage(key, value) {
-  __storage__.setItem(key, JSON.stringify(value));
+  // __storage__.setItem(key, JSON.stringify(value));
+  GM_setValue(key, value);
 }
 
 function delFromStorage(key) {
-  __storage__.removeItem(key);  
+  GM_deleteValue(key);
+  // __storage__.removeItem(key);  
 }
 
 /*
@@ -309,17 +356,44 @@ function addButtons() {
   addResetButton();
 }
 
-(function() {
-  courseId = document.getElementById('course_id').value;
-  contentId = document.getElementById('content_id').value;
+function handleSubmit(e) {
+  console.log('value', document.getElementById('course_id').value);
+  showCourse(document.getElementById('course_id').value);
+}
 
-  if (storageAvailable()) {
-    if (window.location.href.includes('&scanning=true')) {
-      init();
-    } else {
-      addButtons();
+(function() {
+  var url = window.location.href;
+  if (url.includes('results.html')) {
+    // results page
+    var courseIdNode = document.getElementById('course_id');
+    if (url.includes('course_id=')) {
+      var params = url.split('?')[1];
+      params = params.split('&');
+      params = params.reduce(function(acc, val) {
+        console.log(val);
+        if (val.includes('course_id')) {
+          return val.split('=')[1];
+        }
+      }, 0);
+      courseIdNode.value = params;
+      handleSubmit();
     }
+    courseIdNode.focus();
+    // courseIdNode.addEventListener('submit', handleSubmit);
+    document.getElementById('see_results').addEventListener('click', handleSubmit);
+
   } else {
-    alert('Please update your browser to Chrome 4 or Firefox 3.5 to use the Course Scanner Script.');
+    courseId = document.getElementById('course_id').value;
+    contentId = document.getElementById('content_id').value;
+    if (storageAvailable()) {
+      console.log('page?');
+      if (window.location.href.includes('&scanning=true')) {
+        init();
+      } else {
+        addButtons();
+      }
+    } else {
+      alert('Please update your browser to Chrome 4 or Firefox 3.5 to use the Course Scanner Script.');
+    }
   }
 })();
