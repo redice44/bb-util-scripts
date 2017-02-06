@@ -82,6 +82,7 @@ function showCourse(courseId) {
     document.getElementById('results').appendChild(domNode);
   } else {
     console.log('No course scan');
+    document.getElementById('results').innerHTML = 'Course Not Found';
   }
 }
 
@@ -90,7 +91,7 @@ function showLevel(parent) {
   var ul = document.createElement('ul');
   var li = document.createElement('li');
   var a = document.createElement('a');
-  a.appendChild(document.createTextNode(title));
+  a.appendChild(document.createTextNode(title + ' (' + parent.numItems + ' items scanned)'));
   a.setAttribute('target', '_blank');
   if (parent.title) {
     // Not root node
@@ -325,7 +326,10 @@ function addResultsButton() {
   title.appendChild(link);
   btn.appendChild(title);
 
-  btn.addEventListener('click', showCourse);
+  // btn.addEventListener('click', showCourse);
+  btn.addEventListener('click', function() {
+    window.open('https://redice44.github.io/bb-util-scripts/results.html?course_id=' + course_id);
+  });
 
   primaryActionBar.appendChild(btn);
 }
