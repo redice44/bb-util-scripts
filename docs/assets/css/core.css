@@ -100,6 +100,12 @@ a > img.icon {
   height: 24px;
 }
 
+button {
+  border: 1px solid black;
+  padding: 5px;
+
+}
+
 /* General Utility Classes */
 
 .small-text {
