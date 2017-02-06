@@ -77,6 +77,7 @@ function finishScan() {
 function showCourse(courseId) {
   var courseMap = getFromStorage(courseId);
   if (courseMap) {
+    document.getElementById('results').innerHTML = '';
     var domNode = document.createElement('div');
     domNode.appendChild(showLevel(courseMap));
     document.getElementById('results').appendChild(domNode);
@@ -360,9 +361,27 @@ function addButtons() {
   addResetButton();
 }
 
-function handleSubmit(e) {
-  console.log('value', document.getElementById('course_id').value);
-  showCourse(document.getElementById('course_id').value);
+function handleSubmit(id) {
+  showCourse(id);
+}
+
+function parseCourseId(url) {
+  if (url.includes('course_id=')) {
+    var params = url.split('?')[1];
+    params = params.split('&');
+    params = params.reduce(function(acc, val) {
+      console.log(val);
+      if (val.includes('course_id')) {
+        console.log('course_id', val);
+        return val.split('=')[1];
+      }
+      return acc;
+    }, '');
+    console.log('return', params);
+    return params;
+  }
+  // return 
+  // not sure what to return when it isn't a param
 }
 
 (function() {
@@ -371,20 +390,18 @@ function handleSubmit(e) {
     // results page
     var courseIdNode = document.getElementById('course_id');
     if (url.includes('course_id=')) {
-      var params = url.split('?')[1];
-      params = params.split('&');
-      params = params.reduce(function(acc, val) {
-        console.log(val);
-        if (val.includes('course_id')) {
-          return val.split('=')[1];
-        }
-      }, 0);
-      courseIdNode.value = params;
-      handleSubmit();
+      courseIdNode.value = parseCourseId(url);
+      handleSubmit(courseIdNode.value);
     }
     courseIdNode.focus();
     // courseIdNode.addEventListener('submit', handleSubmit);
-    document.getElementById('see_results').addEventListener('click', handleSubmit);
+    document.getElementById('see_results').addEventListener('click', function(e) {
+      var courseId = document.getElementById('course_id').value;
+      if (courseId.includes('fiu.blackboard.com')) {
+        courseId = parseCourseId(courseId);
+      }
+      handleSubmit(courseId);
+    });
 
   } else {
     courseId = document.getElementById('course_id').value;
