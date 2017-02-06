@@ -140,6 +140,8 @@ function getEditNodes() {
   document.getElementById("save_settings").addEventListener("click", function(){
     var old = document.getElementById("oldUrlValue").value;
     var newLink = document.getElementById("newUrlValue").value;
+    old = old.trim();
+    newLink = newLink.trim();
     sessionStorage.setItem(oldURLSessionKey, old);
     sessionStorage.setItem(newURLSessionKey, newLink);
     console.log('saved');
