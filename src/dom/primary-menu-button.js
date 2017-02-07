@@ -21,7 +21,7 @@ var makePrimarySubMenuButton = function(linkName, subItems) {
   var liNode = document.createElement('li');
   var h2Node = document.createElement('h2');
   var linkNode = document.createElement('a');
-  var text = document.createTextNode(linkName);
+  var text = document.createTextNode(linkName + ' ');
   var icon = document.createElement('span');
   var iconImg = document.createElement('img');
   // Blackboard class
