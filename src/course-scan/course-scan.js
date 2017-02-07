@@ -6,8 +6,10 @@
 // @description  Detects old vivo links
 // @author       Matt Thomson <red.cataclysm@gmail.com>
 // @match        https://fiu.blackboard.com/webapps/blackboard/content/listContentEditable.jsp?*
+// @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/common/getParameters.js
 // @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/storage/storage.js
 // @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/dom/primary-menu-button.js
+// @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/dom/parsePage.js
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_deleteValue
@@ -38,15 +40,7 @@ function getRoot() {
 function _makeLink(link) {
   var contentId = 'Error: Content ID not parsed';
   var courseId = 'Error: Course ID not parsed';
-  var params = {};
-  var parseParams = link.href.split('?')[1];
-  parseParams = parseParams.split('&');
-  parseParams = parseParams.forEach(function(pair) {
-    var temp = {};
-    var splitPair = pair.split('=');
-    temp[splitPair[0]] = splitPair[1];
-    params = Object.assign({}, temp, params);
-  });
+  var params =getParameters(link.href);
 
   if (params.hasOwnProperty('content_id')) {
     contentId = params.content_id;
@@ -73,16 +67,9 @@ function finishScan() {
 }
 
 function parseContent() {
-  var contentItems = document.getElementById('content_listContainer');
+  var contentItems = document.querySelectorAll('#content_listContainer > li');
   var folders = [];
-
-  // Incase of an empty folder
-  if (contentItems) {
-    // So we only iterate over direct children
-    contentItems = document.querySelectorAll('#content_listContainer > li');
-  } else {
-    contentItems = [];
-  }
+  var items = [];
 
   contentItems.forEach(function(item) {
     var link = item.querySelector('div.item > h3 > a');
@@ -138,8 +125,8 @@ function nextStep(courseMap) {
     updatePath(courseMap);
   } else {
     // This page has not been scanned yet.
-    var content = parseContent();
-    step.nodes = content.folders;
+    var content = parsePage();
+    step.nodes = content.dir;
     step.numItems = content.numItems;
     if (step.nodes.length > 0) {
       // has children
@@ -166,11 +153,11 @@ function init() {
   var courseMap = getFromStorage(courseId);
   if (courseMap) {
     if (courseMap.path.length > 0) {
-      // continue 'walk'
+      // continue walk
       nextStep(courseMap);
     } else {
       console.log('Course already scanned.');
-      showCourse(courseId);
+      viewResults();
     }
   } else {
     // Build course entry
@@ -189,20 +176,15 @@ function init() {
   }
 }
 
-function addResetButton() {
-  makePrimaryMenuButton('Reset Scan Results', function(e) {
-    console.log('Removed Course Scan');
-    delFromStorage(courseId);
-  });
+function viewResults() {
+  window.open('https://redice44.github.io/bb-util-scripts/results.html?course_id=' + course_id);
 }
 
-function addResultsButton() {
-  makePrimaryMenuButton('View Results', function() {
-    window.open('https://redice44.github.io/bb-util-scripts/results.html?course_id=' + course_id);
-  });
+function resetScan() {
+  delFromStorage(courseId);
 }
 
-function addScanButton() {
+function addButtons() {
   var items = [
     {
       linkName: 'Scan Course',
@@ -210,24 +192,15 @@ function addScanButton() {
     },
     {
       linkName: 'View Results',
-      action: function() {
-        window.open('https://redice44.github.io/bb-util-scripts/results.html?course_id=' + course_id);
-      }
+      action: viewResults
     },
     {
       linkName: 'Reset Scan',
-      action: function(e) {
-        delFromStorage(courseId);
-      }
+      action: resetScan
     }
   ];
-  makePrimarySubMenuButton('Scanner', items);
-}
 
-function addButtons() {
-  addScanButton();
-  // addResultsButton();
-  // addResetButton();
+  makePrimarySubMenuButton('Scanner', items);
 }
 
 function parseCourseId(url) {
