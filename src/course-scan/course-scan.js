@@ -6,8 +6,6 @@
 // @description  Detects old vivo links
 // @author       Matt Thomson <red.cataclysm@gmail.com>
 // @match        https://fiu.blackboard.com/webapps/blackboard/content/listContentEditable.jsp?*
-// @match        file:///*/results.html*
-// @match        https://redice44.github.io/bb-util-scripts/results.html*
 // @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/storage/storage.js
 // @grant        GM_setValue
 // @grant        GM_getValue
@@ -69,44 +67,8 @@ function finishScan() {
   var elapsedSec = Math.floor((Date.now() - courseMap.startTime) / 1000);
   courseMap.elapsedTime = elapsedSec;
   setToStorage(courseId, courseMap);
-  // showCourse();
   // Return to initial page and stop scanning
   window.location = courseMap.nodes[0].url;
-}
-
-function showCourse(courseId) {
-  var courseMap = getFromStorage(courseId);
-  if (courseMap) {
-    document.getElementById('results').innerHTML = '';
-    var domNode = document.createElement('div');
-    domNode.appendChild(showLevel(courseMap));
-    document.getElementById('results').appendChild(domNode);
-  } else {
-    console.log('No course scan');
-    document.getElementById('results').innerHTML = 'Course Not Found';
-  }
-}
-
-function showLevel(parent) {
-  var title = parent.title || 'Course';
-  var ul = document.createElement('ul');
-  var li = document.createElement('li');
-  var a = document.createElement('a');
-  a.appendChild(document.createTextNode(title + ' (' + parent.numItems + ' items scanned)'));
-  a.setAttribute('target', '_blank');
-  if (parent.title) {
-    // Not root node
-    a.setAttribute('href', parent.url);
-  }
-  li.appendChild(a);
-  ul.appendChild(li);
-  if (parent.nodes) {
-    parent.nodes.forEach(function(child) {
-      ul.appendChild(showLevel(child));
-    });
-  }
-
-  return ul;
 }
 
 function parseContent() {
@@ -264,7 +226,6 @@ function addResultsButton() {
   title.appendChild(link);
   btn.appendChild(title);
 
-  // btn.addEventListener('click', showCourse);
   btn.addEventListener('click', function() {
     window.open('https://redice44.github.io/bb-util-scripts/results.html?course_id=' + course_id);
   });
@@ -314,7 +275,6 @@ function parseCourseId(url) {
       }
       return acc;
     }, '');
-    console.log('return', params);
     return params;
   }
   // return 
@@ -322,31 +282,11 @@ function parseCourseId(url) {
 }
 
 (function() {
-  var url = window.location.href;
-  if (url.includes('results.html')) {
-    // results page
-    var courseIdNode = document.getElementById('course_id');
-    if (url.includes('course_id=')) {
-      courseIdNode.value = parseCourseId(url);
-      handleSubmit(courseIdNode.value);
-    }
-    courseIdNode.focus();
-    // courseIdNode.addEventListener('submit', handleSubmit);
-    document.getElementById('see_results').addEventListener('click', function(e) {
-      var courseId = document.getElementById('course_id').value;
-      if (courseId.includes('fiu.blackboard.com')) {
-        courseId = parseCourseId(courseId);
-      }
-      handleSubmit(courseId);
-    });
-
+  courseId = document.getElementById('course_id').value;
+  contentId = document.getElementById('content_id').value;
+  if (window.location.href.includes('&scanning=true')) {
+    init();
   } else {
-    courseId = document.getElementById('course_id').value;
-    contentId = document.getElementById('content_id').value;
-    if (window.location.href.includes('&scanning=true')) {
-      init();
-    } else {
-      addButtons();
-    }
+    addButtons();
   }
 })();
