@@ -3,12 +3,12 @@ var directoryPlugin = {
     var contentFolderController = '/webapps/blackboard/content/listContentEditable.jsp?';
     var link = item.querySelector('div.item > h3 > a');
 
-    if (!page.hasOwnProperty('dir')) {
-      page = Object.assign({}, { dir: [] }, page);
+    if (!page.hasOwnProperty('nodes')) {
+      page = Object.assign({}, { nodes: [] }, page);
     }
 
     if (link && link.href.includes(contentFolderController)) {
-      page.dir.push(this.__makeLink__(link));
+      page.nodes.push(this.__makeLink__(link));
     }
 
     return page;

@@ -14,6 +14,7 @@
 // @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/course-scan/directory-plugin.js
 // @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/course-scan/item-count-plugin.js
 // @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/course-scan/log-item-plugin.js
+// @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/course-scan/link-new-window-plugin.js
 // @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/scan-results/scan-results.js
 // @grant        GM_setValue
 // @grant        GM_getValue
@@ -121,8 +122,9 @@ function nextStep(courseMap) {
     // This page has not been scanned yet.
     var content = parsePage(scannerPlugins);
     console.log(content);
-    step.nodes = content.dir;
-    step.numItems = content.numItems;
+    step = Object.assign({}, content, step);
+    // step.nodes = content.dir;
+    // step.numItems = content.numItems;
     if (step.nodes && step.nodes.length > 0) {
       // has children
       courseMap.path.push(0); // add another layer of depth;
