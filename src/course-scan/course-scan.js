@@ -6,6 +6,7 @@
 // @description  Detects old vivo links
 // @author       Matt Thomson <red.cataclysm@gmail.com>
 // @match        https://fiu.blackboard.com/webapps/blackboard/content/listContentEditable.jsp?*
+// @match        https://redice44.github.io/bb-util-scripts/results.html*
 // @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/common/getParameters.js
 // @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/storage/storage.js
 // @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/dom/primary-menu-button.js
@@ -13,6 +14,7 @@
 // @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/course-scan/directory-plugin.js
 // @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/course-scan/item-count-plugin.js
 // @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/course-scan/log-item-plugin.js
+// @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/scan-results/scan-results.js
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_deleteValue
@@ -214,11 +216,16 @@ function parseCourseId(url) {
 }
 
 (function() {
-  courseId = document.getElementById('course_id').value;
-  contentId = document.getElementById('content_id').value;
-  if (window.location.href.includes('&scanning=true')) {
-    init();
+  var url = window.location.href;
+  if (url.includes(contentFolderController)) {
+    courseId = document.getElementById('course_id').value;
+    contentId = document.getElementById('content_id').value;
+    if (window.location.href.includes('&scanning=true')) {
+      init();
+    } else {
+      addButtons();
+    }
   } else {
-    addButtons();
+    initResults();
   }
 })();

@@ -29,8 +29,7 @@ function showCourse(courseId) {
     domNode.appendChild(showLevel(courseMap));
     resultsNode.appendChild(domNode);
   } else {
-    console.log('No course scan');
-    resultsNode.innerHTML = 'Course Not Found';
+    courseNotFound();
   }
 }
 
@@ -72,9 +71,12 @@ function parseCourseId(url) {
   throw new Error('Does not contain a course_id');
 }
 
-(function() {
-  'use strict';
+function courseNotFound() {
+  console.log('Course Not Found');
+  resultsNode.innerHTML = 'Course Not Found';
+}
 
+var initResults = function() {
   var url = window.location.href;
 
   try {
@@ -86,10 +88,11 @@ function parseCourseId(url) {
   }
 
   submitBtn.addEventListener('click', function(e) {
+    console.log(courseIdNode.value);
     try {
       showCourse(parseCourseId(courseIdNode.value));
     } catch (e) {
-      courseNotFound();
+      showCourse(courseIdNode.value);
     }
   });
-})();
+};
