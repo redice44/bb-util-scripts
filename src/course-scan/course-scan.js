@@ -28,7 +28,8 @@ var contentId;
 var scannerPlugins = [
   directoryPlugin,
   itemCountPlugin,
-  logItemPlugin
+  logItemPlugin,
+  linkNewWindowPlugin
 ];
 
 /*
@@ -72,6 +73,7 @@ function finishScan() {
   var elapsedSec = Math.floor((Date.now() - courseMap.startTime) / 1000);
   courseMap.elapsedTime = elapsedSec;
   setToStorage(courseId, courseMap);
+  console.log(courseMap)
   // Return to initial page and stop scanning
   window.location = courseMap.nodes[0].url;
 }
