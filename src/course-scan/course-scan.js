@@ -8,7 +8,7 @@
 // @match        https://fiu.blackboard.com/webapps/blackboard/content/listContentEditable.jsp?*
 // @match        file:///*/results.html*
 // @match        https://redice44.github.io/bb-util-scripts/results.html*
-// @require      https://redice44.github.com/bb-util-scripts/master/src/storage/storage.js
+// @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/storage/storage.js
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_deleteValue
@@ -17,7 +17,6 @@
 
 var contentFolderController = '/webapps/blackboard/content/listContentEditable.jsp?';
 
-var __storage__;
 var courseId;
 var contentId;
 
@@ -226,39 +225,6 @@ function init() {
     window.location = courseMap.nodes[0].url + '&scanning=true';
   }
 }
-/*
-function getFromStorage(key) {
-  // return JSON.parse(__storage__.getItem(key));
-  // console.log('get: ', key,GM_getValue(key, null));
-  // return JSON.parse(GM_getValue(key, null));
-  return GM_getValue(key, null);
-}
-
-function setToStorage(key, value) {
-  // __storage__.setItem(key, JSON.stringify(value));
-  GM_setValue(key, value);
-}
-
-function delFromStorage(key) {
-  GM_deleteValue(key);
-  // __storage__.removeItem(key);  
-}
-*/
-/*
-  Availability code from: 
-  https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API
-*/
-function storageAvailable() {
-  try {
-    __storage__ = window.localStorage;
-    var x = '__storage_test__';
-    __storage__.setItem(x, x);
-    __storage__.removeItem(x);
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
 
 function addResetButton() {
   const PRIMARY_BAR_ID = 'nav';
@@ -377,15 +343,10 @@ function parseCourseId(url) {
   } else {
     courseId = document.getElementById('course_id').value;
     contentId = document.getElementById('content_id').value;
-    if (storageAvailable()) {
-      console.log('page?');
-      if (window.location.href.includes('&scanning=true')) {
-        init();
-      } else {
-        addButtons();
-      }
+    if (window.location.href.includes('&scanning=true')) {
+      init();
     } else {
-      alert('Please update your browser to Chrome 4 or Firefox 3.5 to use the Course Scanner Script.');
+      addButtons();
     }
   }
 })();
