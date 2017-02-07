@@ -74,7 +74,7 @@ function finishScan() {
   var elapsedSec = Math.floor((Date.now() - courseMap.startTime) / 1000);
   courseMap.elapsedTime = elapsedSec;
   setToStorage(courseId, courseMap);
-  console.log(courseMap)
+  console.log(courseMap);
   // Return to initial page and stop scanning
   window.location = courseMap.nodes[0].url;
 }
@@ -82,7 +82,7 @@ function finishScan() {
 function getStep(courseMap) {
   var step = courseMap;
 
-  console.log('get step parent', step);
+  // console.log('get step parent', step);
   for (var i = 0; i < courseMap.path.length; i++) {
     // console.log('get step', step);
     step = step.nodes[courseMap.path[i]];
