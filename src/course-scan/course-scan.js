@@ -10,6 +10,9 @@
 // @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/storage/storage.js
 // @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/dom/primary-menu-button.js
 // @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/dom/parsePage.js
+// @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/course-scan/directory-plugin.js
+// @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/course-scan/item-count-plugin.js
+// @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/course-scan/log-item-plugin.js
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_deleteValue
@@ -21,9 +24,9 @@ var contentFolderController = '/webapps/blackboard/content/listContentEditable.j
 var courseId;
 var contentId;
 var scannerPlugins = [
-  directoryPlugin.parser,
-  itemCountPlugin.parser,
-  logItemPlugin.parser
+  directoryPlugin,
+  itemCountPlugin,
+  logItemPlugin
 ];
 
 /*
@@ -112,7 +115,7 @@ function nextStep(courseMap) {
     updatePath(courseMap);
   } else {
     // This page has not been scanned yet.
-    var content = parsePage();
+    var content = parsePage(scannerPlugins);
     console.log(content);
     step.nodes = content.dir;
     step.numItems = content.numItems;
@@ -169,8 +172,10 @@ function viewResults() {
 }
 
 function resetScan() {
+  console.log('Resetting Scan', courseId);
+  console.log(getFromStorage(courseId));
+  console.log(GM_listValues());
   delFromStorage(courseId);
-  console.log('Resetting Scan');
 }
 
 function addButtons() {

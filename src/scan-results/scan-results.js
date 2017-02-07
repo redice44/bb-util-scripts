@@ -20,7 +20,9 @@ var courseIdNode = document.getElementById('course_id');
 var resultsNode = document.getElementById('results');
 
 function showCourse(courseId) {
+  console.log(GM_listValues());
   var courseMap = getFromStorage(courseId);
+  console.log(courseMap);
   if (courseMap) {
     resultsNode.innerHTML = '';
     var domNode = document.createElement('div');

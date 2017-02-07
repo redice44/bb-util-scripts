@@ -5,7 +5,7 @@ var parsePage = function (plugins) {
 
   contentItems.forEach(function(item) {
     plugins.forEach(function(plugin) {
-      page = plugin(item, page);
+      page = plugin.parser(item, page);
     });
   });
 
