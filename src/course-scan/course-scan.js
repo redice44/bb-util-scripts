@@ -7,6 +7,7 @@
 // @author       Matt Thomson <red.cataclysm@gmail.com>
 // @match        https://fiu.blackboard.com/webapps/blackboard/content/listContentEditable.jsp?*
 // @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/storage/storage.js
+// @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/dom/primary-menu-button.js
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_deleteValue
@@ -189,6 +190,11 @@ function init() {
 }
 
 function addResetButton() {
+  makePrimaryMenuButton('Reset Scan Results', function(e) {
+    console.log('Removed Course Scan');
+    delFromStorage(courseId);
+  });
+  /*
   const PRIMARY_BAR_ID = 'nav';
   const primaryActionBar = document.getElementById(PRIMARY_BAR_ID);
   let btn = document.createElement('li');
@@ -209,9 +215,14 @@ function addResetButton() {
   });
 
   primaryActionBar.appendChild(btn);
+  */
 }
 
 function addResultsButton() {
+  makePrimaryMenuButton('View Results', function() {
+    window.open('https://redice44.github.io/bb-util-scripts/results.html?course_id=' + course_id);
+  });
+  /*
   const PRIMARY_BAR_ID = 'nav';
   const primaryActionBar = document.getElementById(PRIMARY_BAR_ID);
   let btn = document.createElement('li');
@@ -231,9 +242,12 @@ function addResultsButton() {
   });
 
   primaryActionBar.appendChild(btn);
+  */
 }
 
 function addScanButton() {
+  makePrimaryMenuButton('Scan Course', init);
+  /*
   const PRIMARY_BAR_ID = 'nav';
   const primaryActionBar = document.getElementById(PRIMARY_BAR_ID);
   let btn = document.createElement('li');
@@ -241,16 +255,32 @@ function addScanButton() {
   let link = document.createElement('a');
   let text = document.createTextNode('Scan Course');
   // Blackboard class
-  btn.classList.add('mainButton');
+  btn.classList.add('mainButton', 'sub');
   link.setAttribute('href', '#');
 
   link.appendChild(text);
   title.appendChild(link);
   btn.appendChild(title);
 
-  btn.addEventListener('click', init);
+  // btn.addEventListener('click', init);
+
+
+  var subList = document.createElement('ul');
+  var subListItem = document.createElement('li');
+  var subListA = document.createElement('a');
+  var subListText = document.createTextNode('link 1');
+
+  subListA.appendChild(subListText);
+  subListItem.appendChild(subListA);
+  subListItem.classList.add('actionMenuItem');
+  subList.appendChild(subListItem);
+  subList.classList.add('actionMenu');
+
+
+  btn.appendChild(subList);
 
   primaryActionBar.appendChild(btn);
+  */
 }
 
 function addButtons() {
@@ -277,8 +307,6 @@ function parseCourseId(url) {
     }, '');
     return params;
   }
-  // return 
-  // not sure what to return when it isn't a param
 }
 
 (function() {
