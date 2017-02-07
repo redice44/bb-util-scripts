@@ -20,6 +20,11 @@ var contentFolderController = '/webapps/blackboard/content/listContentEditable.j
 
 var courseId;
 var contentId;
+var scannerPlugins = [
+  directoryPlugin.parser,
+  itemCountPlugin.parser,
+  logItemPlugin.parser
+];
 
 /*
   Parses the Course Menu for content folders to parse through. 
