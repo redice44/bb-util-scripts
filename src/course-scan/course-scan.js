@@ -194,103 +194,40 @@ function addResetButton() {
     console.log('Removed Course Scan');
     delFromStorage(courseId);
   });
-  /*
-  const PRIMARY_BAR_ID = 'nav';
-  const primaryActionBar = document.getElementById(PRIMARY_BAR_ID);
-  let btn = document.createElement('li');
-  let title = document.createElement('h2');
-  let link = document.createElement('a');
-  let text = document.createTextNode('Reset Scan Results');
-  // Blackboard class
-  btn.classList.add('mainButton');
-  link.setAttribute('href', '#');
-
-  link.appendChild(text);
-  title.appendChild(link);
-  btn.appendChild(title);
-
-  btn.addEventListener('click', function(e) {
-    console.log('Removed Course Scan');
-    delFromStorage(courseId);
-  });
-
-  primaryActionBar.appendChild(btn);
-  */
 }
 
 function addResultsButton() {
   makePrimaryMenuButton('View Results', function() {
     window.open('https://redice44.github.io/bb-util-scripts/results.html?course_id=' + course_id);
   });
-  /*
-  const PRIMARY_BAR_ID = 'nav';
-  const primaryActionBar = document.getElementById(PRIMARY_BAR_ID);
-  let btn = document.createElement('li');
-  let title = document.createElement('h2');
-  let link = document.createElement('a');
-  let text = document.createTextNode('View Results');
-  // Blackboard class
-  btn.classList.add('mainButton');
-  link.setAttribute('href', '#');
-
-  link.appendChild(text);
-  title.appendChild(link);
-  btn.appendChild(title);
-
-  btn.addEventListener('click', function() {
-    window.open('https://redice44.github.io/bb-util-scripts/results.html?course_id=' + course_id);
-  });
-
-  primaryActionBar.appendChild(btn);
-  */
 }
 
 function addScanButton() {
-  makePrimaryMenuButton('Scan Course', init);
-  /*
-  const PRIMARY_BAR_ID = 'nav';
-  const primaryActionBar = document.getElementById(PRIMARY_BAR_ID);
-  let btn = document.createElement('li');
-  let title = document.createElement('h2');
-  let link = document.createElement('a');
-  let text = document.createTextNode('Scan Course');
-  // Blackboard class
-  btn.classList.add('mainButton', 'sub');
-  link.setAttribute('href', '#');
-
-  link.appendChild(text);
-  title.appendChild(link);
-  btn.appendChild(title);
-
-  // btn.addEventListener('click', init);
-
-
-  var subList = document.createElement('ul');
-  var subListItem = document.createElement('li');
-  var subListA = document.createElement('a');
-  var subListText = document.createTextNode('link 1');
-
-  subListA.appendChild(subListText);
-  subListItem.appendChild(subListA);
-  subListItem.classList.add('actionMenuItem');
-  subList.appendChild(subListItem);
-  subList.classList.add('actionMenu');
-
-
-  btn.appendChild(subList);
-
-  primaryActionBar.appendChild(btn);
-  */
+  var items = [
+    {
+      linkName: 'Scan Course',
+      action: init
+    },
+    {
+      linkName: 'View Results',
+      action: function() {
+        window.open('https://redice44.github.io/bb-util-scripts/results.html?course_id=' + course_id);
+      }
+    },
+    {
+      linkName: 'Reset Scan',
+      action: function(e) {
+        delFromStorage(courseId);
+      }
+    }
+  ];
+  makePrimarySubMenuButton('Scanner', items);
 }
 
 function addButtons() {
   addScanButton();
-  addResultsButton();
-  addResetButton();
-}
-
-function handleSubmit(id) {
-  showCourse(id);
+  // addResultsButton();
+  // addResetButton();
 }
 
 function parseCourseId(url) {

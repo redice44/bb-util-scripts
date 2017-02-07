@@ -1,4 +1,4 @@
-var makePrimaryMenuButton = function(linkName, cb) {
+var makePrimaryMenuButton = function(linkName, action) {
   var primaryActionBar = document.getElementById('nav');
   var liNode = document.createElement('li');
   var h2Node = document.createElement('h2');
@@ -12,11 +12,11 @@ var makePrimaryMenuButton = function(linkName, cb) {
   h2Node.appendChild(linkNode);
   liNode.appendChild(h2Node);
 
-  liNode.addEventListener('click', cb);
+  liNode.addEventListener('click', action);
   primaryActionBar.appendChild(liNode);
 };
 
-var makePrimarySubMenuButton = function() {
+var makePrimarySubMenuButton = function(linkName, subItems) {
   var primaryActionBar = document.getElementById('nav');
   var liNode = document.createElement('li');
   var h2Node = document.createElement('h2');
@@ -24,29 +24,30 @@ var makePrimarySubMenuButton = function() {
   var text = document.createTextNode(linkName);
   // Blackboard class
   liNode.classList.add('mainButton');
-  linkNode.setAttribute('href', '#');
 
   linkNode.appendChild(text);
   h2Node.appendChild(linkNode);
   liNode.appendChild(h2Node);
-
-  liNode.addEventListener('click', cb);
-  primaryActionBar.appendChild(liNode);
-
 
   var subList = document.createElement('ul');
-  var subListItem = document.createElement('li');
-  var subListA = document.createElement('a');
-  var subListText = document.createTextNode('link 1');
-
-  subListA.appendChild(subListText);
-  subListItem.appendChild(subListA);
-  subListItem.classList.add('actionMenuItem');
-  subList.appendChild(subListItem);
+  subItems.forEach(function(item) {
+    __subListItem__(item, subList);
+  });
   subList.classList.add('actionMenu');
 
-
-  btn.appendChild(subList);
-
-  primaryActionBar.appendChild(btn);
+  liNode.appendChild(subList);
+  primaryActionBar.appendChild(liNode);
 };
+
+function __subListItem__ (item, parent) {
+  var liNode = document.createElement('li');
+  var subListA = document.createElement('a');
+  var subListText = document.createTextNode(item.linkName);
+
+  subListA.appendChild(subListText);
+  liNode.appendChild(subListA);
+  liNode.classList.add('actionMenuItem');
+  liNode.addEventListener('click', item.action);
+
+  parent.appendChild(liNode);
+}
