@@ -8,6 +8,7 @@
 // @match        https://fiu.blackboard.com/webapps/blackboard/content/listContentEditable.jsp?*
 // @match        file:///*/results.html*
 // @match        https://redice44.github.io/bb-util-scripts/results.html*
+// @require      https://redice44.github.com/bb-util-scripts/master/src/storage/storage.js
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_deleteValue
@@ -109,36 +110,6 @@ function showLevel(parent) {
   return ul;
 }
 
-/*
-function showCourse(courseId) {
-  var courseMap = getFromStorage(courseId);
-  console.log(courseMap);
-  console.log(GM_listValues());
-  if (courseMap) {
-    var elapsedSec = courseMap.elapsedTime;
-    var elapsedMin = Math.floor(elapsedSec / 60);
-    elapsedSec = elapsedSec % 60;
-    console.log('Total items scanned: ' + showLevel(courseMap, 0));
-    console.log('Time Elapsed: ' + elapsedMin + 'm ' + elapsedSec + 's');
-  } else {
-    console.log('No course scan');
-  }
-}
-
-function showLevel(parent, level) {
-  var title = parent.title || 'Course';
-  var spacing = ' '.repeat(level * 2);
-  var total = parent.numItems;
-  console.log(spacing + level + ': ' + title + ' (' + parent.numItems + ' items scanned)');
-  if (parent.nodes) {
-    parent.nodes.forEach(function(child, i) {
-      total += showLevel(child, level + 1);
-    });
-  }
-
-  return total;
-}
-*/
 function parseContent() {
   var contentItems = document.getElementById('content_listContainer');
   var folders = [];
@@ -255,7 +226,7 @@ function init() {
     window.location = courseMap.nodes[0].url + '&scanning=true';
   }
 }
-
+/*
 function getFromStorage(key) {
   // return JSON.parse(__storage__.getItem(key));
   // console.log('get: ', key,GM_getValue(key, null));
@@ -272,7 +243,7 @@ function delFromStorage(key) {
   GM_deleteValue(key);
   // __storage__.removeItem(key);  
 }
-
+*/
 /*
   Availability code from: 
   https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API
