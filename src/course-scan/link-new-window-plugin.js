@@ -8,6 +8,7 @@ var linkNewWindowPlugin = {
 
     links.forEach(function(link) {
       var temp = link.getAttribute('target');
+      console.log('target ', temp);
       if (temp && temp !== '_blank') {
         page.newWindow.push({
           title: link.innerText,

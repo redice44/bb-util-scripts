@@ -39,7 +39,7 @@ function showLevel(parent) {
   var ul = document.createElement('ul');
   var li = document.createElement('li');
   var a = document.createElement('a');
-  var numItems = parent.numItems ? parent.numItems : 0
+  var numItems = parent.numItems ? parent.numItems : 0;
   var newWindowItems = parent.newWindow || [];
   newWindowItems = newWindowItems.length;
   a.appendChild(document.createTextNode(title + ' (' + numItems + ' items scanned) (Not in new window: ' + newWindowItems + ')'));
