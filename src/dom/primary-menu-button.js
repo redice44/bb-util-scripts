@@ -23,7 +23,7 @@ var makePrimarySubMenuButton = function(linkName, subItems) {
   var linkNode = document.createElement('a');
   var text = document.createTextNode(linkName);
   // Blackboard class
-  liNode.classList.add('mainButton');
+  liNode.classList.add('mainButton', 'sub');
 
   linkNode.appendChild(text);
   h2Node.appendChild(linkNode);
