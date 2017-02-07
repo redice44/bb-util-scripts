@@ -82,7 +82,9 @@ function finishScan() {
 function getStep(courseMap) {
   var step = courseMap;
 
+  console.log('get step parent', step);
   for (var i = 0; i < courseMap.path.length; i++) {
+    // console.log('get step', step);
     step = step.nodes[courseMap.path[i]];
   }
 
@@ -121,8 +123,13 @@ function nextStep(courseMap) {
   } else {
     // This page has not been scanned yet.
     var content = parsePage(scannerPlugins);
-    console.log(content);
-    step = Object.assign({}, content, step);
+    // console.log('content', content);
+    // step = Object.assign({}, content, step);
+    for (var d in content) {
+      // console.log('attr', d);
+      step[d] = content[d];
+    }
+    // console.log('step', step);
     // step.nodes = content.dir;
     // step.numItems = content.numItems;
     if (step.nodes && step.nodes.length > 0) {

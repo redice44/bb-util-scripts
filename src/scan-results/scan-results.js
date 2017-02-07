@@ -38,7 +38,9 @@ function showLevel(parent) {
   var ul = document.createElement('ul');
   var li = document.createElement('li');
   var a = document.createElement('a');
-  a.appendChild(document.createTextNode(title + ' (' + parent.numItems + ' items scanned)'));
+  var newWindowItems = parent.newWindow || [];
+  newWindowItems = newWindowItems.length;
+  a.appendChild(document.createTextNode(title + ' (' + parent.numItems ? parent.numItems : 0 + ' items scanned) (Not in new window: ' + newWindowItems + ')'));
   a.setAttribute('target', '_blank');
   if (parent.title) {
     // Not root node
