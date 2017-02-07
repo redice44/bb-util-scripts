@@ -34,6 +34,7 @@ function showCourse(courseId) {
 }
 
 function showLevel(parent) {
+  console.log('level', parent);
   var title = parent.title || 'Course';
   var ul = document.createElement('ul');
   var li = document.createElement('li');
