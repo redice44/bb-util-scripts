@@ -1,10 +1,14 @@
-var parsePage = function () {
+var parsePage = function (plugins) {
   var contentItems = document.querySelectorAll('#content_listContainer > li');
   var page = {};
+  plugins = plugins || [];
 
   contentItems.forEach(function(item) {
     page = __buildDirectory__(item, page);
     page = __updateItemCount__(item, page);
+    plugins.forEach(function(plugin) {
+      page = plugin(item, page);
+    });
   });
 
   return page;

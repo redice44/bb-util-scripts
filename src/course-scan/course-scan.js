@@ -66,24 +66,6 @@ function finishScan() {
   window.location = courseMap.nodes[0].url;
 }
 
-function parseContent() {
-  var contentItems = document.querySelectorAll('#content_listContainer > li');
-  var folders = [];
-  var items = [];
-
-  contentItems.forEach(function(item) {
-    var link = item.querySelector('div.item > h3 > a');
-    if (link && link.href.includes(contentFolderController)) {
-      folders.push(_makeLink(link));
-    }
-  });
-
-  return {
-    numItems: contentItems.length,
-    folders: folders
-  };
-}
-
 function getStep(courseMap) {
   var step = courseMap;
 
@@ -126,9 +108,10 @@ function nextStep(courseMap) {
   } else {
     // This page has not been scanned yet.
     var content = parsePage();
+    console.log(content);
     step.nodes = content.dir;
     step.numItems = content.numItems;
-    if (step.nodes.length > 0) {
+    if (step.nodes && step.nodes.length > 0) {
       // has children
       courseMap.path.push(0); // add another layer of depth;
       courseMap.max.push(step.nodes.length - 1);
@@ -182,6 +165,7 @@ function viewResults() {
 
 function resetScan() {
   delFromStorage(courseId);
+  console.log('Resetting Scan');
 }
 
 function addButtons() {
