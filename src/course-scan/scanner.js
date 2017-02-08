@@ -6,6 +6,7 @@ var scanner = {
   init: function(plugins) {
     this.courseId = document.getElementById('course_id').value;
     this.contentId = document.getElementById('content_id').value;
+    console.log(this.courseId);
     this.plugins = plugins;
 
     if (window.location.href.includes('&scanning=true')) {
