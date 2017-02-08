@@ -169,11 +169,11 @@ var scanner = {
     makePrimarySubMenuButton('Scanner', items);
   },
   viewResults: function () {
-    window.open('https://redice44.github.io/bb-util-scripts/results.html?course_id=' + course_id);
+    window.open('https://redice44.github.io/bb-util-scripts/results.html?course_id=' + this.courseId);
   },
   resetScan: function () {
-    console.log('Resetting Scan', courseId);
-    delFromStorage(courseId);
+    console.log('Resetting Scan', this.courseId);
+    delFromStorage(this.courseId);
   }, 
   /*
   parseCourseId: function (url) {
