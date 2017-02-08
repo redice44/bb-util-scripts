@@ -155,15 +155,15 @@ var scanner = {
     var items = [
       {
         linkName: 'Scan Course',
-        action: this.checkPage
+        action: this.checkPage.bind(this)
       },
       {
         linkName: 'View Results',
-        action: this.viewResults
+        action: this.viewResults.bind(this)
       },
       {
         linkName: 'Reset Scan',
-        action: this.resetScan
+        action: this.resetScan.bind(this)
       }
     ];
 
