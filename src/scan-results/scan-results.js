@@ -13,90 +13,90 @@
 // @grant        GM_deleteValue
 // @grant        GM_listValues
 // ==/UserScript==
+var scanResults = {
+  // Global DOM Nodes
+  submitBtn: null,
+  courseIdNode: null,
+  resultsNode: null,
+  plugins: [],
+  init: function(plugins) {
+    this.plugins = plugins;
+    this.submitBtn = document.getElementById('see_results');
+    this.courseIdNode = document.getElementById('course_id');
+    this.resultsNode = document.getElementById('results');
 
-// Global DOM Nodes
-var submitBtn = document.getElementById('see_results');
-var courseIdNode = document.getElementById('course_id');
-var resultsNode = document.getElementById('results');
+    var url = window.location.href;
 
-function showCourse(courseId) {
-  console.log(GM_listValues());
-  var courseMap = getFromStorage(courseId);
-  console.log(courseMap);
-  if (courseMap) {
-    resultsNode.innerHTML = '';
-    var domNode = document.createElement('div');
-    domNode.appendChild(showLevel(courseMap));
-    resultsNode.appendChild(domNode);
-  } else {
-    courseNotFound();
-  }
-}
-
-function showLevel(parent) {
-  console.log('level', parent);
-  var title = parent.title || 'Course';
-  var ul = document.createElement('ul');
-  var li = document.createElement('li');
-  var a = document.createElement('a');
-  var numItems = parent.numItems ? parent.numItems : 0;
-  var newWindowItems = parent.newWindow || [];
-  newWindowItems = newWindowItems.length;
-  a.appendChild(document.createTextNode(title + ' (' + numItems + ' items scanned) (Not in new window: ' + newWindowItems + ')'));
-  a.setAttribute('target', '_blank');
-  if (parent.title) {
-    // Not root node
-    a.setAttribute('href', parent.url);
-  }
-  li.appendChild(a);
-  ul.appendChild(li);
-  if (parent.nodes) {
-    parent.nodes.forEach(function(child) {
-      ul.appendChild(showLevel(child));
-    });
-  }
-
-  return ul;
-}
-
-function parseCourseId(url) {
-  if (url.includes('course_id=')) {
-    var params = url.split('?')[1];
-    params = params.split('&');
-    params = params.reduce(function(acc, val) {
-      if (val.includes('course_id')) {
-        return val.split('=')[1];
-      }
-      return acc;
-    }, '');
-
-    return params;
-  }
-  throw new Error('Does not contain a course_id');
-}
-
-function courseNotFound() {
-  console.log('Course Not Found');
-  resultsNode.innerHTML = 'Course Not Found';
-}
-
-var initResults = function() {
-  var url = window.location.href;
-
-  try {
-    courseIdNode.value = parseCourseId(url);
-    showCourse(courseIdNode.value);
-  } catch (e) {
-    // It's fine to not have an initial query parameter.
-    courseIdNode.focus();
-  }
-
-  submitBtn.addEventListener('click', function(e) {
-    console.log(courseIdNode.value);
     try {
-      showCourse(parseCourseId(courseIdNode.value));
+      this.courseIdNode.value = this.parseCourseId(url);
+      this.showCourse(this.courseIdNode.value);
     } catch (e) {
-      showCourse(courseIdNode.value);
+      // It's fine to not have an initial query parameter.
+      this.courseIdNode.focus();
     }
-  });
+
+    this.submitBtn.addEventListener('click', function(e) {
+      console.log(this.courseIdNode.value);
+      try {
+        this.showCourse(this.parseCourseId(this.courseIdNode.value));
+      } catch (e) {
+        this.showCourse(this.courseIdNode.value);
+      }
+    });
+  },
+  showCourse: function (courseId) {
+    var courseMap = getFromStorage(courseId);
+
+    if (courseMap) {
+      var domNode = document.createElement('div');
+      this.resultsNode.innerHTML = '';
+      domNode.appendChild(this.showLevel(courseMap));
+      this.resultsNode.appendChild(domNode);
+    } else {
+      this.courseNotFound();
+    }
+  },
+  showLevel: function (parent) {
+    var title = parent.title || 'Course';
+    var ul = document.createElement('ul');
+    var li = document.createElement('li');
+    var a = document.createElement('a');
+    var numItems = parent.numItems ? parent.numItems : 0;
+    var newWindowItems = parent.newWindow || [];
+    newWindowItems = newWindowItems.length;
+    a.appendChild(document.createTextNode(title + ' (' + numItems + ' items scanned) (Not in new window: ' + newWindowItems + ')'));
+    a.setAttribute('target', '_blank');
+    if (parent.title) {
+      // Not root node
+      a.setAttribute('href', parent.url);
+    }
+    li.appendChild(a);
+    ul.appendChild(li);
+    if (parent.nodes) {
+      parent.nodes.forEach(function(child) {
+        ul.appendChild(this.showLevel(child));
+      });
+    }
+
+    return ul;
+  },
+  parseCourseId: function (url) {
+    if (url.includes('course_id=')) {
+      var params = url.split('?')[1];
+      params = params.split('&');
+      params = params.reduce(function(acc, val) {
+        if (val.includes('course_id')) {
+          return val.split('=')[1];
+        }
+        return acc;
+      }, '');
+
+      return params;
+    }
+    throw new Error('Does not contain a course_id');
+  },
+  courseNotFound: function () {
+    console.log('Course Not Found');
+    this.resultsNode.innerHTML = 'Course Not Found';
+  }
 };
