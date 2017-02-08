@@ -6,7 +6,7 @@ var scanner = {
   init: function(plugins) {
     this.courseId = document.getElementById('course_id').value;
     this.contentId = document.getElementById('content_id').value;
-    console.log(this.courseId);
+    // console.log(this.courseId);
     this.plugins = plugins;
 
     if (window.location.href.includes('&scanning=true')) {
@@ -21,7 +21,7 @@ var scanner = {
     if (courseMap) {
       if (courseMap.path.length > 0) {
         // continue walk
-        nextStep(courseMap);
+        this.nextStep(courseMap);
       } else {
         console.log('Course already scanned.');
         viewResults();
@@ -50,7 +50,7 @@ var scanner = {
       if (link.href.includes(this.contentFolderController)) {
         _root.push(this._makeLink(link));
       }
-    });
+    }, this);
 
     return _root;
   },
@@ -74,10 +74,10 @@ var scanner = {
     };
   },
   finishScan: function () {
-    var courseMap = getFromStorage(courseId);
+    var courseMap = getFromStorage(this.courseId);
     var elapsedSec = Math.floor((Date.now() - courseMap.startTime) / 1000);
     courseMap.elapsedTime = elapsedSec;
-    setToStorage(courseId, courseMap);
+    setToStorage(this.courseId, courseMap);
     console.log(courseMap);
     // Return to initial page and stop scanning
     window.location = courseMap.nodes[0].url;
@@ -98,7 +98,7 @@ var scanner = {
   },
   takeStep: function (courseMap, step) {
     step = this.getStep(courseMap);
-    setToStorage(courseId, courseMap);
+    setToStorage(this.courseId, courseMap);
     window.location = step.url + '&scanning=true';
   },
   updatePath: function (courseMap) {
@@ -147,7 +147,7 @@ var scanner = {
     } else {
       console.log('Course Completed');
       this.updateNode(step);
-      setToStorage(courseId, courseMap);
+      setToStorage(this.courseId, courseMap);
       this.finishScan();
     }
   },
@@ -175,22 +175,5 @@ var scanner = {
   resetScan: function () {
     console.log('Resetting Scan', this.courseId);
     delFromStorage(this.courseId);
-  }, 
-  /*
-  parseCourseId: function (url) {
-    if (url.includes('course_id=')) {
-      var params = url.split('?')[1];
-      params = params.split('&');
-      params = params.reduce(function(acc, val) {
-        console.log(val);
-        if (val.includes('course_id')) {
-          console.log('course_id', val);
-          return val.split('=')[1];
-        }
-        return acc;
-      }, '');
-      return params;
-    }
   }
-  */
 };

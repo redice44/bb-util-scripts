@@ -13,10 +13,10 @@
 // @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/dom/parsePage.js
 // @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/course-scan/directory-plugin.js
 // @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/course-scan/item-count-plugin.js
-// @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/course-scan/log-item-plugin.js
+// @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/scan-results/scan-results.js
 // @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/course-scan/link-new-window-plugin.js
 // @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/course-scan/scanner.js
-// @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/scan-results/scan-results.js
+// @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/course-scan/log-item-plugin.js
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_deleteValue

@@ -20,6 +20,7 @@ var scanResults = {
   resultsNode: null,
   plugins: [],
   init: function(plugins) {
+    console.log('results');
     this.plugins = plugins;
     this.submitBtn = document.getElementById('see_results');
     this.courseIdNode = document.getElementById('course_id');
@@ -45,18 +46,21 @@ var scanResults = {
     });
   },
   showCourse: function (courseId) {
+    console.log('course id', courseId);
     var courseMap = getFromStorage(courseId);
 
     if (courseMap) {
       var domNode = document.createElement('div');
       this.resultsNode.innerHTML = '';
       domNode.appendChild(this.showLevel(courseMap));
+      console.log(domNode);
       this.resultsNode.appendChild(domNode);
     } else {
       this.courseNotFound();
     }
   },
   showLevel: function (parent) {
+    console.log(parent);
     var title = parent.title || 'Course';
     var ul = document.createElement('ul');
     var li = document.createElement('li');
@@ -75,7 +79,7 @@ var scanResults = {
     if (parent.nodes) {
       parent.nodes.forEach(function(child) {
         ul.appendChild(this.showLevel(child));
-      });
+      }, this);
     }
 
     return ul;
