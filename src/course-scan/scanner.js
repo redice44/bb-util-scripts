@@ -6,7 +6,6 @@ var scanner = {
   init: function(plugins) {
     this.courseId = document.getElementById('course_id').value;
     this.contentId = document.getElementById('content_id').value;
-    // console.log(this.courseId);
     this.plugins = plugins;
 
     if (window.location.href.includes('&scanning=true')) {
@@ -35,7 +34,8 @@ var scanner = {
         max: [nodes.length - 1],
         nodes: nodes,
         startTime: Date.now(),
-        numItems: 0
+        numItems: 0,
+        title: document.getElementById('courseMenuPalette_paletteTitleHeading').innerText
       });
       setToStorage(this.courseId, courseMap);
       // initiate walk
