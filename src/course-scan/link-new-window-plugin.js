@@ -28,8 +28,9 @@ var linkNewWindowPlugin = {
             console.log('target ', target);
             console.log('href', href);
             console.log('valid no target=_blank');
+            var title = link.innerText.trim() || 'NO LINK TEXT!!';
             currentItem.newWindow.push({
-              title: link.innerText,
+              title: title,
               url: link.href,
               parentId: item.id.split(':')[1]
             });
@@ -46,18 +47,19 @@ var linkNewWindowPlugin = {
       var contentPageUrl = 'https://fiu.blackboard.com/webapps/blackboard/content/listContentEditable.jsp?';
       var list = document.createElement('ul');
       item.newWindow.forEach(function(i) {
+        console.log('individual link', i, item);
         var domNode = document.createElement('li');
         var link = document.createElement('a');
         var title = i.title;
-        domNode.appendChild(this.addSlice());
         link.appendChild(document.createTextNode(title));
         link.setAttribute('href', contentPageUrl + 'course_id=' + item.courseId + '&content_id=' + item.contentId + '#contentListItem:' + i.parentId);
         link.setAttribute('target', '_blank');
         domNode.appendChild(link);
+        domNode.insertAdjacentElement('beforeend', this.addSlice());
         list.appendChild(domNode);
       }, this);
       resultDom.appendChild(list);
-      resultDom.classList.add(this.__myCSS__);
+      resultDom.classList.add(this.__myCSS__, 'plugin-result');
     }
 
     return resultDom; 
@@ -69,20 +71,19 @@ var linkNewWindowPlugin = {
     return this.__myColor__;
   },
   addIssue: function (parent) {
-    console.log('plugin add issue parent', parent);
     parent.classList.add(this.__myCSS__);
-    parent.insertAdjacentElement('afterbegin', this.addSlice());
+    parent.insertAdjacentElement('beforeend', this.addSlice());
   },
   addSlice: function () {
     var slice = document.createElement('div');
-    // slice.style.borderColor = this.__myColor__;
-    // slice.style.borderLeft = '5px solid ' + this.__myColor__;
+    var tooltip = document.createElement('span');
+    tooltip.appendChild(document.createTextNode('Contains Link that does not open in new window.'));
+    tooltip.classList.add('tooltiptext', 'tooltip-left');
+    slice.appendChild(tooltip);
     slice.style.backgroundColor = this.__myColor__;
     slice.style.color = this.__myColor__;
-    // slice.style.width = '5px';
     slice.style.display = 'inline-block';
-    slice.classList.add('slice');
-    // slice.appendChild(document.createTextNode(' '));
+    slice.classList.add('slice', 'tooltip');
     return slice;
   },
   __myCSS__: 'not-new-window',

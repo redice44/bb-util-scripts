@@ -1,18 +1,3 @@
-// ==UserScript==
-// @name         Course Scanner Results
-// @namespace    https://github.com/redice44
-// @supportURL   https://github.com/redice44/bb-util-scripts/issues
-// @version      0.1.0
-// @description  Detects old vivo links
-// @author       Matt Thomson <red.cataclysm@gmail.com>
-// @match        file:///*/results.html*
-// @match        https://redice44.github.io/bb-util-scripts/results.html*
-// @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/storage/storage.js
-// @grant        GM_setValue
-// @grant        GM_getValue
-// @grant        GM_deleteValue
-// @grant        GM_listValues
-// ==/UserScript==
 var scanResults = {
   // Global DOM Nodes
   submitBtn: null,
@@ -81,7 +66,7 @@ var scanResults = {
       // if (plugin.hasIssue(pluginDom)) {
       //   pluginDom.appendChild(this.addSlice(plugin.getLegendColor()));
       // }
-      if (plugin.hasIssue(pluginDom)) {
+      if (plugin.hasIssue(pluginDom) && !plugin.hasIssue(title)) {
         plugin.addIssue(title);
       }
       itemDom.appendChild(pluginDom);
@@ -111,11 +96,19 @@ var scanResults = {
               folder = node;
             }
           }, this);
-          itemDom.appendChild(this.showLevel(folder));
+          var folderDom = this.showLevel(folder);
+          this.plugins.forEach(function (plugin) {
+            if (plugin.hasIssue(folderDom.querySelector('header')) &&
+                !plugin.hasIssue(title)) {
+              plugin.addIssue(title);
+            }
+          }, this);
+          itemDom.appendChild(folderDom);
         } else {
           var iDom = this.__buildItem__(i);
           this.plugins.forEach(function (plugin) {
-            if (plugin.hasIssue(iDom.querySelector('header'))) {
+            if (plugin.hasIssue(iDom.querySelector('header')) &&
+                !plugin.hasIssue(title)) {
               plugin.addIssue(title);
             }
           }, this);

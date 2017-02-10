@@ -15,7 +15,6 @@ var parsePage = function (plugins, courseId) {
   return page;
 };
 
-
 var logItemPlugin = {
   parser: function (item, page) {
     if (!page.hasOwnProperty('items')) {
