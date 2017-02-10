@@ -35,7 +35,8 @@ var scanner = {
         nodes: nodes,
         startTime: Date.now(),
         numItems: 0,
-        title: document.getElementById('courseMenuPalette_paletteTitleHeading').innerText
+        title: document.getElementById('courseMenuPalette_paletteTitleHeading').innerText,
+        courseId: document.getElementById('course_id').value
       });
       setToStorage(this.courseId, courseMap);
       // initiate walk
@@ -121,7 +122,7 @@ var scanner = {
       this.updatePath(courseMap);
     } else {
       // This page has not been scanned yet.
-      var content = parsePage(scannerPlugins);
+      var content = parsePage(scannerPlugins, step.courseId);
       // console.log('content', content);
       // step = Object.assign({}, content, step);
       for (var d in content) {

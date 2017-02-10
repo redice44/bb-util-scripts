@@ -1,7 +1,8 @@
-var parsePage = function (plugins) {
+var parsePage = function (plugins, courseId) {
   var contentItems = document.querySelectorAll('#content_listContainer > li');
   var page = {};
   plugins = plugins || [];
+  page.courseId = courseId;
 
   contentItems.forEach(function(item) {
     page = directoryPlugin.parser(item, page);
@@ -20,8 +21,7 @@ var logItemPlugin = {
     if (!page.hasOwnProperty('items')) {
       page = Object.assign({}, { items: [] }, page);
     }
-
-    page.items.push(this.__makeItem__(item));
+    page.items.push(this.__makeItem__(item, page.courseId));
     return page;
   },
   getDom: function(item) {
@@ -42,7 +42,7 @@ var logItemPlugin = {
 
     return domNode;
   },
-  __makeItem__: function(item) {
+  __makeItem__: function(item, courseId) {
     var contentFolderController = '/webapps/blackboard/content/listContentEditable.jsp?';
 
     var itemResult = {};
@@ -55,6 +55,9 @@ var logItemPlugin = {
       // Not a folder
       itemResult.title = item.querySelector('div.item > h3').innerText;
     }
+
+    itemResult.contentId = item.id.split(':')[1];
+    itemResult.courseId = courseId;
 
     return itemResult;
   },

@@ -4,12 +4,45 @@
   padding: 5px;
 }
 
-#results section {
-  margin-left: 30px;
-  margin-top: 30px;
+.course > header {
+  margin: 20px;
+  text-align: center;
+  font-size: 24px;
+  line-height: 24px;
 }
 
-#results ol, #results ul {
-  margin-left: 30px;
-  margin-bottom: 15px;
+section.folder {
+  background-color: rgba(164, 199, 244, 0.2);
+}
+
+section.folder.collapse::before {
+  content: '';
+}
+
+section.folder > header.collapse ~ article, section.folder > header.collapse ~ section {
+  display: none;
+}
+
+section.folder > header {
+  margin-left: 20px;
+  /*border-bottom: 1px solid #475451;*/
+  padding: 20px;
+  /*text-align: center;*/
+  font-size: 32px;
+  line-height: 32px;
+
+  overflow-wrap: break-word;
+}
+
+section.folder > article, section.folder > section {
+  /*background-color: rgba(164, 199, 244, 0.2);*/
+  margin-left: 50px;
+}
+
+section.folder > article {
+  padding: 20px;
+}
+
+.slice::before {
+  content: '_';
 }
