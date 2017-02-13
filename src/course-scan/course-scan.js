@@ -14,8 +14,8 @@
 // @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/course-scan/plugins/oldMediaSitesPlugin.js
 // @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/course-scan/plugins/newWindowPlugin.js
 // @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/dom/parsePage.js
-// @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/scan-results/scan-results.js
 // @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/course-scan/scanner.js
+// @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/scan-results/scan-results.js
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_deleteValue
