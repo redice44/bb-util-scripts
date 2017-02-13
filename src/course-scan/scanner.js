@@ -59,6 +59,7 @@ var scanner = {
     var contentId = 'Error: Content ID not parsed';
     var courseId = 'Error: Course ID not parsed';
     var params = getParameters(link.href);
+    console.log(params);
 
     if (params.hasOwnProperty('content_id')) {
       contentId = params.content_id;
@@ -122,7 +123,7 @@ var scanner = {
       this.updatePath(courseMap);
     } else {
       // This page has not been scanned yet.
-      var content = parsePage(scannerPlugins, step.courseId);
+      var content = parsePage(this.plugins, step.courseId);
       // console.log('content', content);
       // step = Object.assign({}, content, step);
       for (var d in content) {
