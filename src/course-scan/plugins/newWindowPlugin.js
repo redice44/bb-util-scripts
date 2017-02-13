@@ -47,7 +47,6 @@ var linkNewWindowPlugin = {
       var contentPageUrl = 'https://fiu.blackboard.com/webapps/blackboard/content/listContentEditable.jsp?';
       var list = document.createElement('ul');
       item.newWindow.forEach(function(i) {
-        console.log('individual link', i, item);
         var domNode = document.createElement('li');
         var link = document.createElement('a');
         var title = i.title;
