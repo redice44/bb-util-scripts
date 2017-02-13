@@ -23,7 +23,8 @@
 // ==/UserScript==
 
 var scannerPlugins = [
-  linkNewWindowPlugin
+  linkNewWindowPlugin,
+  mediaSitesOldLinkPlugin
 ];
 
 var contentFolderController = '/webapps/blackboard/content/listContentEditable.jsp?';

@@ -29,6 +29,66 @@ var scanResults = {
         this.showCourse(this.courseIdNode.value);
       }
     });
+
+    // this.filter = this.filter.bind(this);
+  },
+  buildFilters: function() {
+    var filterDom = document.getElementById('filter-form');
+    var filter = document.createElement('div');
+    var selectDom = document.createElement('select');
+    var optionDom = document.createElement('option');
+    optionDom.appendChild(document.createTextNode('Show All'));
+    optionDom.setAttribute('value', 'show-all');
+    // selectDom.setAttribute('multiple', 'true');
+    selectDom.name = 'filter-details';
+    selectDom.id = 'filter-details';
+
+    // selectDom.addEventListener('click', this.filter.bind(this));
+    selectDom.addEventListener('change', this.filter.bind(this));
+
+    selectDom.appendChild(optionDom);
+    filter.appendChild(selectDom);
+
+    filterDom.appendChild(filter);
+
+    this.plugins.forEach(function (plugin) {
+      var pluginFilter = plugin.addFilter();
+      // pluginFilter.addEventListener('click', this.filter.bind(this));
+      selectDom.appendChild(pluginFilter);
+    }, this);
+  },
+  filter: function(e) {
+    var results = document.getElementById('results');
+    var detailsFilter = document.getElementById('filter-details');
+
+    // Clean this up later. But for now parse all. 
+
+    results.querySelectorAll('.hide').forEach(function (item) {
+      item.classList.remove('hide');
+    });
+    if (detailsFilter.value !== 'show-all') {
+      this.plugins.forEach(function (plugin) {
+        plugin.filter();
+      }, this);
+    }
+
+
+
+    // if (detailsFilter.checked) {
+    //   results.querySelectorAll('section > article > header.hide:not(.issue)').forEach(function(item) {
+    //     item.classList.remove('hide');
+    //   });
+    // } else {
+      // temp = results.querySelectorAll('section > article > header:not(.issue)');
+      // temp.forEach(function (item) {
+      //   console.log(item);
+      //   item.classList.toggle('hide', !detailsFilter.checked);
+      // });
+    // }
+
+    // this.plugins.forEach(function (plugin) {
+    //   plugin.filter();
+    // }, this);
   },
   showCourse: function (courseId) {
     var courseMap = getFromStorage(courseId);
@@ -46,6 +106,8 @@ var scanResults = {
         domNode.appendChild(this.showLevel(items));
       }, this);
       this.resultsNode.appendChild(domNode);
+      this.buildFilters();
+      this.filter();
     } else {
       this.courseNotFound();
     }
@@ -63,9 +125,7 @@ var scanResults = {
     // plugin doms
     this.plugins.forEach(function(plugin) {
       var pluginDom = plugin.getDom(item);
-      // if (plugin.hasIssue(pluginDom)) {
-      //   pluginDom.appendChild(this.addSlice(plugin.getLegendColor()));
-      // }
+
       if (plugin.hasIssue(pluginDom) && !plugin.hasIssue(title)) {
         plugin.addIssue(title);
       }
@@ -115,8 +175,6 @@ var scanResults = {
           itemDom.appendChild(iDom);
         }
       }, this);
-
-      // itemDom.appendChild(childrenList);
     }
 
     itemDom.classList.add('folder');
