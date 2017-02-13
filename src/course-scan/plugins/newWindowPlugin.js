@@ -44,6 +44,9 @@ var linkNewWindowPlugin = {
   getDom: function (item) {
     var resultDom = document.createElement('div');
     if (item.newWindow && item.newWindow.length > 0) {
+      // var heading = document.createElement('p');
+      // heading.appendChild(document.createTextNode('List of Links that open in same window: '));
+      // resultDom.appendChild(heading);
       var contentPageUrl = 'https://fiu.blackboard.com/webapps/blackboard/content/listContentEditable.jsp?';
       var list = document.createElement('ul');
       item.newWindow.forEach(function(i) {
@@ -70,7 +73,7 @@ var linkNewWindowPlugin = {
     return this.__myColor__;
   },
   addIssue: function (parent) {
-    parent.classList.add(this.__myCSS__);
+    parent.classList.add(this.__myCSS__, 'issue');
     parent.insertAdjacentElement('beforeend', this.addSlice());
   },
   addSlice: function () {
@@ -84,6 +87,43 @@ var linkNewWindowPlugin = {
     slice.style.display = 'inline-block';
     slice.classList.add('slice', 'tooltip');
     return slice;
+  },
+  addFilter: function() {
+    var optionDom = document.createElement('option');
+    optionDom.appendChild(document.createTextNode('New Window'));
+    optionDom.setAttribute('value', 'new-window');
+
+    return optionDom;
+  },
+  filter: function() {
+    var results = document.getElementById('results');
+    var detailsFilter = document.getElementById('filter-details');
+    var nodes = results.querySelectorAll('article > header:not(.' + this.__myCSS__ + ')');
+
+    if (detailsFilter.value === 'new-window') {
+      nodes.forEach(function (item) {
+        item.classList.add('hide');
+      });
+      nodes = results.querySelectorAll('.folder > header:not(.' + this.__myCSS__ + ')');
+      nodes.forEach(function (item) {
+        item.classList.add('hide');
+      });
+    }
+
+    // if (filter) {
+    //   if (nodes) {
+    //     nodes.forEach(function(item) {
+    //       item.classList.add('hide');
+    //     });
+    //   }
+    // } else {
+    //   if (nodes) {
+    //     results.querySelectorAll('article > header:not(.' + this.__myCSS__ + ')').forEach(function(item) {
+    //       item.classList.remove('hide');
+    //     });
+    //   }
+    // }
+
   },
   __myCSS__: 'not-new-window',
   __myColor__: '#FF0000'
