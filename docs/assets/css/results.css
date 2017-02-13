@@ -45,6 +45,19 @@ article > header {
   font-weight: bold;
 }
 
+article > div {
+  line-height: 16px;
+  font-size: 16px;
+}
+
+article > div > ul, article > div > ol {
+  margin-left: 20px;
+}
+
+article > div li {
+  list-style: disc;
+}
+
 /*Folder Title*/
 
 section > header {
@@ -65,6 +78,13 @@ li {
   content: '-';
 }
 
+.hide {
+  display: none;
+}
+
+.hide ~ div.plugin-result {
+  display: none;
+}
 
 /* Tooltip container */
 .tooltip {

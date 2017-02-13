@@ -11,7 +11,8 @@
 // @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/common/getParameters.js
 // @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/storage/storage.js
 // @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/dom/primary-menu-button.js
-// @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/course-scan/link-new-window-plugin.js
+// @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/course-scan/plugins/oldMediaSitesPlugin.js
+// @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/course-scan/plugins/newWindowPlugin.js
 // @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/dom/parsePage.js
 // @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/scan-results/scan-results.js
 // @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/course-scan/scanner.js
