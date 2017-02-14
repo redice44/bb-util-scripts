@@ -95,9 +95,15 @@ var scanResults = {
       if (plugin.hasIssue(pluginDom) && !plugin.hasIssue(title)) {
         pluginAlert = plugin.addAlert(title);
         pluginAlert.addEventListener('click', function(e) {
-          // Ugly for now
-          var className = e.path[1].classList[0];
-          var dom = e.path[3].querySelector('section.plugin-issues > .' + className);
+          var targetDom = e.target;
+
+          while (targetDom.nodeName !== 'svg') {
+            targetDom = targetDom.parentElement;
+          }
+
+          var className = targetDom.classList[0];
+          targetDom = targetDom.parentElement.parentElement;
+          var dom = targetDom.querySelector('section.plugin-issues > .' + className);
           dom.classList.toggle('hide');
 
         });
