@@ -30,48 +30,6 @@ var scanResults = {
         this.showCourse(this.courseIdNode.value);
       }
     });
-
-    // this.filter = this.filter.bind(this);
-  },
-  buildFilters: function() {
-    var filterDom = document.getElementById('filter-form');
-    var filter = document.createElement('div');
-    var selectDom = document.createElement('select');
-    var optionDom = document.createElement('option');
-    optionDom.appendChild(document.createTextNode('Show All'));
-    optionDom.setAttribute('value', 'show-all');
-    // selectDom.setAttribute('multiple', 'true');
-    selectDom.name = 'filter-details';
-    selectDom.id = 'filter-details';
-
-    // selectDom.addEventListener('click', this.filter.bind(this));
-    selectDom.addEventListener('change', this.filter.bind(this));
-
-    selectDom.appendChild(optionDom);
-    filter.appendChild(selectDom);
-
-    filterDom.appendChild(filter);
-
-    this.plugins.forEach(function (plugin) {
-      var pluginFilter = plugin.addFilter();
-      // pluginFilter.addEventListener('click', this.filter.bind(this));
-      selectDom.appendChild(pluginFilter);
-    }, this);
-  },
-  filter: function(e) {
-    var results = document.getElementById('results');
-    var detailsFilter = document.getElementById('filter-details');
-
-    // Clean this up later. But for now parse all. 
-
-    results.querySelectorAll('.hide').forEach(function (item) {
-      item.classList.remove('hide');
-    });
-    if (detailsFilter.value !== 'show-all') {
-      this.plugins.forEach(function (plugin) {
-        plugin.filter();
-      }, this);
-    }
   },
   showCourse: function (courseId) {
     var courseMap = getFromStorage(courseId);
@@ -89,58 +47,25 @@ var scanResults = {
 
       this.navNodeTemplate = document.createElement('nav');
 
-      // this.plugins.forEach(function (plugin) {
-      //   var filter = plugin.addFilterButton();
-      //   filter.addEventListener('click', function(e) {
-      //     console.log(e);
-      //   });
-      //   this.navNodeTemplate.appendChild(filter);
-      // }, this);
-      // this.navNodeTemplate.style.width = (this.plugins.length * 12) + 'px';
-
-
-
-
       courseMap.nodes.forEach(function(items) {
         courseNode.appendChild(this.showLevel(items));
       }, this);
 
       this.resultsNode.appendChild(courseNode);
-
-
-
-      // var domNode = document.createElement('div');
-      // var header = document.createElement('header');
-      // header.appendChild(document.createTextNode(courseMap.title));
-      // domNode.appendChild(header);
-      // domNode.id = courseMap.courseId;
-      // domNode.classList.add('course');
-      // this.resultsNode.innerHTML = '';
-      // courseMap.nodes.forEach(function(items) {
-      //   domNode.appendChild(this.showLevel(items));
-      // }, this);
-      // this.resultsNode.appendChild(domNode);
-      // this.buildFilters();
-      // this.filter();
     } else {
       this.courseNotFound();
     }
   },
   toggleDisplay: function(e) {
     var target = e.target;
-    // console.log('clicked', e);
     target.classList.toggle('collapse');
   },
   __buildItem__: function(item) {
     var itemDom = document.createElement('section');
 
-    // var navDom = this.navNodeTemplate.cloneNode(true);
     var title = document.createElement('header');
     var pluginList = document.createElement('section');
     title.appendChild(document.createTextNode(item.title));
-
-
-
 
 
 
@@ -160,45 +85,19 @@ var scanResults = {
     itemIcon.appendChild(pathData1Svg);
     itemIcon.appendChild(pathData2Svg);
 
-
     title.insertAdjacentElement('afterbegin', itemIcon);
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        // plugin doms
     this.plugins.forEach(function(plugin) {
       var pluginDom = plugin.getDom(item);
       var pluginAlert;
 
-      // if (plugin.hasIssue(pluginDom) && !plugin.hasIssue(navDom)) {
       if (plugin.hasIssue(pluginDom) && !plugin.hasIssue(title)) {
         pluginAlert = plugin.addAlert(title);
         pluginAlert.addEventListener('click', function(e) {
-          console.log('clicky', e);
-          // jsut for testing
+          // Ugly for now
           var className = e.path[1].classList[0];
-          console.log(className);
-          console.log(e.path[3]);
           var dom = e.path[3].querySelector('section.plugin-issues > .' + className);
-          console.log(dom);
           dom.classList.toggle('hide');
 
         });
@@ -208,14 +107,12 @@ var scanResults = {
     }, this);
 
     pluginList.classList.add('plugin-issues');
-    // itemDom.appendChild(navDom);
     itemDom.appendChild(title);
     itemDom.appendChild(pluginList);
     return itemDom;
   },
   showLevel: function (item) {
     var itemDom = document.createElement('section');
-    // var navDom = this.navNodeTemplate.cloneNode(true);
     var title = document.createElement('header');
     var childrenList = document.createElement('article');
 
@@ -256,10 +153,6 @@ var scanResults = {
     openFolderIcon.appendChild(openPathData2Svg);
 
 
-
-
-
-
     title.appendChild(document.createTextNode(item.title));
     title.addEventListener('click', this.toggleDisplay);
     title.classList.add('collapse');
@@ -268,11 +161,7 @@ var scanResults = {
     title.insertAdjacentElement('afterbegin', folderIcon);
 
 
-
-
-
     var pluginAlert;
-
 
     if (item.items) {
       item.items.forEach(function (i) {
@@ -310,7 +199,6 @@ var scanResults = {
       }, this);
     }
 
-    // itemDom.appendChild(navDom);
     itemDom.appendChild(title);
     itemDom.appendChild(childrenList);
     return itemDom;

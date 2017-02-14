@@ -4,10 +4,6 @@ var mediaSitesOldLinkPlugin = {
     var links = item.querySelectorAll('a');
     var currentItemTitle = item.querySelector('div.item > h3').innerText;
 
-    // if (!page.hasOwnProperty('newWindow')) {
-    //   page = Object.assign({}, { newWindow: [] }, page);
-    // }
-
     if (links) {
       // Find the item
       var currentItem = page.items.find(function(i) {
@@ -59,9 +55,7 @@ var mediaSitesOldLinkPlugin = {
       title.appendChild(alertIcon);
       title.appendChild(document.createTextNode('Old MediaSites Links:'));
       resultDom.appendChild(title);
-      // var heading = document.createElement('p');
-      // heading.appendChild(document.createTextNode('List of old MediaSites Links: '));
-      // resultDom.appendChild(heading);
+
       var contentPageUrl = 'https://fiu.blackboard.com/webapps/blackboard/content/listContentEditable.jsp?';
       var list = document.createElement('ul');
       item.mediaSitesOldLink.forEach(function(i) {
@@ -72,7 +66,6 @@ var mediaSitesOldLinkPlugin = {
         link.setAttribute('href', contentPageUrl + 'course_id=' + item.courseId + '&content_id=' + item.contentId + '#contentListItem:' + i.parentId);
         link.setAttribute('target', '_blank');
         domNode.appendChild(link);
-        // domNode.insertAdjacentElement('beforeend', this.addSlice());
         list.appendChild(domNode);
       }, this);
       resultDom.appendChild(list);
@@ -95,15 +88,11 @@ var mediaSitesOldLinkPlugin = {
       result = dom.classList.contains(this.__myCSS__) && !dom.classList.contains('off');
     }
     return result;
-    // return dom.classList.contains(this.__myCSS__);
   },
   getLegendColor: function() {
     return this.__myColor__;
   },
   addAlert: function (parent) {
-
-
-
     var alertIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     alertIcon.setAttribute('fill', this.__myColor__);
     alertIcon.setAttribute('height', '24');
@@ -121,73 +110,14 @@ var mediaSitesOldLinkPlugin = {
     alertIcon.appendChild(pathData1Svg);
     alertIcon.appendChild(pathData2Svg);
 
-    // parent.insertAdjacentElement('beforeend', alertIcon);
-
     parent.classList.add(this.__myCSS__);
 
     return alertIcon;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // console.log('media parent', parent);
-    // parent.querySelector('.' + this.__myCSS__).classList.remove('off');
-    // parent.classList.add(this.__myCSS__, 'issue');
-    // parent.insertAdjacentElement('afterbegin', this.addSlice());
-  },
-  addFilterButton: function () {
-    var squareDom = document.createElement('div');
-    squareDom.classList.add(this.__myCSS__, 'off');
-    squareDom.style.backgroundColor = this.__myColor__;
-
-    return squareDom;
   },
   addSlice: function () {
-    // var slice = document.createElement('div');
-    // var tooltip = document.createElement('span');
-    // tooltip.appendChild(document.createTextNode('Contains old MediaSites Link.'));
-    // tooltip.classList.add('tooltiptext', 'tooltip-left');
-    // slice.appendChild(tooltip);
-    // slice.style.backgroundColor = this.__myColor__;
-    // slice.style.color = this.__myColor__;
-    // slice.style.display = 'inline-block';
-    // slice.classList.add('slice', 'tooltip');
-    console.log('slice')
     var slice = document.createElement('div');
     slice.appendChild(folderIcon);
     return slice;
-  },
-  addFilter: function() {
-    var optionDom = document.createElement('option');
-    optionDom.appendChild(document.createTextNode('Old MediaSites'));
-    optionDom.setAttribute('value', 'old-mediasites');
-
-    return optionDom;
-  },
-  filter: function() {
-    var results = document.getElementById('results');
-    var detailsFilter = document.getElementById('filter-details');
-    var nodes = results.querySelectorAll('article > header:not(.' + this.__myCSS__ + ')');
-
-    if (detailsFilter.value === 'old-mediasites') {
-      nodes.forEach(function (item) {
-        item.classList.add('hide');
-      });
-      nodes = results.querySelectorAll('.folder > header:not(.' + this.__myCSS__ + ')');
-      nodes.forEach(function (item) {
-        item.classList.add('hide');
-      });
-    }
   },
   __myCSS__: 'old-mediasites',
   __myColor__: '#0000FF'
