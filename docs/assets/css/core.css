@@ -106,6 +106,16 @@ button {
 
 }
 
+#footer {
+  margin-top: 30px;
+  height: 200px;
+  background-color: #232928;
+  color: #dfece6;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 /* General Utility Classes */
 
 .small-text {
