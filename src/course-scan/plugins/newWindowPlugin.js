@@ -59,6 +59,7 @@ var linkNewWindowPlugin = {
 
       var title = document.createElement('p');
       title.appendChild(alertIcon);
+      // title.appendChild(alertOpenIcon);
       title.appendChild(document.createTextNode('Items that do not open in a new window:'));
       resultDom.appendChild(title);
 
@@ -98,6 +99,50 @@ var linkNewWindowPlugin = {
   getLegendColor: function() {
     return this.__myColor__;
   },
+  addAlertOpen: function (parent) {
+    var alertIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    alertIcon.setAttribute('fill', this.__myColor__);
+    alertIcon.setAttribute('height', '24');
+    alertIcon.setAttribute('viewBox', '0 0 24 24');
+    alertIcon.setAttribute('width', '24');
+    alertIcon.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+    alertIcon.setAttribute('class', this.__myCSS__ + ' open hide');
+
+    var pathData1Svg = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    pathData1Svg.setAttribute('d', 'M11 15h2v2h-2zm0-8h2v6h-2zm.99-5C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z');
+    var pathData2Svg = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    pathData2Svg.setAttribute('d', 'M0 0h24v24H0V0z');
+    pathData2Svg.setAttribute('fill', 'none');
+
+    alertIcon.appendChild(pathData1Svg);
+    alertIcon.appendChild(pathData2Svg);
+
+    alertIcon.addEventListener('click', function(e) {
+      var targetDom = e.target;
+
+      while (targetDom.nodeName !== 'svg') {
+        targetDom = targetDom.parentElement;
+      }
+
+      var className = targetDom.classList[0];
+      // Header
+      targetDom = targetDom.parentElement;
+      // Update the hide
+      var dom = targetDom.querySelectorAll('.' + this.__myCSS__);
+      dom.forEach(function(d) {
+        console.log(d);
+        d.classList.toggle('hide');
+      });
+
+      // Section
+      targetDom = targetDom.parentElement;
+      dom = targetDom.querySelector('section.plugin-issues > .' + className);
+      dom.classList.toggle('hide');
+
+    }.bind(this));
+
+    return alertIcon;
+  },
   addAlert: function (parent) {
     var alertIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     alertIcon.setAttribute('fill', this.__myColor__);
@@ -105,7 +150,7 @@ var linkNewWindowPlugin = {
     alertIcon.setAttribute('viewBox', '0 0 24 24');
     alertIcon.setAttribute('width', '24');
     alertIcon.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-    alertIcon.setAttribute('class', this.__myCSS__);
+    alertIcon.setAttribute('class', this.__myCSS__ + ' close');
 
     var pathData1Svg = document.createElementNS("http://www.w3.org/2000/svg", "path");
     pathData1Svg.setAttribute('d', 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z');
@@ -115,6 +160,32 @@ var linkNewWindowPlugin = {
 
     alertIcon.appendChild(pathData1Svg);
     alertIcon.appendChild(pathData2Svg);
+
+    alertIcon.addEventListener('click', function(e) {
+      var targetDom = e.target;
+
+      while (targetDom.nodeName !== 'svg') {
+        targetDom = targetDom.parentElement;
+      }
+
+      var className = targetDom.classList[0];
+      // Header
+      targetDom = targetDom.parentElement;
+      // Update the hide
+      console.log(targetDom);
+      var dom = targetDom.querySelectorAll('.' + this.__myCSS__);
+      console.log(dom);
+      dom.forEach(function(d) {
+        console.log(d);
+        d.classList.toggle('hide');
+      });
+
+      // Section
+      targetDom = targetDom.parentElement;
+      dom = targetDom.querySelector('section.plugin-issues > .' + className);
+      dom.classList.toggle('hide');
+
+    }.bind(this));
 
     parent.classList.add(this.__myCSS__);
 

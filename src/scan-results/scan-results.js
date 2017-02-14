@@ -44,7 +44,6 @@ var scanResults = {
       courseNode.classList.add('course');
       this.resultsNode.innerHTML = '';
 
-
       this.navNodeTemplate = document.createElement('nav');
 
       courseMap.nodes.forEach(function(items) {
@@ -67,8 +66,6 @@ var scanResults = {
     var pluginList = document.createElement('section');
     title.appendChild(document.createTextNode(item.title));
 
-
-
     var itemIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     itemIcon.setAttribute('fill', '#475451');
     itemIcon.setAttribute('height', '24');
@@ -87,26 +84,14 @@ var scanResults = {
 
     title.insertAdjacentElement('afterbegin', itemIcon);
 
-
     this.plugins.forEach(function(plugin) {
       var pluginDom = plugin.getDom(item);
       var pluginAlert;
 
       if (plugin.hasIssue(pluginDom) && !plugin.hasIssue(title)) {
+        pluginAlert = plugin.addAlertOpen(title);
+        title.insertAdjacentElement('beforeend', pluginAlert);
         pluginAlert = plugin.addAlert(title);
-        pluginAlert.addEventListener('click', function(e) {
-          var targetDom = e.target;
-
-          while (targetDom.nodeName !== 'svg') {
-            targetDom = targetDom.parentElement;
-          }
-
-          var className = targetDom.classList[0];
-          targetDom = targetDom.parentElement.parentElement;
-          var dom = targetDom.querySelector('section.plugin-issues > .' + className);
-          dom.classList.toggle('hide');
-
-        });
         title.insertAdjacentElement('beforeend', pluginAlert);
       }
       pluginList.appendChild(pluginDom);
@@ -139,8 +124,6 @@ var scanResults = {
     folderIcon.appendChild(pathData1Svg);
     folderIcon.appendChild(pathData2Svg);
 
-
-
     var openFolderIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     openFolderIcon.setAttribute('fill', '#475451');
     openFolderIcon.setAttribute('height', '24');
@@ -158,7 +141,6 @@ var scanResults = {
     openFolderIcon.appendChild(openPathData1Svg);
     openFolderIcon.appendChild(openPathData2Svg);
 
-
     title.appendChild(document.createTextNode(item.title));
     title.addEventListener('click', this.toggleDisplay);
     title.classList.add('collapse');
@@ -166,12 +148,12 @@ var scanResults = {
     title.insertAdjacentElement('afterbegin', openFolderIcon);    
     title.insertAdjacentElement('afterbegin', folderIcon);
 
-
     var pluginAlert;
 
     if (item.items) {
       item.items.forEach(function (i) {
         if (i.url) {
+          console.log('this is a folder');
           // Is a folder
           var folder;
           // Get correct folder node
