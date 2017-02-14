@@ -120,5 +120,5 @@ var mediaSitesOldLinkPlugin = {
     return slice;
   },
   __myCSS__: 'old-mediasites',
-  __myColor__: '#292970'
+  __myColor__: '#373795'
 };
