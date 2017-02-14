@@ -4,6 +4,7 @@ var scanResults = {
   courseIdNode: null,
   resultsNode: null,
   plugins: [],
+  navNodeTemplate: null,
   init: function(plugins) {
     console.log('results');
     this.plugins = plugins;
@@ -71,43 +72,56 @@ var scanResults = {
         plugin.filter();
       }, this);
     }
-
-
-
-    // if (detailsFilter.checked) {
-    //   results.querySelectorAll('section > article > header.hide:not(.issue)').forEach(function(item) {
-    //     item.classList.remove('hide');
-    //   });
-    // } else {
-      // temp = results.querySelectorAll('section > article > header:not(.issue)');
-      // temp.forEach(function (item) {
-      //   console.log(item);
-      //   item.classList.toggle('hide', !detailsFilter.checked);
-      // });
-    // }
-
-    // this.plugins.forEach(function (plugin) {
-    //   plugin.filter();
-    // }, this);
   },
   showCourse: function (courseId) {
     var courseMap = getFromStorage(courseId);
 
     if (courseMap) {
       console.log('rendering results', courseMap);
-      var domNode = document.createElement('div');
-      var header = document.createElement('header');
-      header.appendChild(document.createTextNode(courseMap.title));
-      domNode.appendChild(header);
-      domNode.id = courseMap.courseId;
-      domNode.classList.add('course');
+      var courseNode = document.createElement('section');
+      var headingNode = document.createElement('header');
+      headingNode.appendChild(document.createTextNode(courseMap.title));
+      courseNode.appendChild(headingNode);
+      courseNode.id = courseMap.courseId;
+      courseNode.classList.add('course');
       this.resultsNode.innerHTML = '';
+
+
+      this.navNodeTemplate = document.createElement('nav');
+
+      // this.plugins.forEach(function (plugin) {
+      //   var filter = plugin.addFilterButton();
+      //   filter.addEventListener('click', function(e) {
+      //     console.log(e);
+      //   });
+      //   this.navNodeTemplate.appendChild(filter);
+      // }, this);
+      // this.navNodeTemplate.style.width = (this.plugins.length * 12) + 'px';
+
+
+
+
       courseMap.nodes.forEach(function(items) {
-        domNode.appendChild(this.showLevel(items));
+        courseNode.appendChild(this.showLevel(items));
       }, this);
-      this.resultsNode.appendChild(domNode);
-      this.buildFilters();
-      this.filter();
+
+      this.resultsNode.appendChild(courseNode);
+
+
+
+      // var domNode = document.createElement('div');
+      // var header = document.createElement('header');
+      // header.appendChild(document.createTextNode(courseMap.title));
+      // domNode.appendChild(header);
+      // domNode.id = courseMap.courseId;
+      // domNode.classList.add('course');
+      // this.resultsNode.innerHTML = '';
+      // courseMap.nodes.forEach(function(items) {
+      //   domNode.appendChild(this.showLevel(items));
+      // }, this);
+      // this.resultsNode.appendChild(domNode);
+      // this.buildFilters();
+      // this.filter();
     } else {
       this.courseNotFound();
     }
@@ -118,31 +132,146 @@ var scanResults = {
     target.classList.toggle('collapse');
   },
   __buildItem__: function(item) {
-    var itemDom = document.createElement('article');
+    var itemDom = document.createElement('section');
+
+    // var navDom = this.navNodeTemplate.cloneNode(true);
     var title = document.createElement('header');
+    var pluginList = document.createElement('section');
     title.appendChild(document.createTextNode(item.title));
-    itemDom.appendChild(title);
-    // plugin doms
+
+
+
+
+
+
+    var itemIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    itemIcon.setAttribute('fill', '#000000');
+    itemIcon.setAttribute('height', '24');
+    itemIcon.setAttribute('viewBox', '0 0 24 24');
+    itemIcon.setAttribute('width', '24');
+    itemIcon.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+
+    var pathData1Svg = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    pathData1Svg.setAttribute('d', 'M6 2c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6H6zm7 7V3.5L18.5 9H13z');
+    var pathData2Svg = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    pathData2Svg.setAttribute('d', 'M0 0h24v24H0z');
+    pathData2Svg.setAttribute('fill', 'none');
+
+    itemIcon.appendChild(pathData1Svg);
+    itemIcon.appendChild(pathData2Svg);
+
+
+    title.insertAdjacentElement('afterbegin', itemIcon);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        // plugin doms
     this.plugins.forEach(function(plugin) {
       var pluginDom = plugin.getDom(item);
+      var pluginAlert;
 
+      // if (plugin.hasIssue(pluginDom) && !plugin.hasIssue(navDom)) {
       if (plugin.hasIssue(pluginDom) && !plugin.hasIssue(title)) {
-        plugin.addIssue(title);
+        pluginAlert = plugin.addAlert(title);
+        pluginAlert.addEventListener('click', function(e) {
+          console.log('clicky', e);
+          // jsut for testing
+          var className = e.path[1].classList[0];
+          console.log(className);
+          console.log(e.path[3]);
+          var dom = e.path[3].querySelector('section.plugin-issues > .' + className);
+          console.log(dom);
+          dom.classList.toggle('hide');
+
+        });
+        title.insertAdjacentElement('beforeend', pluginAlert);
       }
-      itemDom.appendChild(pluginDom);
+      pluginList.appendChild(pluginDom);
     }, this);
+
+    pluginList.classList.add('plugin-issues');
+    // itemDom.appendChild(navDom);
+    itemDom.appendChild(title);
+    itemDom.appendChild(pluginList);
     return itemDom;
   },
   showLevel: function (item) {
     var itemDom = document.createElement('section');
+    // var navDom = this.navNodeTemplate.cloneNode(true);
     var title = document.createElement('header');
     var childrenList = document.createElement('article');
+
+    var folderIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    folderIcon.setAttribute('fill', '#000000');
+    folderIcon.setAttribute('height', '24');
+    folderIcon.setAttribute('viewBox', '0 0 24 24');
+    folderIcon.setAttribute('width', '24');
+    folderIcon.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+    folderIcon.setAttribute('class', 'close-folder');
+
+    var pathData1Svg = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    pathData1Svg.setAttribute('d', 'M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z');
+    var pathData2Svg = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    pathData2Svg.setAttribute('d', 'M0 0h24v24H0z');
+    pathData2Svg.setAttribute('fill', 'none');
+
+    folderIcon.appendChild(pathData1Svg);
+    folderIcon.appendChild(pathData2Svg);
+
+
+
+    var openFolderIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    openFolderIcon.setAttribute('fill', '#000000');
+    openFolderIcon.setAttribute('height', '24');
+    openFolderIcon.setAttribute('viewBox', '0 0 24 24');
+    openFolderIcon.setAttribute('width', '24');
+    openFolderIcon.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+    openFolderIcon.setAttribute('class', 'open-folder');
+
+    var openPathData1Svg = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    openPathData1Svg.setAttribute('d', 'M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z');
+    var openPathData2Svg = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    openPathData2Svg.setAttribute('d', 'M0 0h24v24H0z');
+    openPathData2Svg.setAttribute('fill', 'none');
+
+    openFolderIcon.appendChild(openPathData1Svg);
+    openFolderIcon.appendChild(openPathData2Svg);
+
+
+
+
 
 
     title.appendChild(document.createTextNode(item.title));
     title.addEventListener('click', this.toggleDisplay);
     title.classList.add('collapse');
-    itemDom.appendChild(title);
+    itemDom.classList.add('folder');
+    title.insertAdjacentElement('afterbegin', openFolderIcon);    
+    title.insertAdjacentElement('afterbegin', folderIcon);
+
+
+
+
+
+    var pluginAlert;
 
 
     if (item.items) {
@@ -157,27 +286,33 @@ var scanResults = {
             }
           }, this);
           var folderDom = this.showLevel(folder);
+          folderDom.classList.add('folder');
           this.plugins.forEach(function (plugin) {
+            // console.log(folderDom);
             if (plugin.hasIssue(folderDom.querySelector('header')) &&
                 !plugin.hasIssue(title)) {
-              plugin.addIssue(title);
+              pluginAlert = plugin.addAlert(title);
+              title.insertAdjacentElement('beforeend', pluginAlert);
             }
           }, this);
-          itemDom.appendChild(folderDom);
+          childrenList.appendChild(folderDom);
         } else {
           var iDom = this.__buildItem__(i);
           this.plugins.forEach(function (plugin) {
             if (plugin.hasIssue(iDom.querySelector('header')) &&
                 !plugin.hasIssue(title)) {
-              plugin.addIssue(title);
+              pluginAlert = plugin.addAlert(title);
+              title.insertAdjacentElement('beforeend', pluginAlert);
             }
           }, this);
-          itemDom.appendChild(iDom);
+          childrenList.appendChild(iDom);
         }
       }, this);
     }
 
-    itemDom.classList.add('folder');
+    // itemDom.appendChild(navDom);
+    itemDom.appendChild(title);
+    itemDom.appendChild(childrenList);
     return itemDom;
   },
   parseCourseId: function (url) {

@@ -11,66 +11,106 @@
   line-height: 24px;
 }
 
-section.folder {
-  background-color: rgba(164, 199, 244, 0.2);
+.folder > article {
+/*  border: solid black;
+  border-width: 1px 0 0 1px;*/
+  padding-left: 30px;
 }
 
-section.folder.collapse::before {
-  content: '';
+.folder > header.collapse > .open-folder {
+  display: none;
+}
+
+.folder > header:not(.collapse) > .close-folder {
+  display: none;
+}
+
+header > svg {
+  position: relative;
+  top: 5px;
+  margin: 0 5px;
+}
+
+.folder header:hover {
+  background-color: rgba(0, 200, 0, 0.2);
+}
+
+
+section > nav {
+  display: inline-block;
+  line-height: 50px;
+}
+
+section > nav > div {
+  display: inline-block;
+  width: 12px;
+  line-height: 50px;
+  box-sizing: border-box;
+  /*border-right: 1px solid black;*/
+}
+
+section > nav > div.off {
+  background-color: transparent !important;
+}
+/*
+section > nav > div::before {
+  content: '.';
+  color: transparent;
+}*/
+
+section > header {
+  /*display: inline-block;*/
+  line-height: 50px;
+}
+
+section.folder > header {
+  cursor: pointer;
+}
+
+section:not(.folder) > header > svg {
+  cursor: pointer;
 }
 
 section.folder > header.collapse ~ article, section.folder > header.collapse ~ section {
   display: none;
 }
 
-section.folder > header {
-  margin-left: 20px;
-  font-size: 32px;
-  line-height: 64px;
 
-  overflow-wrap: break-word;
+/* Future show/hide for plugin details */
+.plugin-issues > div {
+  /*display: none;*/
 }
 
-section.folder > article, section.folder > section {
-  margin-left: 50px;
+.plugin-result {
+  margin-left: 35px;
 }
 
-section.folder > article {
-  line-height: 50px;
+.plugin-result.hide {
+  display: none;
 }
 
-/*Item Title*/
-
-article > header {
-  font-weight: bold;
+.plugin-result p {
+  padding: 10px 0;
 }
 
-article > div {
-  line-height: 16px;
-  font-size: 16px;
-}
-
-article > div > ul, article > div > ol {
+.plugin-result ul {
   margin-left: 20px;
 }
 
-article > div li {
-  list-style: disc;
+.plugin-result li {
+  padding: 5px;
 }
 
-/*Folder Title*/
 
-section > header {
-
+.folder > header {
+  /*background-color: rgba(0, 200, 0, 0.2);*/
 }
 
-li {
-  list-style: none;
-}
+header.bob ~ section.plugin-issues > .bob
 
 .slice {
-  font-size: 32px;
-  float: right;
+  /*font-size: 32px;*/
+  /*float: right;*/
   padding: 0 3px;
 }
 
@@ -78,13 +118,9 @@ li {
   content: '-';
 }
 
-.hide {
-  display: none;
-}
 
-.hide ~ div.plugin-result {
-  display: none;
-}
+
+
 
 /* Tooltip container */
 .tooltip {
@@ -130,4 +166,3 @@ li {
 .tooltip:hover .tooltiptext {
     visibility: visible;
 }
-
