@@ -70,7 +70,7 @@ var scanResults = {
 
 
     var itemIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    itemIcon.setAttribute('fill', '#000000');
+    itemIcon.setAttribute('fill', '#475451');
     itemIcon.setAttribute('height', '24');
     itemIcon.setAttribute('viewBox', '0 0 24 24');
     itemIcon.setAttribute('width', '24');
@@ -117,7 +117,7 @@ var scanResults = {
     var childrenList = document.createElement('article');
 
     var folderIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    folderIcon.setAttribute('fill', '#000000');
+    folderIcon.setAttribute('fill', '#475451');
     folderIcon.setAttribute('height', '24');
     folderIcon.setAttribute('viewBox', '0 0 24 24');
     folderIcon.setAttribute('width', '24');
@@ -136,7 +136,7 @@ var scanResults = {
 
 
     var openFolderIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    openFolderIcon.setAttribute('fill', '#000000');
+    openFolderIcon.setAttribute('fill', '#475451');
     openFolderIcon.setAttribute('height', '24');
     openFolderIcon.setAttribute('viewBox', '0 0 24 24');
     openFolderIcon.setAttribute('width', '24');
