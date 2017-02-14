@@ -126,5 +126,5 @@ var linkNewWindowPlugin = {
     return slice;
   },
   __myCSS__: 'not-new-window',
-  __myColor__: '#FF0000'
+  __myColor__: '#4b1111'
 };

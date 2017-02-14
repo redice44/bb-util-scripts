@@ -120,5 +120,5 @@ var vivoOldLinkPlugin = {
     return slice;
   },
   __myCSS__: 'old-vivo',
-  __myColor__: '#00FF00'
+  __myColor__: '#2c592c'
 };
