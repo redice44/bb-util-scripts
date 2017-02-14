@@ -90,8 +90,10 @@ var scanResults = {
 
       if (plugin.hasIssue(pluginDom) && !plugin.hasIssue(title)) {
         pluginAlert = plugin.addAlertOpen(title);
+        pluginAlert.addEventListener('click', plugin.alertHandler.bind(plugin));
         title.insertAdjacentElement('beforeend', pluginAlert);
         pluginAlert = plugin.addAlert(title);
+        pluginAlert.addEventListener('click', plugin.alertHandler.bind(plugin));
         title.insertAdjacentElement('beforeend', pluginAlert);
       }
       pluginList.appendChild(pluginDom);
@@ -153,7 +155,6 @@ var scanResults = {
     if (item.items) {
       item.items.forEach(function (i) {
         if (i.url) {
-          console.log('this is a folder');
           // Is a folder
           var folder;
           // Get correct folder node

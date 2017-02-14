@@ -99,6 +99,28 @@ var linkNewWindowPlugin = {
   getLegendColor: function() {
     return this.__myColor__;
   },
+  alertHandler: function(e) {
+    var targetDom = e.target;
+
+    while (targetDom.nodeName !== 'svg') {
+      targetDom = targetDom.parentElement;
+    }
+
+    var className = targetDom.classList[0];
+    // Header
+    targetDom = targetDom.parentElement;
+    // Update the hide
+    var dom = targetDom.querySelectorAll('.' + this.__myCSS__);
+    dom.forEach(function(d) {
+      console.log(d);
+      d.classList.toggle('hide');
+    });
+
+    // Section
+    targetDom = targetDom.parentElement;
+    dom = targetDom.querySelector('section.plugin-issues > .' + className);
+    dom.classList.toggle('hide');
+  },
   addAlertOpen: function (parent) {
     var alertIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     alertIcon.setAttribute('fill', this.__myColor__);
@@ -116,30 +138,6 @@ var linkNewWindowPlugin = {
 
     alertIcon.appendChild(pathData1Svg);
     alertIcon.appendChild(pathData2Svg);
-
-    alertIcon.addEventListener('click', function(e) {
-      var targetDom = e.target;
-
-      while (targetDom.nodeName !== 'svg') {
-        targetDom = targetDom.parentElement;
-      }
-
-      var className = targetDom.classList[0];
-      // Header
-      targetDom = targetDom.parentElement;
-      // Update the hide
-      var dom = targetDom.querySelectorAll('.' + this.__myCSS__);
-      dom.forEach(function(d) {
-        console.log(d);
-        d.classList.toggle('hide');
-      });
-
-      // Section
-      targetDom = targetDom.parentElement;
-      dom = targetDom.querySelector('section.plugin-issues > .' + className);
-      dom.classList.toggle('hide');
-
-    }.bind(this));
 
     return alertIcon;
   },
@@ -160,32 +158,6 @@ var linkNewWindowPlugin = {
 
     alertIcon.appendChild(pathData1Svg);
     alertIcon.appendChild(pathData2Svg);
-
-    alertIcon.addEventListener('click', function(e) {
-      var targetDom = e.target;
-
-      while (targetDom.nodeName !== 'svg') {
-        targetDom = targetDom.parentElement;
-      }
-
-      var className = targetDom.classList[0];
-      // Header
-      targetDom = targetDom.parentElement;
-      // Update the hide
-      console.log(targetDom);
-      var dom = targetDom.querySelectorAll('.' + this.__myCSS__);
-      console.log(dom);
-      dom.forEach(function(d) {
-        console.log(d);
-        d.classList.toggle('hide');
-      });
-
-      // Section
-      targetDom = targetDom.parentElement;
-      dom = targetDom.querySelector('section.plugin-issues > .' + className);
-      dom.classList.toggle('hide');
-
-    }.bind(this));
 
     parent.classList.add(this.__myCSS__);
 
