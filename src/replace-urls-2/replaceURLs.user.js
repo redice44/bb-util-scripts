@@ -139,53 +139,50 @@ function getEditNodes() {
 
       if(newUrl) header.insertAdjacentHTML('beforeend', '<input id="newUrlValue" type="text" name="newURL" value=' + newUrl + ' readonly>');
       else header.insertAdjacentHTML('beforeend', '<input id="newUrlValue" type="text" name="newURL" placeholder="New URL" readonly>');
-  }
-  else{
+      
+      var nodes = getEditNodes();
+      console.log(nodes);
+
+      nodes = nodes.map(function(id) {
+        return document.getElementById(id);
+      });
+
+      nodes.forEach(function(node) {
+        if (node) {
+          if (newUrl.length > 0) {
+            if (node.nodeName.toLowerCase() === 'input') {
+              node.value = updateUrl(node.value, oldUrl, newUrl);
+            } else if (node.nodeName.toLowerCase() === 'textarea') {
+              node.innerHTML = updateUrl(node.innerHTML, oldUrl, newUrl);
+            } else {
+              console.log('Error: Unhandled node type.', node.nodeName);
+            }
+
+          }
+        }
+      });
+  } else {
       header.insertAdjacentHTML('beforeend', '<input id="oldUrlValue" type="text" name="oldURL" placeholder="Old URL">');
       header.insertAdjacentHTML('beforeend', '<input id="newUrlValue" type="text" name="newURL" placeholder="New URL">');
-      header.insertAdjacentHTML('beforeend', '<button id="save_settings" class="button-1" style="width: 120px; height: 30px; font-size: 14px; right 10px; padding: 0px; margin-right: 15px;">Save</button>');
-      header.insertAdjacentHTML('beforeend', '<label id="urlSavedLbl" for="saved">Saved</label>');
-      document.getElementById("urlSavedLbl").style.visibility = "hidden";
+      header.insertAdjacentHTML('beforeend', '<button id="save_settings" class="button-1" style="width: 120px; height: 30px; font-size: 14px; right 10px; padding: 0px; margin-right: 15px;">Search</button>');
+      // header.insertAdjacentHTML('beforeend', '<label id="urlSavedLbl" for="saved">Saved</label>');
+      // document.getElementById("urlSavedLbl").style.visibility = "hidden";
       if (oldUrl) document.getElementById("oldUrlValue").value = oldUrl;
       if (newUrl) document.getElementById("newUrlValue").value = newUrl;
+      document.getElementById("save_settings").addEventListener("click", function(){
+        var old = document.getElementById("oldUrlValue").value;
+        var newLink = document.getElementById("newUrlValue").value;
+        old = old.replace(/\s/g,'');
+        newLink = newLink.replace(/\s/g,'');
+        // old = removeProtocols(old);
+        // newLink = removeProtocols(newLink);
+        sessionStorage.setItem(oldURLSessionKey, old);
+        sessionStorage.setItem(newURLSessionKey, newLink);
+        // document.getElementById("urlSavedLbl").style.visibility = "visible";
+        searchForOldUrl(); // This will search for any old url reference once button is clicked
+        searchForNewUrl(); // This will search for any new url refernces once button is clicked
+        console.log('saved');
+      });
   }
 
-  document.getElementById("save_settings").addEventListener("click", function(){
-    var old = document.getElementById("oldUrlValue").value;
-    var newLink = document.getElementById("newUrlValue").value;
-    old = old.replace(/\s/g,'');
-    newLink = newLink.replace(/\s/g,'');
-    old = removeProtocols(old);
-    newLink = removeProtocols(newLink);
-    sessionStorage.setItem(oldURLSessionKey, old);
-    sessionStorage.setItem(newURLSessionKey, newLink);
-    document.getElementById("urlSavedLbl").style.visibility = "visible";
-    searchForOldUrl(); // This will search for any old url reference once button is clicked
-    searchForNewUrl(); // This will search for any new url refernces once button is clicked
-    console.log('saved');
-  });
-
-  searchForOldUrl(); // Search for old url references on page
-  searchForNewUrl(); // Search for new url references on page
-
-  var nodes = getEditNodes();
-
-  nodes = nodes.map(function(id) {
-    return document.getElementById(id);
-  });
-
-  nodes.forEach(function(node) {
-    if (node) {
-      if (newUrl.length > 0) {
-        if (node.nodeName.toLowerCase() === 'input') {
-          node.value = updateUrl(node.value, oldUrl, newUrl);
-        } else if (node.nodeName.toLowerCase() === 'textarea') {
-          node.innerHTML = updateUrl(node.innerHTML, oldUrl, newUrl);
-        } else {
-          console.log('Error: Unhandled node type.', node.nodeName);
-        }
-
-      }
-    }
-  });
 })();
