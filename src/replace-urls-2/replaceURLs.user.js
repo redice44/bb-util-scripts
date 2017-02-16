@@ -23,15 +23,14 @@ function updateUrl(target, oldUrl, newUrl) {
     return target.replace(new RegExp(oldUrl, 'g'), newUrl);
 }
 
-// Searches area for old url
-function searchForOldUrl(){
-  var oldUrl = sessionStorage.getItem(oldURLSessionKey);
+function searchForOldUrl(){ // Searches area for old url
+  var oUrl = sessionStorage.getItem(oldURLSessionKey);
   console.log('checking for the url');
-  console.log(oldUrl);
-  if (oldUrl) {
+  console.log(oUrl);
+  if (oUrl) {
     var links = document.querySelectorAll('#content_listContainer a');
     var items = [];
-    var linkFlag = oldUrl;
+    var linkFlag = oUrl;
 
     for (var l of links) {
       if (l.href.includes(linkFlag)) {
@@ -49,8 +48,7 @@ function searchForOldUrl(){
   }// End of outter if statement loop
 } // End of function
 
-// Search for new URL
-function searchForNewUrl(){
+function searchForNewUrl(){ // Search for new URL
   var nUrl = sessionStorage.getItem(newURLSessionKey);
   console.log('checking for the url');
   console.log(nUrl);
@@ -184,5 +182,4 @@ function getEditNodes() {
         console.log('saved');
       });
   }
-
 })();
