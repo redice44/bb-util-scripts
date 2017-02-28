@@ -18,7 +18,7 @@
 var oldURLSessionKey = "oldUrlKey";
 var newURLSessionKey = "newUrlKey";
 var stateOfHighlightValidUrlKey = "highlightValidUrlKey";
-
+//New comment
 function updateUrl(target, oldUrl, newUrl) {
     return target.replace(new RegExp(oldUrl, 'g'), newUrl);
 }
