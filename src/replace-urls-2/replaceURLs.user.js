@@ -14,13 +14,33 @@
 // @match        https://fiu.blackboard.com/webapps/assignment/execute/manageAssignment?*
 // @grant        none
 // ==/UserScript==
-
+//var oldUrl = "fiuonline.mediasite.com";
+//var newUrl = "fiuolmediasite.fiu.edu";
 var oldURLSessionKey = "oldUrlKey";
 var newURLSessionKey = "newUrlKey";
 var stateOfHighlightValidUrlKey = "highlightValidUrlKey";
-//New comment
+
 function updateUrl(target, oldUrl, newUrl) {
     return target.replace(new RegExp(oldUrl, 'g'), newUrl);
+}
+
+function setToOpenNewTab(node){
+    var newTabProperty = 'target="_blank"';
+    var replaceString = '<a target="_blank"';
+    var links = [];
+    if(node.length > 0){
+        links = node.match(/<a(.*?)a>/ig);
+        if(links.length > -1){
+            for(var i = 0; i < links.length; i++){
+                if(links[i].includes(newTabProperty) === false){
+                    var updatedLink = links[i].replace(new RegExp('<a', 'g'), replaceString);
+                    node = node.replace(links[i], updatedLink);
+                    console.log('Append target to link: ', updatedLink);
+                }
+            }
+        }
+    }
+    return node;
 }
 
 function searchForOldUrl(){ // Searches area for old url
@@ -67,8 +87,7 @@ function searchForNewUrl(){ // Search for new URL
   }// End of outter if statement loop
 }
 
-// Validate Urls form saved session data
-function validateOldUrl(oUrl){
+function validateOldUrl(oUrl){ // Validate Urls form saved session data
   if (sessionStorage.getItem(oldURLSessionKey) === null || sessionStorage.getItem(oldURLSessionKey) === undefined) {
     oUrl = "";
     sessionStorage.setItem(oldURLSessionKey, oUrl);
@@ -76,18 +95,12 @@ function validateOldUrl(oUrl){
   return oUrl;
 }
 
-// Validate Urls form saved session data
-function validateNewUrl(nUrl){
+function validateNewUrl(nUrl){ // Validate Urls form saved session data
   if (sessionStorage.getItem(newURLSessionKey) === null) {
     nUrl = "";
     sessionStorage.setItem(newURLSessionKey, nUrl);
   }
   return nUrl;
-}
-
-function removeProtocols(url){
-    url = url.replace(/[https]+\:\/\/|www\./ig,'');
-    return url;
 }
 
 function getEditNodes() {
@@ -125,8 +138,6 @@ function getEditNodes() {
   var newUrl = sessionStorage.getItem(newURLSessionKey);
   oldUrl = validateOldUrl(oldUrl);
   newUrl = validateNewUrl(newUrl);
-  //var oldUrl = "fiuonline.mediasite.com";
-  //var newUrl = "fiuolmediasite.fiu.edu";
 
   var header = document.getElementById("pageTitleDiv"); // Grab the title div
   var currentPage = window.location.href; // Current page that was loaded
@@ -137,7 +148,6 @@ function getEditNodes() {
 
       if(newUrl) header.insertAdjacentHTML('beforeend', '<input id="newUrlValue" type="text" name="newURL" value=' + newUrl + ' readonly>');
       else header.insertAdjacentHTML('beforeend', '<input id="newUrlValue" type="text" name="newURL" placeholder="New URL" readonly>');
-      
       var nodes = getEditNodes();
       console.log(nodes);
 
@@ -149,9 +159,11 @@ function getEditNodes() {
         if (node) {
           if (newUrl.length > 0) {
             if (node.nodeName.toLowerCase() === 'input') {
-              node.value = updateUrl(node.value, oldUrl, newUrl);
+                node.value = updateUrl(node.value, oldUrl, newUrl);
+                node.value = setToOpenNewTab(node.value);
             } else if (node.nodeName.toLowerCase() === 'textarea') {
-              node.innerHTML = updateUrl(node.innerHTML, oldUrl, newUrl);
+                node.innerHTML = updateUrl(node.innerHTML, oldUrl, newUrl);
+                node.textContent = setToOpenNewTab(node.textContent);
             } else {
               console.log('Error: Unhandled node type.', node.nodeName);
             }
@@ -163,20 +175,16 @@ function getEditNodes() {
       header.insertAdjacentHTML('beforeend', '<input id="oldUrlValue" type="text" name="oldURL" placeholder="Old URL">');
       header.insertAdjacentHTML('beforeend', '<input id="newUrlValue" type="text" name="newURL" placeholder="New URL">');
       header.insertAdjacentHTML('beforeend', '<button id="save_settings" class="button-1" style="width: 120px; height: 30px; font-size: 14px; right 10px; padding: 0px; margin-right: 15px;">Search</button>');
-      // header.insertAdjacentHTML('beforeend', '<label id="urlSavedLbl" for="saved">Saved</label>');
-      // document.getElementById("urlSavedLbl").style.visibility = "hidden";
       if (oldUrl) document.getElementById("oldUrlValue").value = oldUrl;
       if (newUrl) document.getElementById("newUrlValue").value = newUrl;
+      
       document.getElementById("save_settings").addEventListener("click", function(){
         var old = document.getElementById("oldUrlValue").value;
         var newLink = document.getElementById("newUrlValue").value;
         old = old.replace(/\s/g,'');
         newLink = newLink.replace(/\s/g,'');
-        // old = removeProtocols(old);
-        // newLink = removeProtocols(newLink);
         sessionStorage.setItem(oldURLSessionKey, old);
         sessionStorage.setItem(newURLSessionKey, newLink);
-        // document.getElementById("urlSavedLbl").style.visibility = "visible";
         searchForOldUrl(); // This will search for any old url reference once button is clicked
         searchForNewUrl(); // This will search for any new url refernces once button is clicked
         console.log('saved');
