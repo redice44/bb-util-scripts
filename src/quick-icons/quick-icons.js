@@ -43,9 +43,12 @@ function ContentObject (config) {
   this.id = temp.id;
   this.title = temp.title;
   this.availability = temp.availability;
-  this.editLink = this.getActionLink(config.actionNode, actionLink.edit);
-  this.copyLink = this.getActionLink(config.actionNode, actionLink.copy);
-  this.moveLink = this.getActionLink(config.actionNode, actionLink.move);
+  // this.editLink = this.getActionLink(config.actionNode, actionLink.edit);
+  // this.copyLink = this.getActionLink(config.actionNode, actionLink.copy);
+  // this.moveLink = this.getActionLink(config.actionNode, actionLink.move);
+  this.editLink = this.getActionLink(config.actionNode, 'Edit');
+  this.copyLink = this.getActionLink(config.actionNode, 'Copy');
+  this.moveLink = this.getActionLink(config.actionNode, 'Move');
   this.deleteLink = this.getActionLink(config.actionNode, actionLink.delete);
   // this.nonce = document.querySelector('input[name="blackboard.platform.security.NonceUtil.nonce.ajax"]').value;
 
@@ -59,10 +62,13 @@ function ContentObject (config) {
 ContentObject.prototype.getActionLink = function (node, action) {
   var link = node.querySelector('ul');
   console.log('');
-  link = link.children[action];
-  link = link.querySelector('a').href;
-
-  return link;
+  // link = link.children[action];
+  link = link.querySelector('a[title="'+action+'"]');
+  if (link) {
+    return link.href;
+  } else {
+    return null;
+  }
 };
 
 ContentObject.prototype.addActionIcons = function () {
@@ -71,9 +77,18 @@ ContentObject.prototype.addActionIcons = function () {
   var moveIconSvg = 'PHN2ZyBmaWxsPSIjMDAwMDAwIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4NCiAgICA8cGF0aCBkPSJNMTAgOWg0VjZoM2wtNS01LTUgNWgzdjN6bS0xIDFINlY3bC01IDUgNSA1di0zaDN2LTR6bTE0IDJsLTUtNXYzaC0zdjRoM3YzbDUtNXptLTkgM2gtNHYzSDdsNSA1IDUtNWgtM3YtM3oiLz4NCiAgICA8cGF0aCBkPSJNMCAwaDI0djI0SDB6IiBmaWxsPSJub25lIi8+DQo8L3N2Zz4=';
   var deleteIconSvg = 'PHN2ZyBmaWxsPSIjMDAwMDAwIiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4NCiAgICA8cGF0aCBkPSJNNiAxOWMwIDEuMS45IDIgMiAyaDhjMS4xIDAgMi0uOSAyLTJWN0g2djEyek0xOSA0aC0zLjVsLTEtMWgtNWwtMSAxSDV2MmgxNFY0eiIvPg0KICAgIDxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiLz4NCjwvc3ZnPg==';
 
-  this.addActionIcon(this.editLink, editIconSvg);
-  this.addActionIcon(this.copyLink, copyIconSvg);
-  this.addActionIcon(this.moveLink, moveIconSvg);
+  if (this.editLink) {
+    this.addActionIcon(this.editLink, editIconSvg);
+  }
+
+  if (this.copyLink) {
+    this.addActionIcon(this.copyLink, copyIconSvg);
+  }
+
+  if (this.moveLink) {
+    this.addActionIcon(this.moveLink, moveIconSvg);
+  }
+
   this.addDeleteIcon(deleteIconSvg);
 };
 
