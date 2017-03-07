@@ -49,7 +49,7 @@ function ContentObject (config) {
   this.editLink = this.getActionLink(config.actionNode, 'Edit');
   this.copyLink = this.getActionLink(config.actionNode, 'Copy');
   this.moveLink = this.getActionLink(config.actionNode, 'Move');
-  this.deleteLink = this.getActionLink(config.actionNode, actionLink.delete);
+  this.deleteLink = this.getActionLink(config.actionNode, 'Delete');
   // this.nonce = document.querySelector('input[name="blackboard.platform.security.NonceUtil.nonce.ajax"]').value;
 
   this.dense = false;
