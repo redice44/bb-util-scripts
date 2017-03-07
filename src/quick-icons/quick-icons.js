@@ -58,6 +58,7 @@ function ContentObject (config) {
 
 ContentObject.prototype.getActionLink = function (node, action) {
   var link = node.querySelector('ul');
+  console.log('');
   link = link.children[action];
   link = link.querySelector('a').href;
 
@@ -84,6 +85,7 @@ ContentObject.prototype.addDeleteIcon = function (icon) {
   var linkNode = document.createElement('a');
   var iconNode = document.createElement('img');
 
+  linkNode.setAttribute('href', '');
   linkNode.addEventListener('click', this.deleteMe.bind(this));
 
   iconNode.setAttribute('src', `data:image/svg+xml;base64,${icon}`);
@@ -313,7 +315,7 @@ var contentObjectObserver = new MutationObserver(function (mutations) {
           actionNode: mutation.removedNodes[0],
           courseId: courseId
         };
-        // console.log(config);
+        console.log(config);
         contentObjects.push(new ContentObject(config));
       }
   });
