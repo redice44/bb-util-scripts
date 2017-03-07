@@ -144,9 +144,12 @@ function getEditNodes() {
       nodes = nodes.map(function(id) {
         return document.getElementById(id);
       });
+      console.log(nodes);
+
 
       nodes.forEach(function(node) {
         if (node) {
+        console.log(node);
           if (newUrl.length > 0) {
             if (node.nodeName.toLowerCase() === 'input') {
               node.value = updateUrl(node.value, oldUrl, newUrl);
