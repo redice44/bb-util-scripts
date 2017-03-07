@@ -64,6 +64,7 @@ ContentObject.prototype.getActionLink = function (node, action) {
   console.log('');
   // link = link.children[action];
   link = link.querySelector('a[title="'+action+'"]');
+  console.log(link);
   if (link) {
     return link.href;
   } else {
@@ -108,7 +109,8 @@ ContentObject.prototype.addDeleteIcon = function (icon) {
   parent.appendChild(linkNode);
 };
 
-ContentObject.prototype.deleteMe = function () {
+ContentObject.prototype.deleteMe = function (e) {
+  e.preventDefault();
   var link = this.deleteLink.substr(40);
   link = link.split(',');
   var title = link[1];
