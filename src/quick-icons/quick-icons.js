@@ -345,7 +345,9 @@ function toggleAll (e) {
   // TODO: Use constants for state
   e.target.innerText = denseAllState ? 'Expand' : 'Collapse';
   contentObjects.forEach(function (item) {
-    item.setDense(denseAllState);
+    if (document.getElementById(item.domId)) {
+      item.setDense(denseAllState);
+    }
   });
 };
 
