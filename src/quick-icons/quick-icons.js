@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         Quick Icons
+// @name         DEV Quick Icons
 // @namespace    https://github.com/redice44
 // @supportURL   https://github.com/redice44/bb-util-scripts/issues
 // @version      0.1.0
@@ -26,13 +26,6 @@ var ACTIONS = '__bbqol__actions';
 var denseAllState = false;
 var request = superagent;
 
-// Indexes of each action in the action node
-var actionLink = {
-  edit: 1,
-  copy: 2,
-  move: 3,
-  delete: 4
-};
 
 var nonceQuery = 'input[name="blackboard.platform.security.NonceUtil.nonce.ajax"]';
 
@@ -43,14 +36,14 @@ function ContentObject (config) {
   this.id = temp.id;
   this.title = temp.title;
   this.availability = temp.availability;
-  // this.editLink = this.getActionLink(config.actionNode, actionLink.edit);
-  // this.copyLink = this.getActionLink(config.actionNode, actionLink.copy);
-  // this.moveLink = this.getActionLink(config.actionNode, actionLink.move);
   this.editLink = this.getActionLink(config.actionNode, 'Edit');
+  if (!this.editLink) {
+    // This is for assessments
+    this.editLink = this.getActionLink(config.actionNode, 'Edit the Test Options');
+  }
   this.copyLink = this.getActionLink(config.actionNode, 'Copy');
   this.moveLink = this.getActionLink(config.actionNode, 'Move');
   this.deleteLink = this.getActionLink(config.actionNode, 'Delete');
-  // this.nonce = document.querySelector('input[name="blackboard.platform.security.NonceUtil.nonce.ajax"]').value;
 
   this.dense = false;
   this.toggleDense = this.toggleDense.bind(this);
