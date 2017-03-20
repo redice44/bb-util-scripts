@@ -1,0 +1,33 @@
+{
+  "name": "bb-util-scripts",
+  "version": "0.1.0",
+  "description": "Blackboard Quality of Life Suite",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "build": "webpack --config webpack.config.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/redice44/bb-util-scripts.git"
+  },
+  "authors": [
+    "Matt Thomson<red.cataclysm@gmail.com>",
+    "Emmanuel Franco",
+    "Daniel Victoriano"
+  ],
+  "license": "",
+  "bugs": {
+    "url": "https://github.com/redice44/bb-util-scripts/issues"
+  },
+  "homepage": "https://github.com/redice44/bb-util-scripts#readme",
+  "devDependencies": {
+    "webpack": "^2.2.1"
+  },
+  "dependencies": {
+    "lodash.foreach": "^4.5.0"
+  }
+}
