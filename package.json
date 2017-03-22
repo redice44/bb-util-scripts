@@ -28,6 +28,7 @@
     "webpack": "^2.2.1"
   },
   "dependencies": {
-    "lodash.foreach": "^4.5.0"
+    "lodash.foreach": "^4.5.0",
+    "superagent": "^3.5.1"
   }
 }
