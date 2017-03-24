@@ -1,12 +1,12 @@
 var linkNewWindowPlugin = {
   parser: function (item, page) {
     var links = item.querySelectorAll('a');
-    var currentItemTitle = item.querySelector('div.item > h3').innerText;
+    var myId = item.id.split(':')[1];
 
     if (links) {
       // Find the item
       var currentItem = page.items.find(function(i) {
-        return i.title === currentItemTitle;
+        return i.contentId === myId;
       });
 
       currentItem.newWindow = [];
