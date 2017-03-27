@@ -79,13 +79,13 @@ BlackboardInterface.prototype.getPage = function (page) {
             items.forEach(function (item) {
               var contentId = that.getContentId(item);
               if (that.isPage(item)) {
-                page.addItem(new Page(page.courseId, contentId));
+                page.addItem(new Page(page.courseId, contentId, item));
               } else {
-                page.addItem(new Item(page.courseId, contentId));
+                page.addItem(new Item(page.courseId, contentId, item));
               }
             });
           }
-          
+
           resolve(page);
         }
       });

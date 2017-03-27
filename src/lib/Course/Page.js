@@ -1,7 +1,7 @@
 import Item from 'Course/Item';
 
-function Page (course, id) {
-  Item.call(this, course, id);
+function Page (course, id, dom) {
+  Item.call(this, course, id, dom);
   this.items = [];
 }
 

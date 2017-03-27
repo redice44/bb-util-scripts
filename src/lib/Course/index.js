@@ -9,7 +9,7 @@ function Course (id, LMSinterface) {
 /**
   Scans all top level pages
 */
-Course.prototype.scan = function () {
+Course.prototype.getCourse = function () {
   // get course dom
   var that = this;
   var menuLinks = this.LMSinterface.getTopLevel(this.id);
@@ -37,6 +37,9 @@ Course.prototype.scanPage = function (page) {
       console.log(p);
       // iterate over the items that are pages
       p.items.forEach(function (item) {
+        this.plugins.forEach(function (plugin) {
+
+        });
         if (item instanceof Page) {
           // console.log('page');
           this.scanPage(item);
@@ -48,6 +51,14 @@ Course.prototype.scanPage = function (page) {
     .catch(function (err) {
       console.log(err);
     });
+};
+
+Course.prototype.run = function (plugin) {
+  this.root.forEach(function (topPage) {
+    topPage.items.forEach(function (item) {
+      item.addResult(plugin.parse(item.getDom()));
+    });
+  });
 };
 
 export default Course;
