@@ -1,18 +1,21 @@
+import request from 'superagent';
+
 import DOMInterface from 'dom';
 import Page from 'Course/Page';
 import Item from 'Course/Item';
 import getParameters from 'Utility/getParameters';
 
-var ids = {
-  courseMenu: 'courseMenuPalette_contents'
-}
-
-var endpoints = {
-  contentFolder: '/webapps/blackboard/content/listContentEditable.jsp?'
-}
-
-function BlackboardInterface() {
+function BlackboardInterface(domain) {
   DOMInterface.call(this);
+  this.domain = domain;
+  this.ids = {
+    courseMenu: 'courseMenuPalette_contents',
+    contentItems: 'content_listContainer'
+  };
+  this.endpoints = {
+    courseLauncher: '/webapps/blackboard/execute/launcher?',
+    contentFolder: '/webapps/blackboard/content/listContentEditable.jsp?'
+  };
 }
 
 // Inherit DOMInterface
@@ -24,6 +27,16 @@ BlackboardInterface.prototype.constructor = BlackboardInterface;
   @return {DOM Node} - DOM of the course's main page.
 */
 BlackboardInterface.prototype.getCourse = function (id) {
+  var that = this;
+  request
+    .get(`${domain}${this.endpoints.courseLauncher}type=Course&id=${id}&url=`)
+    .end(function (err, res) {
+      var parser = new DOMParser();
+      var doc = parser.parseFromString(res.text, "text/html");
+      var items = that.getChildren(that.getId(doc, that.ids.contentItems), 'li.liItem');
+      console.log(items);
+      // dump dom into 'return'
+    });
   // request page
   // parse doc
   // return doc
@@ -37,9 +50,9 @@ BlackboardInterface.prototype.getTopLevel = function (id) {
   var doc = this.getCourse(id);
   this.updateDoc(doc);
   var menuItems = this
-    .getChildren(this.getId(ids.courseMenu), 'li.clearfix > a')
+    .getChildren(this.getId(this.ids.courseMenu), 'li.clearfix > a')
     .filter(function (link) {
-      return link.href.includes(endpoints.contentFolder);
+      return link.href.includes(this.endpoints.contentFolder);
     });
 
   menuItems = menuItems.map(function (item) {
@@ -67,3 +80,5 @@ BlackboardInterface.prototype.getPage = function (page) {
 BlackboardInterface.prototype.isPage = function (item) {
   // validation
 };
+
+export default BlackboardInterface;

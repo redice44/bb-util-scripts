@@ -4,14 +4,14 @@ function DOMInterface () {
 
 DOMInterface.prototype.updateDoc = function (doc) {
   this.doc = doc;
-};
+}
 
 /**
   @param id: ID of the DOM node to return.
   @return: DOM node.
 */
-DOMInterface.prototype.getId = function (id) {
-  return this.doc.getElementById(id);
+DOMInterface.prototype.getId = function (dom, id) {
+  return dom.getElementById(id);
 };
 
 /**
@@ -57,3 +57,5 @@ function toArray(arrayCollection) {
 
   return foo;
 }
+
+export default DOMInterface;

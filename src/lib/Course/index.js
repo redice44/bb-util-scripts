@@ -1,7 +1,7 @@
-function Course (id, interface) {
+function Course (id, LMSinterface) {
   this.id = id;
   this.root = null;
-  this.interface = interface;
+  this.LMSinterface = LMSinterface;
 }
 
 /**
@@ -9,10 +9,11 @@ function Course (id, interface) {
 */
 Course.prototype.scan = function () {
   // get course dom
-  this.root = this.interface.getTopLevel(this.id);
-  this.root.forEach(function (page) {
-    this.scanPage(page);
-  });
+  this.LMSinterface.getCourse(this.id);
+  // this.root = this.LMSinterface.getTopLevel(this.id);
+  // this.root.forEach(function (page) {
+  //   this.scanPage(page);
+  // });
 };
 
 /**
