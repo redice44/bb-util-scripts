@@ -1,13 +1,17 @@
 function DOMInterface () {
-
+  this.doc = null;
 }
+
+DOMInterface.prototype.updateDoc = function (doc) {
+  this.doc = doc;
+};
 
 /**
   @param id: ID of the DOM node to return.
   @return: DOM node.
 */
 DOMInterface.prototype.getId = function (id) {
-  return document.getElementById(id);
+  return this.doc.getElementById(id);
 };
 
 /**
@@ -35,11 +39,19 @@ DOMInterface.prototype.getChild = function (dom, i, q) {
   return this.getChildren(dom, q)[i];
 };
 
+DOMInterface.prototype.getUrl = function (link) {
+  return link.href;
+};
+
+/*
+ * Helpers
+*/
+
 function toArray(arrayCollection) {
   var foo = [];
-  var i=0;
+  var i = 0;
 
-  for (; i<arrayCollection.length; i++) {
+  for (; i < arrayCollection.length; i++) {
     foo.push(arrayCollection[i]);
   }
 
