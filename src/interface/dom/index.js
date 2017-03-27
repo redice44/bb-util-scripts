@@ -11,6 +11,9 @@ DOMInterface.prototype.updateDoc = function (doc) {
   @return: DOM node.
 */
 DOMInterface.prototype.getId = function (dom, id) {
+  if (!dom) {
+    return null;
+  }
   return dom.getElementById(id);
 };
 
@@ -20,6 +23,9 @@ DOMInterface.prototype.getId = function (dom, id) {
   @return: Array of DOM nodes
 */
 DOMInterface.prototype.getChildren = function (dom, q) {
+  if (!dom) {
+    return null;
+  }
   if (q) {
     return toArray(dom.querySelectorAll(q));
   } else {
@@ -33,14 +39,26 @@ DOMInterface.prototype.getChildren = function (dom, q) {
   @param q: (Optional) query string. 
   @return: DOM node
 */
-DOMInterface.prototype.getChild = function (dom, i, q) {
+DOMInterface.prototype.getChild = function (dom, q, i) {
+  if (!dom) {
+    return null;
+  }
+
   i = i || 0;
 
-  return this.getChildren(dom, q)[i];
+  var children = this.getChildren(dom, q);
+
+  if (i === 0 && (!children || children.length === 0)) {
+    return null;
+  }
+  return children[i];
 };
 
 DOMInterface.prototype.getUrl = function (link) {
-  return link.href;
+  if (link) {
+    return link.getAttribute('href');
+  }
+  return null;
 };
 
 /*
