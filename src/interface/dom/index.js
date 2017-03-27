@@ -1,10 +1,26 @@
 function DOMInterface () {
-  this.doc = null;
 }
 
-DOMInterface.prototype.updateDoc = function (doc) {
-  this.doc = doc;
-}
+DOMInterface.prototype.makeNode = function (tag, options) {
+  var parent = document.createElement(tag);
+  if (options.text) {
+    parent.appendChild(document.createTextNode(options.text));
+  }
+  if (options.attributes) {
+    for (var attr in options.attributes) {
+      parent.setAttribute(attr, options.attributes[attr]);
+    }
+  }
+  // probably handle classes
+  return parent;
+  /*
+    option {
+      text: 'make text node',
+      attributes: {key:value}
+
+    }
+  */
+};
 
 /**
   @param id: ID of the DOM node to return.
