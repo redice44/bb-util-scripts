@@ -1,4 +1,5 @@
-function Item (id) {
+function Item (course, id) {
+  this.courseId = course;
   this.id = id;
 }
 

@@ -1,7 +1,7 @@
 import Item from 'Course/Item';
 
-function Page (id) {
-  Item.call(this, id);
+function Page (course, id) {
+  Item.call(this, course, id);
   this.items = [];
 }
 
@@ -15,3 +15,5 @@ Page.prototype.constructor = Page;
 Page.prototype.addItem = function (item) {
   this.items.push(item);
 };
+
+export default Page;
