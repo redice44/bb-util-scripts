@@ -1,9 +1,10 @@
 import Page from 'Course/Page';
 
-function Course (id, LMSinterface) {
+function Course (id, LMSinterface, plugins) {
   this.id = id;
   this.root = null;
   this.LMSinterface = LMSinterface;
+  this.plugins = plugins;
 }
 
 /**
@@ -37,8 +38,9 @@ Course.prototype.scanPage = function (page) {
       console.log(p);
       // iterate over the items that are pages
       p.items.forEach(function (item) {
+        // Run all plugins
         this.plugins.forEach(function (plugin) {
-
+          item.addResult(plugin.parse(item.getDom()));
         });
         if (item instanceof Page) {
           // console.log('page');
