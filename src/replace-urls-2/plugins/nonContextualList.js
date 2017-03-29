@@ -11,7 +11,7 @@ var nonContextualList = {
       "http",
       "https",
       "www",
-      "/"
+      "/",
     ];
 
     return list;
