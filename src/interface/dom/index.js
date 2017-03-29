@@ -1,26 +1,106 @@
 function DOMInterface () {
 }
 
-DOMInterface.prototype.makeNode = function (tag, options) {
-  var parent = document.createElement(tag);
-  if (options.text) {
-    parent.appendChild(document.createTextNode(options.text));
-  }
-  if (options.attributes) {
-    for (var attr in options.attributes) {
-      parent.setAttribute(attr, options.attributes[attr]);
+DOMInterface.prototype.makeNode = function (emmetString) {
+  var ops = {
+    '>': 1,
+    '+': 2,
+    //'^',
+    //'*'
+  };
+  
+  var tokens = tokenize(emmetString);
+  console.log(tokens);
+  var opStack = [];
+  var nodeStack = [];
+  var dom = null;
+  while (tokens.length > 0) {
+    var t = tokens.shift();
+    // console.log(tokens);
+    var isOp = null;
+    var op;
+    for (op in ops) {
+      if (t === op) {
+        isOp = t;
+      }
     }
-  }
-  // probably handle classes
-  return parent;
-  /*
-    option {
-      text: 'make text node',
-      attributes: {key:value}
+    if (isOp) {
+      // Opperator
+      // Peek to see if you can add to op stack
+      if (opStack.length > 0) {
+        // console.log(ops[opStack[opStack.length - 1]], ops[isOp])
+        if (ops[opStack[opStack.length - 1]] <= ops[isOp]) {
+          opStack.push(isOp);
+          console.log(`Adding ${isOp} to opStack`);
+        } else {
+          // evaluate
+          nodeStack.push(this.evaluateNodeStack(opStack, nodeStack));
+          opStack.push(isOp)
+          console.log(`Adding ${isOp} to opStack`);
+          console.log(`Adding ${nodeStack[nodeStack.length - 1]} to nodeStack`);
+        }
+      } else {
+        opStack.push(isOp);
+        console.log(`Adding ${isOp} to opStack`);
+      }
+    } else {
+      // Node
+      var node = t.split('#');
+      var id = null;
+      var classes = [];
+      if (node.length > 1) {
+        classes = node[1].split('.');
+        id = classes[0];
+        classes.shift();
+        node = node[0];
+      } else {
+        classes = node[0].split('.');
+        node = classes[0];
+        classes.shift();
+      }
 
+      // generate node with ID and classes
+      // add to node stack
+      nodeStack.push(document.createElement(node));
+      console.log(`adding ${nodeStack[nodeStack.length - 1]} to nodeStack`);
     }
-  */
+  }
+
+  return this.evaluateNodeStack(opStack, nodeStack);
 };
+
+DOMInterface.prototype.evaluateNodeStack = function (opStack, nodeStack) {
+  // console.log(opStack, nodeStack);
+  console.log('Evaluating stack');
+  var n1;
+  var n2;
+  var op;
+  while (opStack.length > 0) {
+    n1 = nodeStack.pop();
+    op = opStack.pop();
+    n2 = nodeStack.pop();
+    switch (op) {
+      case '>':
+        n2.appendChild(n1);
+        nodeStack.push(n2);
+        break;
+      case '+':
+        break;
+      case '^':
+        break;
+      case '*':
+        break;
+      default: 
+    }
+  }
+
+  return nodeStack.pop();
+};
+
+function tokenize (emmetString) {
+  // Handle text spaces later
+  return emmetString.split(' ');
+}
 
 /**
   @param id: ID of the DOM node to return.
