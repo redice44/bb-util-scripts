@@ -13,11 +13,11 @@
 // @match        https://fiu.blackboard.com/webapps/assessment/do/authoring/modifyAssessment*
 // @match        https://fiu.blackboard.com/webapps/assignment/execute/manageAssignment?*
 // @match        http://cpbucket.fiu.edu/*
-// @require      file:///Users/emmanuelfranco/Desktop/newTabPlugin.js
-// @require      file:///Users/emmanuelfranco/Desktop/nonContextualPlugin.js
-// @require      file:///Users/emmanuelfranco/Desktop/nonContextualList.js
-// @require      file:///Users/emmanuelfranco/Desktop/brokenLinkPlugin.js
-// @require      file:///Users/emmanuelfranco/Desktop/svgGeneratorPlugin.js
+// @require      https://github.com/redice44/bb-util-scripts/tree/check-new-tab-plugin/src/replace-urls-2/plugins/newTabPlugin.js
+// @require      https://github.com/redice44/bb-util-scripts/tree/check-new-tab-plugin/src/replace-urls-2/plugins/nonContextualPlugin.js
+// @require      https://github.com/redice44/bb-util-scripts/tree/check-new-tab-plugin/src/replace-urls-2/plugins/nonContextualList.js
+// @require      https://github.com/redice44/bb-util-scripts/tree/check-new-tab-plugin/src/replace-urls-2/plugins/brokenLinkPlugin.js
+// @require      https://github.com/redice44/bb-util-scripts/tree/check-new-tab-plugin/src/replace-urls-2/plugins/svgGeneratorPlugin.js
 // @grant        none
 // ==/UserScript==
 
