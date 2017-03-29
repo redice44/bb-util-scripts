@@ -1,6 +1,10 @@
 function DOMInterface () {
 }
 
+DOMInterface.prototype.setAttr = function (attributes) {
+
+};
+
 DOMInterface.prototype.makeNode = function (emmetString) {
   var ops = {
     '>': 1,
@@ -29,14 +33,14 @@ DOMInterface.prototype.makeNode = function (emmetString) {
       // Peek to see if you can add to op stack
       if (opStack.length > 0) {
         // console.log(ops[opStack[opStack.length - 1]], ops[isOp])
-        if (ops[opStack[opStack.length - 1]] <= ops[isOp]) {
+        if (ops[opStack[opStack.length - 1]] > ops[isOp]) {
           opStack.push(isOp);
           console.log(`Adding ${isOp} to opStack`);
         } else {
           // evaluate
           nodeStack.push(this.evaluateNodeStack(opStack, nodeStack));
           opStack.push(isOp)
-          console.log(`Adding ${isOp} to opStack`);
+          console.log(`Adding ${isOp} to opStack post eval`);
           console.log(`Adding ${nodeStack[nodeStack.length - 1]} to nodeStack`);
         }
       } else {
@@ -85,6 +89,12 @@ DOMInterface.prototype.evaluateNodeStack = function (opStack, nodeStack) {
         nodeStack.push(n2);
         break;
       case '+':
+        var lastChild = n2;
+        while (lastChild.children.length > 0) {
+          lastChild = lastChild.children[lastChild.children.length - 1];
+        }
+        lastChild.parentElement.appendChild(n1);
+        nodeStack.push(n2);
         break;
       case '^':
         break;
