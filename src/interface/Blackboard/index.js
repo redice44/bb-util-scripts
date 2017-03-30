@@ -1,13 +1,12 @@
 import request from 'superagent';
 
-import DOMInterface from 'dom';
+import LMSInterface from 'LMSInterface';
 import Page from 'Course/Page';
 import Item from 'Course/Item';
 import getParameters from 'Utility/getParameters';
 
 function BlackboardInterface(domain) {
-  DOMInterface.call(this);
-  this.domain = domain;
+  LMSInterface.call(this, domain);
   this.ids = {
     courseMenu: 'courseMenuPalette_contents',
     contentItems: 'content_listContainer'
@@ -25,15 +24,15 @@ function BlackboardInterface(domain) {
   };
 }
 
-// Inherit DOMInterface
-BlackboardInterface.prototype = Object.create(DOMInterface.prototype);
+// Inherit LMSInterface
+BlackboardInterface.prototype = Object.create(LMSInterface.prototype);
 BlackboardInterface.prototype.constructor = BlackboardInterface;
 
-/**  
-  @param {string} id - Course Id
-  @return {Promise} On resolve: Page[]
+/**
+  @param {String} courseId - The ID of the course.
+  @return {Promise.<Page[]>} - Array of Pages that are at the top level of the course.
 */
-BlackboardInterface.prototype.getTopLevel = function (id) {
+BlackboardInterface.prototype.getMainPage = function (id) {
   var that = this;
   return new Promise(function (resolve, reject) {
     request
@@ -60,8 +59,8 @@ BlackboardInterface.prototype.getTopLevel = function (id) {
 };
 
 /**
-  @param {Page} page - Page to parse
-  @return: {Page} Contains items on page (shallow)
+  @param {Page} page - Page to get content for.
+  @return {Promise.<Item[]>} - Array of Items found on the page.
 */
 BlackboardInterface.prototype.getPage = function (page) {
   var that = this;
@@ -92,6 +91,10 @@ BlackboardInterface.prototype.getPage = function (page) {
   });
 };
 
+/**
+  @param {Item} item - Item in which to find the content ID for.
+  @return {String} - Item's content ID.
+*/
 BlackboardInterface.prototype.getContentId = function (item) {
   return this.getChild(item, 'div.item').getAttribute('id');
 };

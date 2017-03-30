@@ -13,11 +13,10 @@ function Course (id, LMSinterface, plugins) {
 Course.prototype.getCourse = function () {
   // get course dom
   var that = this;
-  var menuLinks = this.LMSinterface.getTopLevel(this.id);
+  var menuLinks = this.LMSinterface.getMainPage(this.id);
   menuLinks
     .then(function (pages) {
-      console.log('pages:');
-      console.log(pages);
+
       pages.forEach(function (page) {
         this.scanPage(page);
       }, that);
@@ -43,10 +42,10 @@ Course.prototype.scanPage = function (page) {
           item.addResult(plugin.parse(item.getDom()));
         });
         if (item instanceof Page) {
-          // console.log('page');
+          // Page
           this.scanPage(item);
         } else {
-          // console.log('item');
+          // Item
         }
       }, that);
     })
