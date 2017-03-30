@@ -164,7 +164,7 @@ DOMInterface.prototype.chainDom = function (dom, updateActiveDom) {
 
 /**
   Builds an SVG DOM Node from an Emmet styled string. See https://emmet.io/ for more details.
-  Only supports > and + currently.
+  Only supports >, +, and * currently.
 
   @param {String} emmetString - Emmet styled string.
 
@@ -178,7 +178,7 @@ DOMInterface.prototype.makeSvg = function (emmetString) {
 
 /**
   Builds a DOM Node from an Emmet styled string. See https://emmet.io/ for more details.
-  Only supports > and + currently.
+  Only supports >, +, and * currently.
 
   @param {String} emmetString - Emmet styled string.
 
@@ -202,7 +202,7 @@ DOMInterface.prototype.__makeNode__ = function (emmetString, create) {
     '>': 1,
     '+': 2,
     //'^',
-    //'*'
+    '*': 0
   };
   
   var tokens = tokenize(emmetString);
@@ -212,7 +212,7 @@ DOMInterface.prototype.__makeNode__ = function (emmetString, create) {
   var dom = null;
   while (tokens.length > 0) {
     var t = tokens.shift();
-    // console.log(tokens);
+    console.log(`token: ${t}`);
     var isOp = null;
     var op;
     for (op in ops) {
@@ -220,11 +220,22 @@ DOMInterface.prototype.__makeNode__ = function (emmetString, create) {
         isOp = t;
       }
     }
+    // Opperator
     if (isOp) {
-      // Opperator
-      // Peek to see if you can add to op stack
       if (opStack.length > 0) {
-        if (ops[opStack[opStack.length - 1]] > ops[isOp]) {
+        if (isOp === '*') {
+          // Is multiplication op
+          console.log('Multiplying');
+          var count = parseInt(tokens.shift());
+          var nodes = [];
+          var temp = nodeStack.pop();
+          var i;
+          for (i = 0; i < count; i++) {
+            nodes.push(temp.cloneNode(true));
+          }
+          nodeStack.push(nodes);
+        } else if (ops[opStack[opStack.length - 1]] >= ops[isOp]) {
+          // Peek to see if you can add to op stack
           opStack.push(isOp);
           console.log(`Adding ${isOp} to opStack`);
         } else {
@@ -292,7 +303,21 @@ DOMInterface.prototype.__evaluateNodeStack__ = function (opStack, nodeStack) {
     n2 = nodeStack.pop();
     switch (op) {
       case '>':
-        n2.appendChild(n1);
+        if (n2 instanceof Array) {
+          console.log('n2 is array', n1, n2);
+          n2 = n2.map(function (item) {
+            item.appendChild(n1);
+            return item.cloneNode(true);
+          });
+        } else if (n1 instanceof Array) {
+          console.log('n1 is array', n1, n2);
+          n1.forEach(function (item) {
+            n2.appendChild(item);
+          });
+        } else {
+          console.log('neither are arrays', n1, n2);
+          n2.appendChild(n1);
+        }
         nodeStack.push(n2);
         break;
       case '+':
