@@ -1,22 +1,202 @@
 function DOMInterface () {
+  this.__activeDom__ = null;
 }
-
-DOMInterface.prototype.setAttr = function (attributes) {
-
+/**
+  @param {DOM Node} dom - The DOM Node to set as the active DOM Node for applicable functions.
+*/
+DOMInterface.prototype.setActiveDom = function (dom) {
+  this.__activeDom__ = dom;
 };
 
+/**
+  Sets the active DOM Node to null.
+*/
+DOMInterface.prototype.clearActiveDom = function () {
+  this.__activeDom__ = null;
+};
+
+
+/**********************************
+  Set of Mutatable DOM functions
+**********************************/
+
+
+/**
+  Sets a set of attributes to the DOM Node.
+  Part of the set of Mutatable DOM functions.
+
+  @param {Object} attributes - The set of attributes to apply to the DOM Node.
+  @param {DOM Node} dom - (Optional) The DOM Node to apply the attributes to.
+  @param {boolean} updateActiveDom - (Optional) If this dom should update the active DOM Node.
+
+  @return {DOM Node} - DOM Node with the new attributes. 
+*/
+DOMInterface.prototype.setAttr = function (attributes, dom, updateActiveDom) {
+  var attr;
+  var domNode = this.chainDom(dom, updateActiveDom);
+
+  if (!domNode) {
+    return null;
+  }
+
+  for (attr in attributes) {
+    domNode.setAttribute(attr, attributes[attr]);
+  }
+
+  return domNode;
+};
+
+/**
+  Adds the classes to the DOM Node.
+  Part of the set of Mutatable DOM functions.
+
+  @param {String[]} classes - Array of CSS classes to apply to the dom.
+  @param {DOM Node} dom - (Optional) The DOM Node to apply the attributes to.
+  @param {boolean} updateActiveDom - (Optional) If this dom should update the active DOM Node.
+
+  @return {DOM Node} - DOM Node with the new attributes. 
+*/
+DOMInterface.prototype.addClasses = function (classes, dom, updateActiveDom) {
+  var domNode = this.chainDom(dom, updateActiveDom);
+
+  if (!domNode) {
+    return null;
+  }
+
+  classes.forEach(function (c) {
+    domNode.classList.add(c);
+  });
+
+  return domNode;
+};
+
+/**
+  Gets the DOM Node with the id.
+  Part of the set of Mutatable DOM functions.
+
+  @param {String} id - ID of the DOM Node to return.
+  @param {DOM Node} dom - (Optional) The DOM Node to apply the attributes to.
+  @param {boolean} updateActiveDom - (Optional) If this dom should update the active DOM Node.
+
+  @return {DOM Node}
+*/
+DOMInterface.prototype.getId = function (id, dom, updateActiveDom) {
+  var domNode = this.chainDom(dom, updateActiveDom);
+
+  if (!domNode) {
+    return null;
+  }
+
+  return domNode.getElementById(id);
+};
+
+/**
+  Gets the children of the DOM Node.
+  Part of the set of Mutatable DOM functions.
+
+  @param {String} q - (Optional) Query string. If not provided, then all children are returned.
+  @param {DOM Node} dom - (Optional) The DOM Node to apply the attributes to.
+  @param {boolean} updateActiveDom - (Optional) If this dom should update the active DOM Node.
+
+  @return: {DOM Node[]}
+*/
+DOMInterface.prototype.getChildren = function (q, dom, updateActiveDom) {
+  var domNode = this.chainDom(dom, updateActiveDom);
+
+  if (!domNode) {
+    return null;
+  }
+
+  if (q) {
+    return toArray(domNode.querySelectorAll(q));
+  } else {
+    return toArray(domNode.children);
+  }
+};
+
+/**
+  Gets a child of the DOM Node.
+  Part of the set of Mutatable DOM functions.
+
+  @param {String} q - (Optional) Query string. If not provided, then all children are returned.
+  @param {Int} i - (Optional) index of the child. If not provided, then first child is returned.
+  @param {DOM Node} dom - (Optional) The DOM Node to apply the attributes to.
+  @param {boolean} updateActiveDom - (Optional) If this dom should update the active DOM Node.
+  @return: DOM node
+*/
+DOMInterface.prototype.getChild = function (q, i, dom, updateActiveDom) {
+  var children;
+  var index;
+  var domNode = this.chainDom(dom, updateActiveDom);
+  if (!domNode) {
+    return null;
+  }
+
+  index = i || 0;
+  children = this.getChildren(q, domNode);
+
+  if (index === 0 && (!children || children.length === 0)) {
+    return null;
+  }
+  return children[index];
+};
+
+/**
+  @private
+  Private helper for the Mutatable DOM functions.
+
+  @param {DOM Node} dom - Passed DOM Node to use.
+  @param {boolean} updateActiveDom - If this dom should update the active DOM Node.
+*/
+DOMInterface.prototype.chainDom = function (dom, updateActiveDom) {
+  if (updateActiveDom) {
+    this.setActiveDom(dom);
+  }
+
+  return dom || this.__activeDom__;
+};
+
+
+/*********************************
+  Set of DOM Creation functions
+*********************************/
+
+
+/**
+  Builds an SVG DOM Node from an Emmet styled string. See https://emmet.io/ for more details.
+  Only supports > and + currently.
+
+  @param {String} emmetString - Emmet styled string.
+
+  @return {DOM Node}
+*/
 DOMInterface.prototype.makeSvg = function (emmetString) {
-  this.__makeNode__(emmetString, function (node) {
+  return this.__makeNode__(emmetString, function (node) {
     return document.createElementNS("http://www.w3.org/2000/svg", node);
   });
 };
 
+/**
+  Builds a DOM Node from an Emmet styled string. See https://emmet.io/ for more details.
+  Only supports > and + currently.
+
+  @param {String} emmetString - Emmet styled string.
+
+  @return {DOM Node}
+*/
 DOMInterface.prototype.makeNode = function (emmetString) {
-  this.__makeNode__(emmetString, function (node) {
+  return this.__makeNode__(emmetString, function (node) {
     return document.createElement(node);
   });
 };
 
+/**
+  @private
+  Private helper to make DOM Nodes.
+
+  @param {String} emmetString - Emmet styled string.
+  @param {function} create - Function to return a DOM Node
+*/
 DOMInterface.prototype.__makeNode__ = function (emmetString, create) {
   var ops = {
     '>': 1,
@@ -44,14 +224,13 @@ DOMInterface.prototype.__makeNode__ = function (emmetString, create) {
       // Opperator
       // Peek to see if you can add to op stack
       if (opStack.length > 0) {
-        // console.log(ops[opStack[opStack.length - 1]], ops[isOp])
         if (ops[opStack[opStack.length - 1]] > ops[isOp]) {
           opStack.push(isOp);
           console.log(`Adding ${isOp} to opStack`);
         } else {
           // evaluate
-          nodeStack.push(this.evaluateNodeStack(opStack, nodeStack));
-          opStack.push(isOp)
+          nodeStack.push(this.__evaluateNodeStack__(opStack, nodeStack));
+          opStack.push(isOp);
           console.log(`Adding ${isOp} to opStack post eval`);
           console.log(`Adding ${nodeStack[nodeStack.length - 1]} to nodeStack`);
         }
@@ -77,16 +256,32 @@ DOMInterface.prototype.__makeNode__ = function (emmetString, create) {
 
       // generate node with ID and classes
       // add to node stack
-      nodeStack.push(create(node));
+      this.setActiveDom(create(node));
+      if (id) {
+        this.setAttr({"id": id});
+      }
+      if (classes.length > 0) {
+        this.addClasses(classes);
+      }
+      nodeStack.push(this.__activeDom__.cloneNode(true));
+      this.clearActiveDom();
       console.log(`adding ${nodeStack[nodeStack.length - 1]} to nodeStack`);
     }
   }
 
-  return this.evaluateNodeStack(opStack, nodeStack);
+  return this.__evaluateNodeStack__(opStack, nodeStack);
 };
 
-DOMInterface.prototype.evaluateNodeStack = function (opStack, nodeStack) {
-  // console.log(opStack, nodeStack);
+/**
+  @private
+  Private helper to join DOM Nodes
+
+  @param {String[]} opStack - Stack of opperators
+  @param {DOM Node[]} nodeStack - Stack of DOM Nodes
+
+  @return {DOM Node} - The resulting DOM Node after evaluating the stacks.
+*/
+DOMInterface.prototype.__evaluateNodeStack__ = function (opStack, nodeStack) {
   console.log('Evaluating stack');
   var n1;
   var n2;
@@ -119,58 +314,11 @@ DOMInterface.prototype.evaluateNodeStack = function (opStack, nodeStack) {
   return nodeStack.pop();
 };
 
-function tokenize (emmetString) {
-  // Handle text spaces later
-  return emmetString.split(' ');
-}
 
-/**
-  @param id: ID of the DOM node to return.
-  @return: DOM node.
-*/
-DOMInterface.prototype.getId = function (dom, id) {
-  if (!dom) {
-    return null;
-  }
-  return dom.getElementById(id);
-};
+/********************************
+  Set of DOM Utility functions
+********************************/
 
-/**
-  @param dom: The DOM node 
-  @param q: (Optional) query string. If not provided, then all children are returned.
-  @return: Array of DOM nodes
-*/
-DOMInterface.prototype.getChildren = function (dom, q) {
-  if (!dom) {
-    return null;
-  }
-  if (q) {
-    return toArray(dom.querySelectorAll(q));
-  } else {
-    return toArray(dom.children);
-  }
-};
-
-/**
-  @param dom: The DOM node
-  @param i: (Optional) index of the child. If not provided, then first child is returned.
-  @param q: (Optional) query string. 
-  @return: DOM node
-*/
-DOMInterface.prototype.getChild = function (dom, q, i) {
-  if (!dom) {
-    return null;
-  }
-
-  i = i || 0;
-
-  var children = this.getChildren(dom, q);
-
-  if (i === 0 && (!children || children.length === 0)) {
-    return null;
-  }
-  return children[i];
-};
 
 DOMInterface.prototype.getUrl = function (link) {
   if (link) {
@@ -179,11 +327,18 @@ DOMInterface.prototype.getUrl = function (link) {
   return null;
 };
 
-/*
- * Helpers
-*/
 
-function toArray(arrayCollection) {
+/****************************
+  Set of Helper functions
+*****************************/
+
+
+function tokenize (emmetString) {
+  // Handle text spaces later
+  return emmetString.split(' ');
+}
+
+function toArray (arrayCollection) {
   var foo = [];
   var i = 0;
 

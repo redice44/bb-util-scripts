@@ -43,7 +43,7 @@ BlackboardInterface.prototype.getMainPage = function (id) {
         } else {
           var parser = new DOMParser();
           var doc = parser.parseFromString(res.text, "text/html");
-          var links = that.getChildren(that.getId(doc, that.ids.courseMenu), that.q.courseMenuLink)
+          var links = that.getChildren(that.q.courseMenuLink, that.getId(that.ids.courseMenu, doc))
             .filter(function (link) {
               return that.getUrl(link).includes(that.endpoints.contentFolder);
             });
@@ -73,7 +73,7 @@ BlackboardInterface.prototype.getPage = function (page) {
         } else {
           var parser = new DOMParser();
           var doc = parser.parseFromString(res.text, "text/html");
-          var items = that.getChildren(that.getId(doc, that.ids.contentItems), that.q.contentItems);
+          var items = that.getChildren(that.q.contentItems, that.getId(that.ids.contentItems, doc));
           if (items) {
             items.forEach(function (item) {
               var contentId = that.getContentId(item);
@@ -96,7 +96,7 @@ BlackboardInterface.prototype.getPage = function (page) {
   @return {String} - Item's content ID.
 */
 BlackboardInterface.prototype.getContentId = function (item) {
-  return this.getChild(item, 'div.item').getAttribute('id');
+  return this.getChild('div.item', 0, item).getAttribute('id');
 };
 
 /**
@@ -104,7 +104,7 @@ BlackboardInterface.prototype.getContentId = function (item) {
   @return {boolean}
 */
 BlackboardInterface.prototype.isPage = function (item) {
-  var href = this.getUrl(this.getChild(item, this.q.itemLink));
+  var href = this.getUrl(this.getChild(this.q.itemLink, 0, item));
 
   if (href) {
     return href.includes(this.endpoints.contentFolder);
