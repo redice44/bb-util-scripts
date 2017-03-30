@@ -5,7 +5,19 @@ DOMInterface.prototype.setAttr = function (attributes) {
 
 };
 
+DOMInterface.prototype.makeSvg = function (emmetString) {
+  this.__makeNode__(emmetString, function (node) {
+    return document.createElementNS("http://www.w3.org/2000/svg", node);
+  });
+};
+
 DOMInterface.prototype.makeNode = function (emmetString) {
+  this.__makeNode__(emmetString, function (node) {
+    return document.createElement(node);
+  });
+};
+
+DOMInterface.prototype.__makeNode__ = function (emmetString, create) {
   var ops = {
     '>': 1,
     '+': 2,
@@ -65,7 +77,7 @@ DOMInterface.prototype.makeNode = function (emmetString) {
 
       // generate node with ID and classes
       // add to node stack
-      nodeStack.push(document.createElement(node));
+      nodeStack.push(create(node));
       console.log(`adding ${nodeStack[nodeStack.length - 1]} to nodeStack`);
     }
   }
