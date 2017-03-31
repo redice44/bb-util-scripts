@@ -49,7 +49,7 @@ BlackboardInterface.prototype.getMainPage = function (id) {
             });
           var pages = links.map(function (link) {
             var p = getParameters(that.getUrl(link));
-            return new Page(id, p.content_id);
+            return new Page(id, p.content_id, link.innerText);
           });
 
           resolve(pages);
@@ -75,12 +75,12 @@ BlackboardInterface.prototype.getPage = function (page) {
           var doc = parser.parseFromString(res.text, "text/html");
           var items = that.getChildren(that.q.contentItems, that.getId(that.ids.contentItems, doc));
           if (items) {
-            items.forEach(function (item) {
-              var contentId = that.getContentId(item);
-              if (that.isPage(item)) {
-                page.addItem(new Page(page.courseId, contentId, item));
+            items.forEach(function (dom) {
+              var contentId = that.getContentId(dom);
+              if (that.isPage(dom)) {
+                page.addItem(new Page(page.courseId, contentId, that.getContentTitle(dom), dom));
               } else {
-                page.addItem(new Item(page.courseId, contentId, item));
+                page.addItem(new Item(page.courseId, contentId, that.getContentTitle(dom), dom));
               }
             });
           }
@@ -100,6 +100,14 @@ BlackboardInterface.prototype.getContentId = function (item) {
 };
 
 /**
+  @param {DOM Node} dom - DOM Node of the content item
+  @return {String} - Title of the content item
+*/
+BlackboardInterface.prototype.getContentTitle = function (dom) {
+  return this.getChild('div.item > h3', 0, dom).innerText.trim();
+};
+
+/**
   @param {Item} item - Item to determine if it is a Page
   @return {boolean}
 */
@@ -112,6 +120,10 @@ BlackboardInterface.prototype.isPage = function (item) {
   return false;
 };
 
-
+BlackboardInterface.prototype.makeEditLink = function (item) {
+  var courseId = item.courseId;
+  var contentId = item.id;
+  return `${domain}${this.endpoints.contentFolder}content_id=${contentId}&course_id=${courseId}`;
+};
 
 export default BlackboardInterface;
