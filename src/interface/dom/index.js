@@ -16,6 +16,10 @@ DOMInterface.prototype.clearActiveDom = function () {
 };
 
 
+DOMInterface.prototype.useDocument = function () {
+  return document;
+};
+
 /**********************************
   Set of Mutatable DOM functions
 **********************************/
@@ -278,7 +282,11 @@ DOMInterface.prototype.__makeNode__ = function (emmetString, create) {
 
       // generate node with ID and classes
       // add to node stack
-      this.setActiveDom(create(node));
+      if (node.includes('{')) {
+        this.setActiveDom(this.__makeTextNode__(node));
+      } else {
+        this.setActiveDom(create(node));
+      }
       if (id) {
         this.setAttr({"id": id});
       }
@@ -350,6 +358,10 @@ DOMInterface.prototype.__evaluateNodeStack__ = function (opStack, nodeStack) {
   return nodeStack.pop();
 };
 
+DOMInterface.prototype.__makeTextNode__ = function (text) {
+  return document.createTextNode(text.substr(1, text.length-2).trim());
+};
+
 
 /********************************
   Set of DOM Utility functions
@@ -371,7 +383,24 @@ DOMInterface.prototype.getUrl = function (link) {
 
 function tokenize (emmetString) {
   // Handle text spaces later
-  return emmetString.split(' ');
+  var tokens = emmetString.split(' ');
+  for (var i = 0; i < tokens.length; i++) {
+    if (tokens[i].includes('{')) {
+      console.log(`Found starting token ${tokens[i]}`);
+      while (tokens.length > i + 1 && !tokens[i+1].includes('}')) {
+        console.log(`Joining next token ${tokens[i+1]}`);
+        tokens[i] = `${tokens[i]} ${tokens.splice(i+1, 1)[0].trim()}`;
+        console.log(`Updated text token ${tokens[i]}`);
+      }
+      if (tokens.length > i + 1) {
+        // Add the last } token
+        console.log(`Joining last token ${tokens[i+1]}`);
+        tokens[i] = `${tokens[i]} ${tokens.splice(i+1, 1)[0].trim()}`;
+      }
+      tokens[i] = tokens[i].trim();
+    }
+  }
+  return tokens;
 }
 
 function toArray (arrayCollection) {
