@@ -9,13 +9,16 @@ function BlackboardInterface(domain) {
   LMSInterface.call(this, domain);
   this.ids = {
     courseMenu: 'courseMenuPalette_contents',
-    contentItems: 'content_listContainer'
+    contentItems: 'content_listContainer',
+    menuButtons: 'nav'
   };
 
   this.q = {
     courseMenuLink: 'li.clearfix > a',    // Course Menu Link
     contentItems: 'li.liItem',            // Content Items
-    itemLink: 'div.item > h3 > a'         // Content Item Link
+    itemLink: 'div.item > h3 > a',        // Content Item Link
+    contentItemTitle: 'div.item > h3',    // Content Item Title
+    contentItemId: 'div.item'             // Content Item Id
   };
 
   this.endpoints = {
@@ -92,11 +95,22 @@ BlackboardInterface.prototype.getPage = function (page) {
 };
 
 /**
+  @param {String} linkName - Name of the link for the button.
+  @param {function} action - Event handler for 'click' event.
+*/
+BlackboardInterface.prototype.addPrimaryMenuButton = function (linkName, action) {
+  var navNode = this.getId(this.ids.menuButtons, this.useDocument());
+  var menuBtn = this.makeNode(`li.mainButton > h2 > a > {${linkName}}`);
+  menuBtn.addEventListener('click', action); 
+  navNode.appendChild(menuBtn);
+};
+
+/**
   @param {Item} item - Item in which to find the content ID for.
   @return {String} - Item's content ID.
 */
 BlackboardInterface.prototype.getContentId = function (item) {
-  return this.getChild('div.item', 0, item).getAttribute('id');
+  return this.getChild(this.q.contentItemId, 0, item).getAttribute('id');
 };
 
 /**
@@ -104,7 +118,7 @@ BlackboardInterface.prototype.getContentId = function (item) {
   @return {String} - Title of the content item
 */
 BlackboardInterface.prototype.getContentTitle = function (dom) {
-  return this.getChild('div.item > h3', 0, dom).innerText.trim();
+  return this.getChild(this.q.contentItemTitle, 0, dom).innerText.trim();
 };
 
 /**
