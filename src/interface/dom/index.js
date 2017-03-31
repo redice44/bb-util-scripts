@@ -283,15 +283,17 @@ DOMInterface.prototype.__makeNode__ = function (emmetString, create) {
       // generate node with ID and classes
       // add to node stack
       if (node.includes('{')) {
-        this.setActiveDom(this.__makeTextNode__(node));
+        var n = nodeStack.pop();
+        n.append(this.__makeTextNode__(node));
+        this.setActiveDom(n);
       } else {
         this.setActiveDom(create(node));
-      }
-      if (id) {
-        this.setAttr({"id": id});
-      }
-      if (classes.length > 0) {
-        this.addClasses(classes);
+        if (id) {
+          this.setAttr({"id": id});
+        }
+        if (classes.length > 0) {
+          this.addClasses(classes);
+        }
       }
       nodeStack.push(this.__activeDom__.cloneNode(true));
       this.clearActiveDom();
@@ -387,10 +389,12 @@ function tokenize (emmetString) {
   for (var i = 0; i < tokens.length; i++) {
     if (tokens[i].includes('{')) {
       console.log(`Found starting token ${tokens[i]}`);
-      while (tokens.length > i + 1 && !tokens[i+1].includes('}')) {
-        console.log(`Joining next token ${tokens[i+1]}`);
-        tokens[i] = `${tokens[i]} ${tokens.splice(i+1, 1)[0].trim()}`;
-        console.log(`Updated text token ${tokens[i]}`);
+      while (tokens.length > i + 1 &&
+        !tokens[i].includes('}') &&
+        !tokens[i+1].includes('}')) {
+          console.log(`Joining next token ${tokens[i+1]}`);
+          tokens[i] = `${tokens[i]} ${tokens.splice(i+1, 1)[0].trim()}`;
+          console.log(`Updated text token ${tokens[i]}`);
       }
       if (tokens.length > i + 1) {
         // Add the last } token
