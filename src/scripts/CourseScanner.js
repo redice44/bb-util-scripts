@@ -23,3 +23,23 @@ c.getCourse() // Promise
   }).catch(function (err) {
     console.log(err);
   });
+
+// var node = DOM.makeNode('div > p * 3 > { hello world, and goodbye }');
+// console.log(node);
+
+// bbi.addPrimaryMenuButton('test', function(e) {
+//   console.log('clicked');
+// });
+
+// var subTest = [
+//   {
+//     linkName: 'sub1',
+//     action: function() { console.log('action1') }
+//   },
+//   {
+//     linkName: 'sub2',
+//     action: function() { console.log('action2') }
+//   }
+// ];
+
+// bbi.addPrimarySubMenuButton('test sub', subTest);
