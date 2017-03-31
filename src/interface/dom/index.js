@@ -20,6 +20,17 @@ DOMInterface.prototype.clearActiveDom = function () {
   Set of Mutatable DOM functions
 **********************************/
 
+DOMInterface.prototype.addText = function (text, dom, updateActiveDom) {
+  var domNode = this.chainDom(dom, updateActiveDom);
+
+  if (!domNode) {
+    return null;
+  }
+
+  domNode.appendChild(document.createTextNode(text));
+
+  return domNode.cloneNode(true);
+};
 
 /**
   Sets a set of attributes to the DOM Node.
@@ -43,7 +54,7 @@ DOMInterface.prototype.setAttr = function (attributes, dom, updateActiveDom) {
     domNode.setAttribute(attr, attributes[attr]);
   }
 
-  return domNode;
+  return domNode.cloneNode(true);
 };
 
 /**
@@ -67,7 +78,7 @@ DOMInterface.prototype.addClasses = function (classes, dom, updateActiveDom) {
     domNode.classList.add(c);
   });
 
-  return domNode;
+  return domNode.cloneNode(true);
 };
 
 /**
