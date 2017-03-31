@@ -100,8 +100,25 @@ BlackboardInterface.prototype.getPage = function (page) {
 */
 BlackboardInterface.prototype.addPrimaryMenuButton = function (linkName, action) {
   var navNode = this.getId(this.ids.menuButtons, this.useDocument());
-  var menuBtn = this.makeNode(`li.mainButton > h2 > a > {${linkName}}`);
+  var menuBtn = this.makeNode(`li.mainButton > h2 > a {${linkName}}`);
   menuBtn.addEventListener('click', action); 
+  navNode.appendChild(menuBtn);
+};
+
+BlackboardInterface.prototype.addPrimarySubMenuButton = function (linkName, subItems) {
+  var navNode = this.getId(this.ids.menuButtons, this.useDocument());
+  var menuBtn = this.makeNode(`li.mainButton.sub > h2 > a {${linkName}} > span.chevron > img`);
+  // var icon = this.makeNode('span.chevron > img');
+  this.setAttr({ src: '/images/ci/ng/expand.gif' }, this.getChild('h2 > a > span > img', 0, menuBtn));
+  var subMenu = this.makeNode(`ul > li.actionMenuItem * ${subItems.length}`);
+  subItems.forEach(function (item, i) {
+    var parent = this.getChild('li', i, subMenu);
+    var itemNode = this.makeNode(`a {${item.linkName}}`);
+    itemNode.addEventListener('click', item.action);
+    parent.appendChild(itemNode);
+  }, this);
+
+  menuBtn.appendChild(subMenu);
   navNode.appendChild(menuBtn);
 };
 
