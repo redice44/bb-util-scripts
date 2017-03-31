@@ -41,10 +41,10 @@ Course.prototype.displayResults = function () {
 };
 
 Course.prototype.displayPage = function (page) {
-  var pageNode = this.buildPageDisplay();
+  var pageNode = this.buildPageDisplay(page.title);
   var parent = this.LMSInterface.getChild('article', 0, pageNode);
-  this.LMSInterface.addText(page.title,
-    this.LMSInterface.getChild('header', 0, pageNode));
+  // this.LMSInterface.addText(page.title,
+  //   this.LMSInterface.getChild('header', 0, pageNode));
 
   page.getItems().forEach(function (item) {
     if (item instanceof Page) {
@@ -58,10 +58,10 @@ Course.prototype.displayPage = function (page) {
 };
 
 Course.prototype.displayItem = function (item) {
-  var itemNode = this.buildItemDisplay();
+  var itemNode = this.buildItemDisplay(item.title);
   var parent = this.LMSInterface.getChild('section', 0, itemNode);
-  this.LMSInterface.addText(item.title,
-    this.LMSInterface.getChild('header', 0, itemNode));
+  // this.LMSInterface.addText(item.title,
+  //   this.LMSInterface.getChild('header', 0, itemNode));
 
   this.plugins.forEach(function (plugin) {
     parent.appendChild(plugin.getResults(item));
@@ -70,12 +70,12 @@ Course.prototype.displayItem = function (item) {
   return itemNode;
 };
 
-Course.prototype.buildPageDisplay = function () {
-  return this.LMSInterface.makeNode('section > header + article');
+Course.prototype.buildPageDisplay = function (title) {
+  return this.LMSInterface.makeNode(`section > header {${title}} + article`);
 };
 
-Course.prototype.buildItemDisplay = function () {
-  return this.LMSInterface.makeNode('section > header + section');
+Course.prototype.buildItemDisplay = function (title) {
+  return this.LMSInterface.makeNode(`section > header {${title}} + section`);
 };
 
 /**

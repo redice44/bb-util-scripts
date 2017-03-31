@@ -26,12 +26,11 @@ NewWindowPlugin.prototype.parse = function (dom) {
 
 NewWindowPlugin.prototype.getResults = function (item) {
   var results = item.getResults()[this.name];
-  var resultsNode = this.makeNode(`div > p + ul > li * ${results.length} > p`);
-  this.addText(this.resultText, this.getChild('p', 0, resultsNode));
+  var resultsNode = this.makeNode(`div > p ${this.resultText} + ul > li * ${results.length} > p`);
+  // this.addText(this.resultText, this.getChild('p', 0, resultsNode));
 
   results.forEach(function (r, i) {
-    var itemText = this.getChild('p', 0, this.getChild('ul > li', i, resultsNode));
-    this.addText(r.title, itemText);
+    this.addText(r.title, this.getChild('p', 0, this.getChild('ul > li', i, resultsNode)));
   }, this);
   // update dom interface to add content to nodes, like text.
 
