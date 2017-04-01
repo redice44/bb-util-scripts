@@ -396,7 +396,7 @@ function tokenize (emmetString) {
           tokens[i] = `${tokens[i]} ${tokens.splice(i+1, 1)[0].trim()}`;
           console.log(`Updated text token ${tokens[i]}`);
       }
-      if (tokens.length > i + 1) {
+      if (tokens.length > i + 1 && !tokens[i].includes('}')) {
         // Add the last } token
         console.log(`Joining last token ${tokens[i+1]}`);
         tokens[i] = `${tokens[i]} ${tokens.splice(i+1, 1)[0].trim()}`;
