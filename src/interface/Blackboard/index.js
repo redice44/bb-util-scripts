@@ -3,7 +3,6 @@ import request from 'superagent';
 import LMSInterface from 'LMSInterface';
 import Page from 'Course/Page';
 import Item from 'Course/Item';
-import getParameters from 'Utility/getParameters';
 
 function BlackboardInterface(domain) {
   LMSInterface.call(this, domain);
@@ -51,7 +50,7 @@ BlackboardInterface.prototype.getMainPage = function (id) {
               return that.getUrl(link).includes(that.endpoints.contentFolder);
             });
           var pages = links.map(function (link) {
-            var p = getParameters(that.getUrl(link));
+            var p = that.getParameters(that.getUrl(link));
             return new Page(id, p.content_id, link.innerText);
           });
 
@@ -128,6 +127,13 @@ BlackboardInterface.prototype.addPrimarySubMenuButton = function (linkName, subI
 */
 BlackboardInterface.prototype.getContentId = function (item) {
   return this.getChild(this.q.contentItemId, 0, item).getAttribute('id');
+};
+
+/**
+  @param {String} url - URL of the course to get the ID from. If empty: uses current page's url.
+*/
+BlackboardInterface.prototype.getCourseId = function (url) {
+  return this.getParameters(url).course_id;
 };
 
 /**

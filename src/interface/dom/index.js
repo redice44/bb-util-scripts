@@ -377,6 +377,26 @@ DOMInterface.prototype.getUrl = function (link) {
   return null;
 };
 
+/**
+  @param {String} url - URL to get the parameters from. If empty: uses current document url.
+  @return {Object} - key:value from the parameters.
+*/
+DOMInterface.prototype.getParameters = function (url) {
+  url = url || document.URL;
+  var parameters = {};
+  var parseParams = url.split('?')[1];
+  parseParams = parseParams.split('&');
+  parseParams = parseParams.forEach(function (pair) {
+    var temp = {};
+    var splitPair = pair.split('=');
+    temp[splitPair[0]] = splitPair[1];
+    parameters = Object.assign({}, temp, parameters);
+  });
+
+  return parameters;
+};
+
+
 
 /****************************
   Set of Helper functions
