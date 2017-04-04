@@ -79,11 +79,16 @@ BlackboardInterface.prototype.getPage = function (page) {
           if (items) {
             items.forEach(function (dom) {
               var contentId = that.getContentId(dom);
+              var tempItem;
+              // console.log(dom);
               if (that.isPage(dom)) {
-                page.addItem(new Page(page.courseId, contentId, that.getContentTitle(dom), dom));
+                tempItem = new Page(page.courseId, contentId, that.getContentTitle(dom), dom);
               } else {
-                page.addItem(new Item(page.courseId, contentId, that.getContentTitle(dom), dom));
+                tempItem = new Item(page.courseId, contentId, that.getContentTitle(dom), dom);
               }
+              tempItem.addLink(that.__getActionLinks__(dom));
+              tempItem.addLink(that.makeContentLink(tempItem));
+              page.addItem(tempItem);
             });
           }
 
@@ -121,6 +126,7 @@ BlackboardInterface.prototype.addPrimarySubMenuButton = function (linkName, subI
   menuBtn.appendChild(subMenu);
   navNode.appendChild(menuBtn);
 };
+
 
 /**
   @param {Item} item - Item in which to find the content ID for.
@@ -160,10 +166,40 @@ BlackboardInterface.prototype.isPage = function (item) {
   return false;
 };
 
-BlackboardInterface.prototype.makeEditLink = function (item) {
+BlackboardInterface.prototype.__getActionLinks__ = function (dom) {
+  var linkNodes = this.getChildren('li > a', this.getChild('div.cmdiv > ul', 0, dom));
+  var actionLinks = {};
+
+  linkNodes.forEach(function (link) {
+    var foo = {};
+    var name = this.getAttr('title', link);
+    if (name) {
+      var url = this.getUrl(link);
+      if (url[0] === '/') {
+        url = `${this.domain}${url}`;
+      } else if (name === 'Delete') {
+        url = url.split('(\'')[1];
+        url = url.split('\'')[0];
+        url = `${this.domain}${url}`;
+      } else {
+        console.log(`Unhandled Link type: ${name}`);
+      }
+      foo[name] = url;
+      actionLinks = Object.assign({}, actionLinks, foo);
+    }
+  }, this);
+  // console.log(actionLinks);
+
+  return actionLinks;
+};
+
+
+BlackboardInterface.prototype.makeContentLink = function (item) {
   var courseId = item.courseId;
   var contentId = item.id;
-  return `${domain}${this.endpoints.contentFolder}content_id=${contentId}&course_id=${courseId}`;
+  return {
+    Content: `${domain}${this.endpoints.contentFolder}content_id=${contentId}&course_id=${courseId}#${contentId}`
+  };
 };
 
 export default BlackboardInterface;
