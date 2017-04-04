@@ -1,3 +1,7 @@
+/*
+  Google's Material Design Icon: Alert > warning
+*/
+
 import DOMInterface from 'dom';
 
 var dom = new DOMInterface();

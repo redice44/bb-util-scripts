@@ -1,3 +1,7 @@
+/*
+  Google's Material Design Icon: Action > open in new
+*/
+
 import DOMInterface from 'dom';
 
 var dom = new DOMInterface();

@@ -1,12 +1,12 @@
 /*
-  Google's Material Design Icon: Alert > error
+  Google's Material Design Icon: File > folder
 */
 
 import DOMInterface from 'dom';
 
 var dom = new DOMInterface();
 
-function errorIcon (color) {
+function folderClosedIcon (color) {
   color = color || '#000000';
   var icon = dom.makeSvg('svg > path * 2');
   var svgAttr = {
@@ -22,7 +22,7 @@ function errorIcon (color) {
       fill: 'none'
     },
     {
-      d: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z'
+      d: 'M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z'
     }
   ];
   dom.setAttr(svgAttr, icon);
@@ -33,4 +33,4 @@ function errorIcon (color) {
   return icon;
 }
 
-export default errorIcon;
+export default folderClosedIcon;

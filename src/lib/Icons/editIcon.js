@@ -1,12 +1,12 @@
 /*
-  Google's Material Design Icon: Alert > error
+  Google's Material Design Icon: Editor > mode edit
 */
 
 import DOMInterface from 'dom';
 
 var dom = new DOMInterface();
 
-function errorIcon (color) {
+function editIcon (color) {
   color = color || '#000000';
   var icon = dom.makeSvg('svg > path * 2');
   var svgAttr = {
@@ -22,7 +22,7 @@ function errorIcon (color) {
       fill: 'none'
     },
     {
-      d: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z'
+      d: 'M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z'
     }
   ];
   dom.setAttr(svgAttr, icon);
@@ -33,4 +33,4 @@ function errorIcon (color) {
   return icon;
 }
 
-export default errorIcon;
+export default editIcon;
