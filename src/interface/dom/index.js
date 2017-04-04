@@ -108,10 +108,13 @@ DOMInterface.prototype.addClasses = function (classes, dom, updateActiveDom) {
     return null;
   }
 
-  classes.forEach(function (c) {
-    domNode.classList.add(c);
-  });
-
+  if (classes instanceof Array) {
+    classes.forEach(function (c) {
+      domNode.classList.add(c);
+    });
+  } else {
+    domNode.classList.add(classes);
+  }
   return domNode.cloneNode(true);
 };
 
@@ -423,6 +426,10 @@ DOMInterface.prototype.getUrl = function (link) {
     return link.getAttribute('href');
   }
   return null;
+};
+
+DOMInterface.prototype.getAttr = function (attr, dom) {
+  return dom.getAttribute(attr);
 };
 
 /**
