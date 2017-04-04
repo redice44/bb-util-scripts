@@ -100,6 +100,7 @@ BlackboardInterface.prototype.getPage = function (page) {
 BlackboardInterface.prototype.addPrimaryMenuButton = function (linkName, action) {
   var navNode = this.getId(this.ids.menuButtons, this.useDocument());
   var menuBtn = this.makeNode(`li.mainButton > h2 > a {${linkName}}`);
+  this.setAttr({ href: '#' }, this.getChild('h2 > a', 0, menuBtn));
   menuBtn.addEventListener('click', action); 
   navNode.appendChild(menuBtn);
 };
@@ -133,7 +134,9 @@ BlackboardInterface.prototype.getContentId = function (item) {
   @param {String} url - URL of the course to get the ID from. If empty: uses current page's url.
 */
 BlackboardInterface.prototype.getCourseId = function (url) {
-  return this.getParameters(url).course_id;
+  var courseId = this.getParameters(url).course_id.split('#');
+
+  return courseId[0];
 };
 
 /**
