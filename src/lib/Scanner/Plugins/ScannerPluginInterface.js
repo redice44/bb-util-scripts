@@ -1,6 +1,8 @@
 import DOMInterface from 'dom';
 import errorIcon from 'Icons/errorIcon';
 import warningIcon from 'Icons/warningIcon';
+import newWindowIcon from 'Icons/newWindowIcon';
+import editIcon from 'Icons/editIcon';
 
 function ScannerPluginInterface (name, color) {
   DOMInterface.call(this);
@@ -25,6 +27,19 @@ ScannerPluginInterface.prototype.parse = function (dom) {
 */
 ScannerPluginInterface.prototype.getResults = function (item) {
   new Error('Override: ScannerPluginInterface.getResults()');
+};
+
+ScannerPluginInterface.prototype.__addActionLinks__ = function (item, result) {
+  var newWindowNode = this.makeNode('a');
+  this.setAttr({ href: item.getLinks().Content, target: '_blank' }, newWindowNode);
+  newWindowNode.appendChild(newWindowIcon());
+
+  var editNode = this.makeNode('a');
+  this.setAttr({ href: item.getLinks().Edit, target: '_blank' }, editNode);
+  editNode.appendChild(editIcon());
+
+  result.appendChild(newWindowNode);
+  result.appendChild(editNode);
 };
 
 ScannerPluginInterface.prototype.getName = function () {

@@ -105,6 +105,7 @@ function buildModal() {
       color: '#DDDDDD',
       borderRadius: '20px',
       border: '3px solid #DDDDDD',
+      padding: '0 10px',
       fontSize: '24px',
       lineHeight: '24px',
       justifyContent: 'center',

@@ -25,7 +25,7 @@ NewWindowPlugin.prototype.parse = function (dom) {
 };
 
 NewWindowPlugin.prototype.hasResults = function (item) {
-  return item.getResults()[this.name].length > 0;
+  return item.getResults()[this.name] && item.getResults()[this.name].length > 0;
 };
 
 NewWindowPlugin.prototype.toggleResult = function (e) {
@@ -36,13 +36,16 @@ NewWindowPlugin.prototype.toggleResult = function (e) {
 
 NewWindowPlugin.prototype.getResults = function (item) {
   var results = item.getResults()[this.name];
-  var resultsNode = this.makeNode(`div.hide.${this.name} > p {${this.resultText}} + ul > li * ${results.length} > p`);
-  // this.addText(this.resultText, this.getChild('p', 0, resultsNode));
+  var resultsNode = this.makeNode(`div.hide.${this.name}.plugin-result > p + ul > li * ${results.length} > p`);
+  var infoNode = this.getChild('p', 0, resultsNode);
+  infoNode.appendChild(this.getErrorIcon());
+  this.addText(this.resultText, infoNode);
 
   results.forEach(function (r, i) {
-    this.addText(r.title, this.getChild('p', 0, this.getChild('ul > li', i, resultsNode)));
+    var thisResult = this.getChild('p', 0, this.getChild('ul > li', i, resultsNode));
+    this.addText(r.title, thisResult);
+    this.__addActionLinks__(item, thisResult);
   }, this);
-  // update dom interface to add content to nodes, like text.
 
   return resultsNode;
 };
