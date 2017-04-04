@@ -36,6 +36,18 @@ DOMInterface.prototype.addText = function (text, dom, updateActiveDom) {
   return domNode.cloneNode(true);
 };
 
+DOMInterface.prototype.replaceText = function (text, dom, updateActiveDom) {
+  var domNode = this.chainDom(dom, updateActiveDom);
+
+  if (!domNode) {
+    return null;
+  }
+
+  domNode.innerText = text;
+
+  return domNode.cloneNode(true);
+};
+
 /**
   Sets a set of attributes to the DOM Node.
   Part of the set of Mutatable DOM functions.
@@ -57,6 +69,24 @@ DOMInterface.prototype.setAttr = function (attributes, dom, updateActiveDom) {
   for (attr in attributes) {
     domNode.setAttribute(attr, attributes[attr]);
   }
+
+  return domNode.cloneNode(true);
+};
+
+DOMInterface.prototype.setStyle = function (styles, dom, updateActiveDom) {
+  var domNode = this.chainDom(dom, updateActiveDom);
+  var style;
+  var styleStr = '';
+  if (!domNode) {
+    return null;
+  }
+
+  for (style in styles) {
+    // styleStr += `${style}: ${styles[style]};`;
+    domNode.style[style] = styles[style];
+  }
+  // console.log(styleStr);
+  // domNode.setAttribute('style', styleStr);
 
   return domNode.cloneNode(true);
 };
@@ -156,6 +186,24 @@ DOMInterface.prototype.getChild = function (q, i, dom, updateActiveDom) {
   return children[index];
 };
 
+DOMInterface.prototype.deleteChild = function (q, i, dom, updateActiveDom) {
+  var children;
+  var index;
+  var domNode = this.chainDom(dom, updateActiveDom);
+  if (!domNode) {
+    return null;
+  }
+
+  index = i || 0;
+  children = this.getChildren(q, domNode);
+
+  if (index === 0 && (!children || children.length === 0)) {
+    return null;
+  }
+  children[index].remove();
+  return domNode.cloneNode(true);
+};
+
 /**
   @private
   Private helper for the Mutatable DOM functions.
@@ -221,13 +269,13 @@ DOMInterface.prototype.__makeNode__ = function (emmetString, create) {
   };
   
   var tokens = tokenize(emmetString);
-  console.log(tokens);
+  // console.log(tokens);
   var opStack = [];
   var nodeStack = [];
   var dom = null;
   while (tokens.length > 0) {
     var t = tokens.shift();
-    console.log(`token: ${t}`);
+    // console.log(`token: ${t}`);
     var isOp = null;
     var op;
     for (op in ops) {
@@ -240,7 +288,7 @@ DOMInterface.prototype.__makeNode__ = function (emmetString, create) {
       if (opStack.length > 0) {
         if (isOp === '*') {
           // Is multiplication op
-          console.log('Multiplying');
+          // console.log('Multiplying');
           var count = parseInt(tokens.shift());
           var nodes = [];
           var temp = nodeStack.pop();
@@ -252,17 +300,17 @@ DOMInterface.prototype.__makeNode__ = function (emmetString, create) {
         } else if (ops[opStack[opStack.length - 1]] >= ops[isOp]) {
           // Peek to see if you can add to op stack
           opStack.push(isOp);
-          console.log(`Adding ${isOp} to opStack`);
+          // console.log(`Adding ${isOp} to opStack`);
         } else {
           // evaluate
           nodeStack.push(this.__evaluateNodeStack__(opStack, nodeStack));
           opStack.push(isOp);
-          console.log(`Adding ${isOp} to opStack post eval`);
-          console.log(`Adding ${nodeStack[nodeStack.length - 1]} to nodeStack`);
+          // console.log(`Adding ${isOp} to opStack post eval`);
+          // console.log(`Adding ${nodeStack[nodeStack.length - 1]} to nodeStack`);
         }
       } else {
         opStack.push(isOp);
-        console.log(`Adding ${isOp} to opStack`);
+        // console.log(`Adding ${isOp} to opStack`);
       }
     } else {
       // Node
@@ -297,7 +345,7 @@ DOMInterface.prototype.__makeNode__ = function (emmetString, create) {
       }
       nodeStack.push(this.__activeDom__.cloneNode(true));
       this.clearActiveDom();
-      console.log(`adding ${nodeStack[nodeStack.length - 1]} to nodeStack`);
+      // console.log(`adding ${nodeStack[nodeStack.length - 1]} to nodeStack`);
     }
   }
 
@@ -314,7 +362,7 @@ DOMInterface.prototype.__makeNode__ = function (emmetString, create) {
   @return {DOM Node} - The resulting DOM Node after evaluating the stacks.
 */
 DOMInterface.prototype.__evaluateNodeStack__ = function (opStack, nodeStack) {
-  console.log('Evaluating stack');
+  // console.log('Evaluating stack');
   var n1;
   var n2;
   var op;
@@ -325,18 +373,18 @@ DOMInterface.prototype.__evaluateNodeStack__ = function (opStack, nodeStack) {
     switch (op) {
       case '>':
         if (n2 instanceof Array) {
-          console.log('n2 is array', n1, n2);
+          // console.log('n2 is array', n1, n2);
           n2 = n2.map(function (item) {
             item.appendChild(n1);
             return item.cloneNode(true);
           });
         } else if (n1 instanceof Array) {
-          console.log('n1 is array', n1, n2);
+          // console.log('n1 is array', n1, n2);
           n1.forEach(function (item) {
             n2.appendChild(item);
           });
         } else {
-          console.log('neither are arrays', n1, n2);
+          // console.log('neither are arrays', n1, n2);
           n2.appendChild(n1);
         }
         nodeStack.push(n2);
@@ -408,17 +456,17 @@ function tokenize (emmetString) {
   var tokens = emmetString.split(' ');
   for (var i = 0; i < tokens.length; i++) {
     if (tokens[i].includes('{')) {
-      console.log(`Found starting token ${tokens[i]}`);
+      // console.log(`Found starting token ${tokens[i]}`);
       while (tokens.length > i + 1 &&
         !tokens[i].includes('}') &&
         !tokens[i+1].includes('}')) {
-          console.log(`Joining next token ${tokens[i+1]}`);
+          // console.log(`Joining next token ${tokens[i+1]}`);
           tokens[i] = `${tokens[i]} ${tokens.splice(i+1, 1)[0].trim()}`;
-          console.log(`Updated text token ${tokens[i]}`);
+          // console.log(`Updated text token ${tokens[i]}`);
       }
       if (tokens.length > i + 1 && !tokens[i].includes('}')) {
         // Add the last } token
-        console.log(`Joining last token ${tokens[i+1]}`);
+        // console.log(`Joining last token ${tokens[i+1]}`);
         tokens[i] = `${tokens[i]} ${tokens.splice(i+1, 1)[0].trim()}`;
       }
       tokens[i] = tokens[i].trim();
