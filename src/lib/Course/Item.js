@@ -1,5 +1,5 @@
-function Item (course, id, title, dom) {
-  this.courseId = course;
+function Item (courseId, id, title, dom) {
+  this.courseId = courseId;
   this.id = id;
   this.title = title;
   this.__results__ = {};
@@ -11,11 +11,11 @@ Item.prototype.getDom = function () {
 };
 
 Item.prototype.addResult = function (result) {
-  this.__results__ = Object.assign({}, result);
-};
+  this.__results__ = Object.assign({}, this.__results__, result);
+}; 
 
 Item.prototype.getResults = function () {
-  return this.__results__;
-}
+  return Object.assign({}, this.__results__);
+};
 
 export default Item;

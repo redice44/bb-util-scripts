@@ -27,6 +27,10 @@ ScannerPluginInterface.prototype.getResults = function (item) {
   new Error('Override: ScannerPluginInterface.getResults()');
 };
 
+ScannerPluginInterface.prototype.getName = function () {
+  return this.name;
+};
+
 ScannerPluginInterface.prototype.getWarningIcon = function () {
   return warningIcon(this.color);
 };

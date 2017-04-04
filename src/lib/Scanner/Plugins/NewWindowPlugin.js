@@ -1,7 +1,7 @@
 import ScannerPluginInterface from 'Scanner/Plugins/ScannerPluginInterface';
 
 function NewWindowPlugin() {
-  ScannerPluginInterface.call(this, 'New Window', '#7d1c1c');
+  ScannerPluginInterface.call(this, 'New-Window', '#7d1c1c');
   this.resultText = 'Links that do not open in a new window:';
 }
 
@@ -24,9 +24,19 @@ NewWindowPlugin.prototype.parse = function (dom) {
   return result;
 };
 
+NewWindowPlugin.prototype.hasResults = function (item) {
+  return item.getResults()[this.name].length > 0;
+};
+
+NewWindowPlugin.prototype.toggleResult = function (e) {
+  var target = e.target;
+  target = target.parentElement.parentElement.parentElement;
+  this.getChild(`div.${this.name}`, 0, target).classList.toggle('hide');
+};
+
 NewWindowPlugin.prototype.getResults = function (item) {
   var results = item.getResults()[this.name];
-  var resultsNode = this.makeNode(`div > p ${this.resultText} + ul > li * ${results.length} > p`);
+  var resultsNode = this.makeNode(`div.hide.${this.name} > p {${this.resultText}} + ul > li * ${results.length} > p`);
   // this.addText(this.resultText, this.getChild('p', 0, resultsNode));
 
   results.forEach(function (r, i) {
