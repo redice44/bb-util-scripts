@@ -298,9 +298,12 @@ DOMInterface.prototype.__makeNode__ = function (emmetString, create) {
           var i;
           for (i = 0; i < count; i++) {
             nodes.push(temp.cloneNode(true));
+            // nodeStack.push(temp.cloneNode(true));
+            // opStack.push('+');
           }
+          // nodeStack.push(temp.cloneNode(true));
           nodeStack.push(nodes);
-        } else if (ops[opStack[opStack.length - 1]] >= ops[isOp]) {
+        } else if (opStack.length === 0 || ops[opStack[opStack.length - 1]] <= ops[isOp]) {
           // Peek to see if you can add to op stack
           opStack.push(isOp);
           // console.log(`Adding ${isOp} to opStack`);
@@ -366,13 +369,18 @@ DOMInterface.prototype.__makeNode__ = function (emmetString, create) {
 */
 DOMInterface.prototype.__evaluateNodeStack__ = function (opStack, nodeStack) {
   // console.log('Evaluating stack');
+  // console.log(opStack, nodeStack);
   var n1;
   var n2;
   var op;
+
   while (opStack.length > 0) {
     n1 = nodeStack.pop();
     op = opStack.pop();
     n2 = nodeStack.pop();
+    // console.log('n1', n1);
+    // console.log(`op: ${op}`);
+    // console.log('n2', n2);
     switch (op) {
       case '>':
         if (n2 instanceof Array) {
@@ -383,31 +391,74 @@ DOMInterface.prototype.__evaluateNodeStack__ = function (opStack, nodeStack) {
           });
         } else if (n1 instanceof Array) {
           // console.log('n1 is array', n1, n2);
+          var lastChild = n2;
+          while (lastChild.children.length > 0) {
+            lastChild = lastChild.children[lastChild.children.length - 1];
+          }
           n1.forEach(function (item) {
-            n2.appendChild(item);
+            lastChild.appendChild(item.cloneNode(true));
           });
         } else {
           // console.log('neither are arrays', n1, n2);
-          n2.appendChild(n1);
+          // n2.appendChild(n1);
+          var lastChild = n2;
+          while (lastChild.children.length > 0) {
+            lastChild = lastChild.children[lastChild.children.length - 1];
+          }
+          // console.log('last child');
+          // console.log(lastChild);
+
+          lastChild.append(n1);
         }
         nodeStack.push(n2);
         break;
       case '+':
-        var lastChild = n2;
-        while (lastChild.children.length > 0) {
-          lastChild = lastChild.children[lastChild.children.length - 1];
+        // var lastChild = n2;
+        // if (lastChild.parentElement) {
+        //   console.log('has a parent');
+        //   while (lastChild.children.length > 0) {
+        //     lastChild = lastChild.children[lastChild.children.length - 1];
+        //   }
+        //   if (n1 instanceof Array) {
+        //     n1.forEach(function (item) {
+        //       lastChild.parentElement.appendChild(item);
+        //     });
+        //   } else {
+        //     lastChild.parentElement.appendChild(n1);
+        //   }
+        //   nodeStack.push(n2);          
+        // } else {
+        //   console.log('no parent');
+        //   if (n1 instanceof Array) {
+        //     nodeStack.push(n1.push(n2));
+        //   } else {
+        //     nodeStack.push([n2, n1]);
+        //   }
+        // }
+        if (n2 instanceof Array) {
+          if (n1 instanceof Array) {
+            n1.forEach(function (item) {
+              n2.push(item);
+            });
+            nodeStack.push(n2);
+          } else {
+            n2.push(n1);
+            nodeStack.push(n2);
+          }
+        } else if (n1 instanceof Array) {
+          n1.unshift(n2);
+          nodeStack.push(n1);
+        } else {
+          nodeStack.push([n2, n1]);
         }
-        lastChild.parentElement.appendChild(n1);
-        nodeStack.push(n2);
         break;
       case '^':
-        break;
-      case '*':
         break;
       default: 
     }
   }
 
+  // console.log('result', nodeStack[nodeStack.length - 1]);
   return nodeStack.pop();
 };
 
