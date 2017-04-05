@@ -1,5 +1,6 @@
 import DOMInterface from 'dom';
 import errorIcon from 'Icons/errorIcon';
+import errorOutlineIcon from 'Icons/errorOutlineIcon';
 import warningIcon from 'Icons/warningIcon';
 import newWindowIcon from 'Icons/newWindowIcon';
 import editIcon from 'Icons/editIcon';
@@ -52,6 +53,10 @@ ScannerPluginInterface.prototype.getWarningIcon = function () {
 
 ScannerPluginInterface.prototype.getErrorIcon = function () {
   return errorIcon(this.color);
+};
+
+ScannerPluginInterface.prototype.getErrorOutlineIcon = function () {
+  return errorOutlineIcon(this.color);
 };
 
 export default  ScannerPluginInterface;

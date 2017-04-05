@@ -155,7 +155,7 @@ Course.prototype.displayPage = function (page) {
         console.log('plugin results', foo);
         infoNode.appendChild(foo);
       } else {
-        this.LMSInterface.getChild('header', 0, pageNode).appendChild(plugin.getErrorIcon());
+        this.LMSInterface.getChild('header', 0, pageNode).appendChild(plugin.getErrorOutlineIcon());
       }
     }
   }, this);
