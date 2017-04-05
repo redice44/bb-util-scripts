@@ -74,6 +74,7 @@ function catchError (err) {
 
 function buildModal() {
   var modalNode = BBI.makeNode('div#scanner-modal > div#scanner-modal-bg + div#scanner-modal-box');
+  console.log(modalNode);
   var modalBox = BBI.getChild('#scanner-modal-box', 0, modalNode);
   var attrs = {
     modal: {
@@ -95,7 +96,7 @@ function buildModal() {
       backgroundColor: 'rgba(0, 0, 0, 0.4)',
       top: '0',
       left: '0',
-      zIndex: '10'
+      zIndex: '1000'
     },
     modalBox: {
       display: 'flex',
@@ -110,7 +111,7 @@ function buildModal() {
       lineHeight: '24px',
       justifyContent: 'center',
       alignItems: 'center',
-      zIndex: '11'
+      zIndex: '1001'
     }
   };
 
