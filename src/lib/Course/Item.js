@@ -20,7 +20,7 @@ Item.prototype.getLinks = function () {
 };
 
 Item.prototype.addResult = function (result) {
-  this.__results__ = Object.assign({}, this.__results__, result);
+  this.__results__ = Object.assign({}, result, this.__results__);
 }; 
 
 Item.prototype.getResults = function () {
