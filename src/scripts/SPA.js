@@ -32,7 +32,23 @@ function getWholeCourse () {
 function updateLinks () {
   // window.location = lmsi.makeContentLink(course.getMenu()[0]);
   updateMenu();
-  replaceContent(course.getMenu()[0]);
+  var contentId = lmsi.getParameters(document.location.href).content_id;
+  
+  window.addEventListener('popstate', function (e) {
+    console.log('popstate fired');
+
+    if (e.state) {
+      replaceContent(course.getPage(e.state.contentId));
+    }
+  });
+
+  // Store initial location
+  history.replaceState({
+    contentId: contentId
+  }, contentId, document.location.href);
+
+
+  replaceContent(course.getPage(contentId));
 }
 
 function updateMenu () {
@@ -52,8 +68,13 @@ function updateMenu () {
           } else {
             contentId = lmsi.getUrl(target.parentElement).substr(1);
           }
+          console.log('content id', contentId);
+          var page = course.getPage(contentId);
+          history.pushState({
+            contentId: contentId
+          }, contentId, lmsi.makeContentLink(page).Content);
 
-          replaceContent(course.getPage(contentId));
+          replaceContent(page);
         });
       }
     });
@@ -85,8 +106,13 @@ function replaceContent (page) {
         }
 
         console.log('content id', contentId);
+        var page = course.getPage(contentId);
+        console.log('url update', lmsi.makeContentLink(page));
+        history.pushState({
+          contentId: contentId
+        }, contentId, lmsi.makeContentLink(page).Content);
 
-        replaceContent(course.getPage(contentId));
+        replaceContent(page);
       });
     }
 
