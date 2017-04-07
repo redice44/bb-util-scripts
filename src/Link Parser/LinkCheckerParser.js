@@ -70,6 +70,8 @@ LinkCheckerParser.prototype.encode = function(link){
 
    var dict = {
     href: this.getUrl(link),
+    htmlText: link.outerHTML,
+    style: link.style,
     text: link.innerText,
     target: link.target,
     newWindow: this.newWindowValidator(link)
