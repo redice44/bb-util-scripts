@@ -1,5 +1,8 @@
 import Course from 'Course';
 import Page from 'Course/Page';
+import editIcon from 'Icons/edit';
+import copyIcon from 'Icons/copy';
+import moveIcon from 'Icons/move';
 
 function SPA (LMSInterface) {
   this.course = new Course(LMSInterface.getCourseId(), LMSInterface, []);
@@ -33,8 +36,20 @@ SPA.prototype.makeSPA = function () {
     contentId: contentId
   }, contentId, document.location.href);
 
+  this.course.getMenu().forEach(function (page) {
+    this.formatPage(page);
+  }, this);
+
 
   this.updateContent(this.course.getPage(contentId));
+};
+
+SPA.prototype.formatPage = function (page) {
+  var items = page.getItems();
+
+  items.forEach(function (item) {
+    this.addActionIcons(item);
+  }, this);
 };
 
 SPA.prototype.updateMenu = function () {
@@ -88,33 +103,73 @@ SPA.prototype.updateContent = function (page) {
     var dom = item.getDom();
 
     if (item instanceof Page) {
-      var link = this.lmsi.getChild(this.lmsi.q.itemLink, 0, dom);
-      this.lmsi.setAttr({ href: `#${item.id}` }, link);
-      link.addEventListener('click', function (e) {
-        e.preventDefault();
-        console.log('Content Folder Clicked');
-        var target = e.target;
-        var contentId;
-
-        if (target.tagName.toLowerCase() === 'a') {
-          contentId = this.lmsi.getUrl(target).substr(1);
-        } else {
-          contentId = this.lmsi.getUrl(target.parentElement).substr(1);
-        }
-
-        var page = this.course.getPage(contentId);
-        history.pushState({
-          contentId: contentId
-        }, contentId, this.lmsi.makeContentLink(page).Content);
-
-        this.updateContent(page);
-      }.bind(this));
+      this.updateContentFolderLinks(dom, item.id);
     }
 
     contentItemsNode.appendChild(dom);
   }, this);
 
   window.scrollTo(0, 0);
+};
+
+SPA.prototype.updateContentFolderLinks = function (dom, contentId) {
+  // var dom = item.getDom();
+  var link = this.lmsi.getChild(this.lmsi.q.itemLink, 0, dom);
+  this.lmsi.setAttr({ href: `#${contentId}` }, link);
+  link.addEventListener('click', function (e) {
+    console.log('Content Folder Clicked');
+    e.preventDefault();
+    var target = e.target;
+    var contentId;
+
+    if (target.tagName.toLowerCase() === 'a') {
+      contentId = this.lmsi.getUrl(target).substr(1);
+    } else {
+      contentId = this.lmsi.getUrl(target.parentElement).substr(1);
+    }
+
+    var page = this.course.getPage(contentId);
+    history.pushState({
+      contentId: contentId
+    }, contentId, this.lmsi.makeContentLink(page).Content);
+
+    this.updateContent(page);
+  }.bind(this));
+  // item.setDom(dom);
+};
+
+SPA.prototype.addActionIcons = function (item) {
+  var dom = item.getDom();
+  var wrapper = this.lmsi.makeNode('div');
+  var linkUrls = item.getLinks();
+  var actions = [
+    {
+      type: 'Edit',
+      icon: editIcon
+    },
+    {
+      type: 'Copy',
+      icon: copyIcon
+    },
+    {
+      type: 'Move',
+      icon: moveIcon
+    }
+  ];
+  var icon;
+
+  actions.forEach(function (action) {
+    if (linkUrls[action.type]) {
+      icon = this.lmsi.makeNode('a');
+      this.lmsi.setAttr({ href: linkUrls[action.type], target: '_blank' }, icon);
+      icon.appendChild(action.icon());
+      wrapper.appendChild(icon);
+    }
+  }, this);
+
+  var title = this.lmsi.getChild(this.lmsi.q.contentItemId, 0, dom);
+  title.insertBefore(wrapper, title.firstChild);
+  item.setDom(dom);
 };
 
 function genPromisErr (err) {
