@@ -12,6 +12,34 @@ function Course (id, LMSInterface, plugins) {
   this.plugins = plugins;
 }
 
+Course.prototype.getMenu = function () {
+  return this.__root__;
+};
+
+Course.prototype.getPage = function (contentId) {
+  var result = null;
+  this.getMenu().forEach(function (page) {
+    if (!result) {
+      result = this.__getPage__(page, contentId);
+    }
+  }, this);
+  return result;
+};
+
+Course.prototype.__getPage__ = function (page, contentId) {
+  if (page.id === contentId) {
+    return page;
+  }
+  var result = null;
+  page.getItems().forEach(function (item) {
+    if (!result && item instanceof Page) {
+      result = this.__getPage__(item, contentId);
+    }
+  }, this);
+
+  return result;
+};
+
 /**
   Scans all top level pages
 */

@@ -8,7 +8,7 @@ function Item (courseId, id, title, dom) {
 }
 
 Item.prototype.getDom = function () {
-  return this.__dom__;
+  return this.__dom__.cloneNode(true);
 };
 
 Item.prototype.addLink = function (link) {
