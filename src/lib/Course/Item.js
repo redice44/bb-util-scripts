@@ -11,6 +11,10 @@ Item.prototype.getDom = function () {
   return this.__dom__.cloneNode(true);
 };
 
+Item.prototype.setDom = function (dom) {
+  this.__dom__ = dom.cloneNode(true);
+};
+
 Item.prototype.addLink = function (link) {
   this.__links__ = Object.assign({}, this.__links__, link);
 };

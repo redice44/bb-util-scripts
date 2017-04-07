@@ -7,7 +7,7 @@ import Plugins from 'Scanner/Plugins';
 import getFromStorage from 'Storage/get';
 import setToStorage from 'Storage/set';
 import delFromStorage from 'Storage/del';
-import newWindowIcon from 'Icons/newWindowIcon';
+import newWindowIcon from 'Icons/newWindow';
 
 // var DOM = new DOMInterface();
 var BBI = new Interface('https://fiu.blackboard.com');

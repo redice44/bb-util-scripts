@@ -1,9 +1,9 @@
 import DOMInterface from 'dom';
-import errorIcon from 'Icons/errorIcon';
-import errorOutlineIcon from 'Icons/errorOutlineIcon';
-import warningIcon from 'Icons/warningIcon';
-import newWindowIcon from 'Icons/newWindowIcon';
-import editIcon from 'Icons/editIcon';
+import editIcon from 'Icons/edit';
+import errorIcon from 'Icons/error';
+import errorOutlineIcon from 'Icons/errorOutline';
+import newWindowIcon from 'Icons/newWindow';
+import warningIcon from 'Icons/warning';
 
 function ScannerPluginInterface (name, color) {
   DOMInterface.call(this);

@@ -1,9 +1,9 @@
 import Page from 'Course/Page';
 import Item from 'Course/Item';
 
-import itemIcon from 'Icons/itemIcon';
-import folderClosedIcon from 'Icons/folderClosedIcon';
-import folderOpenIcon from 'Icons/folderOpenIcon';
+import itemIcon from 'Icons/item';
+import folderClosedIcon from 'Icons/folderClosed';
+import folderOpenIcon from 'Icons/folderOpen';
 
 function Course (id, LMSInterface, plugins) {
   this.id = id;
