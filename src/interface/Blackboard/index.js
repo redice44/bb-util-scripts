@@ -17,7 +17,9 @@ function BlackboardInterface(domain) {
     contentItems: 'li.liItem',            // Content Items
     itemLink: 'div.item > h3 > a',        // Content Item Link
     contentItemTitle: 'div.item > h3',    // Content Item Title
-    contentItemId: 'div.item'             // Content Item Id
+    contentItemId: 'div.item',            // Content Item Id
+    nonceAjax: 'input[name="blackboard.platform.security.NonceUtil.nonce.ajax"]',
+    nonce: 'input[name="blackboard.platform.security.NonceUtil.nonce"]'
   };
 
   this.endpoints = {
@@ -127,7 +129,6 @@ BlackboardInterface.prototype.addPrimarySubMenuButton = function (linkName, subI
   navNode.appendChild(menuBtn);
 };
 
-
 /**
   @param {Item} item - Item in which to find the content ID for.
   @return {String} - Item's content ID.
@@ -193,13 +194,82 @@ BlackboardInterface.prototype.__getActionLinks__ = function (dom) {
   return actionLinks;
 };
 
-
 BlackboardInterface.prototype.makeContentLink = function (item) {
   var courseId = item.courseId;
   var contentId = item.id;
   return {
     Content: `${domain}${this.endpoints.contentFolder}content_id=${contentId}&course_id=${courseId}#${contentId}`
   };
+};
+
+BlackboardInterface.prototype.getNonce = function (doc) {
+  doc = doc || document;
+  return this.getChild(this.q.nonce, 0, doc).value;
+};
+
+BlackboardInterface.prototype.getNonceAjax = function (doc) {
+  doc = doc || document;
+  return this.getChild(this.q.nonceAjax, 0, doc).value;
+};
+
+BlackboardInterface.prototype.editItem = function () {
+  // var nonce = this.getNonce();
+  var nonce = this.getNonce();
+  var that = this;
+  console.log('original nonce', nonce);
+  request
+    .get('https://fiu.blackboard.com/webapps/blackboard/execute/manageCourseItem?content_id=_5753040_1&course_id=_44712_1&dispatch=edit')
+    .end(function (err, res) {
+      if (err) {
+        return console.log(err);
+      }
+      console.log('edit page response');
+      console.log(res);
+      var parser = new DOMParser();
+      var doc = parser.parseFromString(res.text, "text/html");
+      console.log(doc);
+      // console.log(res.text);
+      // nonce = that.getNonce(doc);
+      nonce = doc.querySelector('#the_form input[name="blackboard.platform.security.NonceUtil.nonce"').value;
+
+      console.log('nonce', nonce);
+
+      request
+        .post('https://fiu.blackboard.com/webapps/blackboard/execute/manageCourseItem?content_id=_5753040_1&btype=&course_id=_44712_1')
+        .field('blackboard.platform.security.NonceUtil.nonce', nonce)
+        .field('course_id', '_44712_1')
+        .field('content_id', '_5753040_1')
+        .field('type', 'item')
+        .field('dispatch', 'save')
+        .field('user_title', 'iAmNewest')
+        // .field('htmlData_text_f', '/usr/local/blackboard/content/vi/BBLEARN/courses/1/Matthew_Thomson_SandBox/content/_5753040_1/embedded')
+        // .field('htmlData_text_w', 'https://fiu.blackboard.com/courses/1/Matthew_Thomson_SandBox/content/_5753040_1/embedded/')
+        // .field('htmlData_type', 'H')
+        // .field('textbox_prefix', 'htmlData_text')
+        // .field('htmlData_text', '<p>today is the day</p>')
+        // .field('isAvailable', 'false')
+        // .field('isTrack', 'false')
+        // .field('top_Submit', 'Submit')
+        // .field('title_color', '#000000')
+        .end(function (err, res) {
+          if (err) {
+            console.log(err);
+          }
+          console.log('edit response');
+          console.log(res);
+          // console.log(res.text);
+          var parser = new DOMParser();
+          var doc = parser.parseFromString(res.text, "text/html");
+          // var errText = that.getChild('#bbNG.receiptTag.content', 0, doc);
+          var errText = doc.getElementById('bbNG.receiptTag.content');
+          if (errText) {
+            console.log(errText.innerText);
+          } else {
+            console.log('Saved');
+            console.log(doc);
+          }
+        });
+    });
 };
 
 export default BlackboardInterface;

@@ -16,9 +16,9 @@ SPA.prototype.start = function () {
     .then(function () {
       that.course.scan()
         .then(that.makeSPA.bind(that))
-        .catch(genPromisErr);
+        .catch(genPromiseErr);
     })
-    .catch(genPromisErr);
+    .catch(genPromiseErr);
 };
 
 SPA.prototype.makeSPA = function () {
@@ -172,7 +172,7 @@ SPA.prototype.addActionIcons = function (item) {
   item.setDom(dom);
 };
 
-function genPromisErr (err) {
+function genPromiseErr (err) {
   console.log(err);
 }
 
