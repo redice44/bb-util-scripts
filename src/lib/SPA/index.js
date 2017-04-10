@@ -12,13 +12,23 @@ function SPA (LMSInterface) {
 SPA.prototype.start = function () {
   console.log('Getting Course');
   var that = this;
-  this.course.getCourse()
-    .then(function () {
-      that.course.scan()
-        .then(that.makeSPA.bind(that))
-        .catch(genPromiseErr);
-    })
-    .catch(genPromiseErr);
+  return new Promise(function (resolve, reject) {
+    that.course.getCourse()
+      .then(function () {
+        console.log('scanning course', that);
+        that.course.scan()
+          .then(function () {
+            that.makeSPA();
+            console.log('done', that);
+            resolve();
+        }).catch(function (err) {
+          reject(err);
+        });
+      })
+      .catch(function (err) {
+        reject(err);
+      });
+  });
 };
 
 SPA.prototype.makeSPA = function () {
