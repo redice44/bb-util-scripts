@@ -1,15 +1,14 @@
 import Interface from 'Blackboard';
 import Course from 'Course';
-// import NewWindowPlugin from 'Scanner/Plugins/NewWindowPlugin';
 import Plugins from 'Scanner/Plugins';
-// import DOMInterface from 'dom';
+import Modal from 'Modal';
 
 import getFromStorage from 'Storage/get';
 import setToStorage from 'Storage/set';
 import delFromStorage from 'Storage/del';
+
 import newWindowIcon from 'Icons/newWindow';
 
-// var DOM = new DOMInterface();
 var BBI = new Interface('https://fiu.blackboard.com');
 var course;
 var modal;
@@ -27,8 +26,10 @@ if (document.URL.includes('redice44.github.io/bb-util-scripts/results.html')) {
     results.appendChild(course.displayResults());
   }
 } else {
-  modal = buildModal();
-  document.body.appendChild(modal);
+  // modal = buildModal();
+  // document.body.appendChild(modal);
+  modal = new Modal('Scan');
+  document.body.appendChild(modal.getModal());
   BBI.addPrimaryMenuButton('Scan Course', makeCourse);
 }
 
@@ -36,7 +37,9 @@ if (document.URL.includes('redice44.github.io/bb-util-scripts/results.html')) {
 function makeCourse (e) {
   e.preventDefault();
   console.log('Building Course');
-  scanningModal();
+  // scanningModal();
+  modal.show();
+  modal.updateDisplay(BBI.makeNode('div > p {Scanning Course}'));
   course = new Course(BBI.getCourseId(), BBI, Plugins);
   course.getCourse()
     .then(scanCourse)
@@ -57,7 +60,7 @@ function saveResults () {
   console.log(c);
   setToStorage(c.id, c);
   console.log('saved', c.id);
-  finishedModal(c.id);
+  modal.updateDisplay(finishedModal(c.id));
 
   console.log(getFromStorage(c.id));
 }
@@ -133,14 +136,15 @@ function scanningModal () {
 
 function finishedModal(courseId) {
   var resultsPage = 'https://redice44.github.io/bb-util-scripts/results.html?course_id=';
-  BBI.setStyle({ display: 'flex' }, modal);
-  BBI.deleteChild('#scanner-modal-box > div', 0, modal);
+  // BBI.setStyle({ display: 'flex' }, modal);
+  // BBI.deleteChild('#scanner-modal-box > div', 0, modal);
   var modalNode = BBI.makeNode('div > a {View Results}');
   var linkNode = BBI.getChild('a', 0, modalNode);
   BBI.setAttr({ href: `${resultsPage}${courseId}`, target: '_blank'}, linkNode);
   BBI.setStyle({ color: '#DDDDDD' }, linkNode);
   linkNode.appendChild(newWindowIcon('#DDDDDD'));
-  BBI.getChild('#scanner-modal-box', 0, modal).appendChild(modalNode);
+  // BBI.getChild('#scanner-modal-box', 0, modal).appendChild(modalNode);
+  return modalNode;
 }
 
 
