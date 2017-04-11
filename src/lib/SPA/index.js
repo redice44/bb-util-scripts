@@ -200,8 +200,6 @@ SPA.prototype.saveEdit = function (event) {
   var that = this;
   var item = this.getItemFromTarget(event.target);
   var results = item.getEditContent();
-  // var parser = new DOMParser();
-  // var doc = parser.parseFromString(res.text, "text/html");
 
   // update the content with the editted content
   // title

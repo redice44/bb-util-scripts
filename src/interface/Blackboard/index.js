@@ -45,8 +45,7 @@ BlackboardInterface.prototype.getMainPage = function (id) {
         if (err) {
           reject(err);
         } else {
-          var parser = new DOMParser();
-          var doc = parser.parseFromString(res.text, "text/html");
+          var doc = that.stringToDom(res.text);
           var links = that.getChildren(that.q.courseMenuLink, that.getId(that.ids.courseMenu, doc))
             .filter(function (link) {
               return that.getUrl(link).includes(that.endpoints.contentFolder);
@@ -75,8 +74,7 @@ BlackboardInterface.prototype.getPage = function (page) {
         if (err) {
           reject(err);
         } else {
-          var parser = new DOMParser();
-          var doc = parser.parseFromString(res.text, "text/html");
+          var doc = that.stringToDom(res.text);
           page.addItems(that.parsePage(doc, page.courseId));
 
           resolve(page);
@@ -263,8 +261,7 @@ BlackboardInterface.prototype.startEdit = function (item) {
         if (err) {
           reject(err);
         }
-        var parser = new DOMParser();
-        var doc = parser.parseFromString(res.text, "text/html");
+        var doc = that.stringToDom(res.text);
         console.log(doc);
         doc = that.getId('the_form', doc);
         console.log(doc);
@@ -348,8 +345,7 @@ BlackboardInterface.prototype.editItem = function (item) {
       .end(function (err, res) {
         console.log('edit response');
         // console.log(res);
-        var parser = new DOMParser();
-        var doc = parser.parseFromString(res.text, "text/html");
+        var doc = that.stringToDom(res.text);
         // DOMInterface doesn't handle the . in the ID.
         var errText = doc.getElementById('bbNG.receiptTag.content');
         if (errText) {

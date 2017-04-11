@@ -1,5 +1,6 @@
 function DOMInterface () {
   this.__activeDom__ = null;
+  this.__parser__ = new DOMParser();
 }
 /**
   @param {DOM Node} dom - The DOM Node to set as the active DOM Node for applicable functions.
@@ -18,6 +19,10 @@ DOMInterface.prototype.clearActiveDom = function () {
 
 DOMInterface.prototype.useDocument = function () {
   return document;
+};
+
+DOMInterface.prototype.stringToDom = function (str) {
+  return this.__parser__.parseFromString(str, "text/html");
 };
 
 /**********************************
