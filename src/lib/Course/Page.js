@@ -16,6 +16,10 @@ Page.prototype.addItem = function (item) {
   this.__items__.push(item);
 };
 
+Page.prototype.addItems = function (items) {
+  this.__items__ = this.__items__.concat(items);
+};
+
 Page.prototype.getItems = function () {
   return this.__items__;
 };

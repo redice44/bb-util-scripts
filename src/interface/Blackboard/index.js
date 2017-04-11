@@ -77,27 +77,34 @@ BlackboardInterface.prototype.getPage = function (page) {
         } else {
           var parser = new DOMParser();
           var doc = parser.parseFromString(res.text, "text/html");
-          var items = that.getChildren(that.q.contentItems, that.getId(that.ids.contentItems, doc));
-          if (items) {
-            items.forEach(function (dom) {
-              var contentId = that.getContentId(dom);
-              var tempItem;
-              // console.log(dom);
-              if (that.isPage(dom)) {
-                tempItem = new Page(page.courseId, contentId, that.getContentTitle(dom), dom);
-              } else {
-                tempItem = new Item(page.courseId, contentId, that.getContentTitle(dom), dom);
-              }
-              tempItem.addLink(that.__getActionLinks__(dom));
-              tempItem.addLink(that.makeContentLink(tempItem));
-              page.addItem(tempItem);
-            });
-          }
+          page.addItems(that.parsePage(doc, page.courseId));
 
           resolve(page);
         }
       });
   });
+};
+
+BlackboardInterface.prototype.parsePage = function (doc, courseId) {
+  var items = this.getChildren(this.q.contentItems, this.getId(this.ids.contentItems, doc));
+  var results = [];
+  if (items) {
+    items.forEach(function (dom) {
+      var contentId = this.getContentId(dom);
+      var tempItem;
+      // console.log(dom);
+      if (this.isPage(dom)) {
+        tempItem = new Page(courseId, contentId, this.getContentTitle(dom), dom);
+      } else {
+        tempItem = new Item(courseId, contentId, this.getContentTitle(dom), dom);
+      }
+      tempItem.addLink(this.__getActionLinks__(dom));
+      tempItem.addLink(this.makeContentLink(tempItem));
+      results.push(tempItem);
+    }, this);
+  }
+
+  return results;
 };
 
 /**
@@ -212,64 +219,154 @@ BlackboardInterface.prototype.getNonceAjax = function (doc) {
   return this.getChild(this.q.nonceAjax, 0, doc).value;
 };
 
-BlackboardInterface.prototype.editItem = function () {
-  // var nonce = this.getNonce();
-  var nonce = this.getNonce();
+
+/*
+  Current known list of values for items
+  key - query
+
+  nonce - input[name="blackboard.platform.security.NonceUtil.nonce"]
+  contentId - input[name="content_id"]
+  courseId - input[name="course_id"]
+  type - input[name="type"]
+  ??? - input[name="do"]
+  dispatch - input[name="dispatch"]
+  ???- input[name="remove_file_id"]
+  ??? - input[name="modify_file_id"]
+  ??? - input[name="tab_id"]
+  ??? - input[name="area"]
+  ??? - input[name="btype"]
+
+  item title - input[name="user_title"]
+  title color - input[name="title_color"]
+  item body - textarea[name="htmlData_text"]
+
+  stuff to handle attachments...omit for now
+
+  availability
+    yes - input#isAvailable_true
+    no - input#isAvailable_false
+
+  tracking
+    yes - input#isTrack_true
+    no - input#isTrack_false
+
+  date availability
+    start - input#bbDateTimePickerstart.value format: YYYY-M-D HH:MM:SS Only double digits if needed
+    end - input#bbDateTimePickerend.value
+*/
+BlackboardInterface.prototype.startEdit = function (item) {
   var that = this;
-  console.log('original nonce', nonce);
-  request
-    .get('https://fiu.blackboard.com/webapps/blackboard/execute/manageCourseItem?content_id=_5753040_1&course_id=_44712_1&dispatch=edit')
-    .end(function (err, res) {
-      if (err) {
-        return console.log(err);
-      }
-      console.log('edit page response');
-      console.log(res);
-      var parser = new DOMParser();
-      var doc = parser.parseFromString(res.text, "text/html");
-      console.log(doc);
-      // console.log(res.text);
-      // nonce = that.getNonce(doc);
-      nonce = doc.querySelector('#the_form input[name="blackboard.platform.security.NonceUtil.nonce"').value;
+  return new Promise(function (resolve, reject) {
+    request
+      .get(item.getLinks().Edit)
+      .end(function (err, res) {
+        if (err) {
+          reject(err);
+        }
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(res.text, "text/html");
+        console.log(doc);
+        doc = that.getId('the_form', doc);
+        console.log(doc);
+        var results = {};
 
-      console.log('nonce', nonce);
+        results.contentId = item.id;
+        results.courseId = item.courseId;
 
-      request
-        .post('https://fiu.blackboard.com/webapps/blackboard/execute/manageCourseItem?content_id=_5753040_1&btype=&course_id=_44712_1')
-        .field('blackboard.platform.security.NonceUtil.nonce', nonce)
-        .field('course_id', '_44712_1')
-        .field('content_id', '_5753040_1')
-        .field('type', 'item')
-        .field('dispatch', 'save')
-        .field('user_title', 'iAmNewest')
-        // .field('htmlData_text_f', '/usr/local/blackboard/content/vi/BBLEARN/courses/1/Matthew_Thomson_SandBox/content/_5753040_1/embedded')
-        // .field('htmlData_text_w', 'https://fiu.blackboard.com/courses/1/Matthew_Thomson_SandBox/content/_5753040_1/embedded/')
-        // .field('htmlData_type', 'H')
-        // .field('textbox_prefix', 'htmlData_text')
-        // .field('htmlData_text', '<p>today is the day</p>')
-        // .field('isAvailable', 'false')
-        // .field('isTrack', 'false')
-        // .field('top_Submit', 'Submit')
-        // .field('title_color', '#000000')
-        .end(function (err, res) {
-          if (err) {
-            console.log(err);
-          }
-          console.log('edit response');
-          console.log(res);
-          // console.log(res.text);
-          var parser = new DOMParser();
-          var doc = parser.parseFromString(res.text, "text/html");
-          // var errText = that.getChild('#bbNG.receiptTag.content', 0, doc);
-          var errText = doc.getElementById('bbNG.receiptTag.content');
-          if (errText) {
-            console.log(errText.innerText);
-          } else {
-            console.log('Saved');
-            console.log(doc);
-          }
-        });
+        results.nonce = that.getChild('input[name="blackboard.platform.security.NonceUtil.nonce"]', 0, doc);
+        if (results.nonce) {
+          results.nonce = results.nonce.value;
+        }
+
+        results.type = that.getChild('input[name="type"]', 0, doc);
+        if (results.type) {
+          results.type = results.type.value;
+        }
+
+        results.title = that.getChild('input[name="user_title"]', 0, doc);
+        if (results.title) {
+          results.title = results.title.value;
+        }
+
+        results.titleColor = that.getChild('input[name="title_color"]', 0, doc);
+        if (results.titleColor) {
+          results.titleColor = results.titleColor.value;
+        }
+
+        results.body = that.getChild('textarea[name="htmlData_text"]', 0, doc);
+        if (results.body) {
+          results.body = results.body.value;
+        }
+
+        results.isVisible = that.getChild('#isAvailable_true', 0, doc);
+        if (results.isVisible) {
+          results.isVisible = results.isVisible.checked;
+        }
+
+        results.isTracking = that.getChild('#isTrack_true', 0, doc);
+        if(results.isTracking) {
+          results.isTracking = results.isTracking.checked;
+        }
+
+        results.dateStart = that.getChild('#bbDateTimePickerstart', 0, doc);
+        if (results.dateStart) {
+          results.dateStart = results.dateStart.value;
+        }
+
+        results.dateEnd = that.getChild('#bbDateTimePickerend', 0, doc);
+        if (results.dateEnd) {
+          results.dateEnd = results.dateEnd.value;
+        }
+
+        resolve(results);
+      });
     });
 };
 
+/**
+  @param {Item} item - Item being sent.
+  @return {Promise.<DOM Node>} - DOM Node of the resulting page. 
+    The content page that the item is located in.
+*/
+BlackboardInterface.prototype.editItem = function (item) {
+  var that = this;
+  return new Promise (function (resolve, reject) {
+    var content = item.getEditContent();
+    console.log('sending content', content);
+    request
+      .post(`https://fiu.blackboard.com/webapps/blackboard/execute/manageCourseItem?content_id=${item.id}&btype=&course_id=${item.courseId}`)
+      .field('blackboard.platform.security.NonceUtil.nonce', content.nonce)
+      .field('course_id', item.courseId)
+      .field('content_id', item.id)
+      .field('type', 'item')
+      .field('dispatch', 'save')
+      .field('user_title', content.title)
+      .field('htmlData_text', content.body)
+      .field('isAvailable', content.isVisible)
+      .field('isTrack', content.isTracking)
+      .field('title_color', content.titleColor)
+      .end(function (err, res) {
+        console.log('edit response');
+        // console.log(res);
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(res.text, "text/html");
+        // DOMInterface doesn't handle the . in the ID.
+        var errText = doc.getElementById('bbNG.receiptTag.content');
+        if (errText) {
+          // console.log(errText.innerText);
+          reject(errText.innerText);
+        } else {
+          console.log('Saved');
+          var items = that.parsePage(doc, item.courseId);
+          items = items.filter(function (i) {
+            return i.id === item.id;
+          });
+          console.log('Returning ', items[0]);
+          resolve(items[0].getDom());
+        }
+      });
+  });
+};
+
 export default BlackboardInterface;
+

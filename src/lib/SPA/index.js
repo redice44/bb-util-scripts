@@ -3,6 +3,7 @@ import Page from 'Course/Page';
 import editIcon from 'Icons/edit';
 import copyIcon from 'Icons/copy';
 import moveIcon from 'Icons/move';
+import saveIcon from 'Icons/save';
 
 function SPA (LMSInterface) {
   this.course = new Course(LMSInterface.getCourseId(), LMSInterface, []);
@@ -46,20 +47,7 @@ SPA.prototype.makeSPA = function () {
     contentId: contentId
   }, contentId, document.location.href);
 
-  this.course.getMenu().forEach(function (page) {
-    this.formatPage(page);
-  }, this);
-
-
   this.updateContent(this.course.getPage(contentId));
-};
-
-SPA.prototype.formatPage = function (page) {
-  var items = page.getItems();
-
-  items.forEach(function (item) {
-    this.addActionIcons(item);
-  }, this);
 };
 
 SPA.prototype.updateMenu = function () {
@@ -111,7 +99,8 @@ SPA.prototype.updateContent = function (page) {
   items = page.getItems();
   items.forEach(function (item) {
     var dom = item.getDom();
-
+    this.addActionIcons(item, dom);
+    this.addEditAreas(item, dom);
     if (item instanceof Page) {
       this.updateContentFolderLinks(dom, item.id);
     }
@@ -148,38 +137,114 @@ SPA.prototype.updateContentFolderLinks = function (dom, contentId) {
   // item.setDom(dom);
 };
 
-SPA.prototype.addActionIcons = function (item) {
-  var dom = item.getDom();
+SPA.prototype.addActionIcons = function (item, dom) {
+  // var dom = item.getDom();
   var wrapper = this.lmsi.makeNode('div');
   var linkUrls = item.getLinks();
-  var actions = [
-    {
-      type: 'Edit',
-      icon: editIcon
-    },
-    {
-      type: 'Copy',
-      icon: copyIcon
-    },
-    {
-      type: 'Move',
-      icon: moveIcon
-    }
-  ];
-  var icon;
-
-  actions.forEach(function (action) {
-    if (linkUrls[action.type]) {
-      icon = this.lmsi.makeNode('a');
-      this.lmsi.setAttr({ href: linkUrls[action.type], target: '_blank' }, icon);
-      icon.appendChild(action.icon());
-      wrapper.appendChild(icon);
-    }
-  }, this);
+  if (linkUrls.Edit) {
+    var icon = editIcon();
+    this.lmsi.setAttr({ name: item.id }, icon);
+    icon.addEventListener('click', this.initEdit.bind(this));
+    wrapper.appendChild(icon);
+  }
 
   var title = this.lmsi.getChild(this.lmsi.q.contentItemId, 0, dom);
   title.insertBefore(wrapper, title.firstChild);
-  item.setDom(dom);
+  // item.setDom(dom);
+};
+
+SPA.prototype.initEdit = function (event) {
+  var item = this.getItemFromTarget(event.target);
+
+  // Gets the edit page
+  this.lmsi.startEdit(item)
+    .then(this.editing.bind(this))
+    .catch(function (err) {
+      console.log(err);
+    });
+};
+
+SPA.prototype.editing = function (results) {
+  console.log('edit page results', results);
+  var item = this.course.getItem(results.contentId);
+  item.setEditContent(results);
+
+  // Find and display the input box
+  var titleEdit = this.lmsi.getId(`${results.contentId}_user_title`, document);
+  this.lmsi.setStyle({ display: 'block' }, titleEdit);
+  this.lmsi.setAttr({ value: results.title }, titleEdit);
+
+  // Find and display the textarea box
+  var bodyEdit = this.lmsi.getId(`${results.contentId}_body`, document);
+  this.lmsi.setStyle({ display: 'block' }, bodyEdit);
+  // this.lmsi.setAttr({ innerText: results.body }, bodyEdit);
+  bodyEdit.setValue(results.body);
+
+  // Find and hide the old title
+  var plainTitle = this.lmsi.getChild(`#${results.contentId} > h3 > span`, 1, document);
+  this.lmsi.setStyle({ display: 'none' }, plainTitle);
+
+  // Find and hide old body
+  var plainBody = this.lmsi.getChild(`#${results.contentId}`, 0, document);
+  plainBody = this.lmsi.getChild(`.details`, 0, plainBody.parentElement);
+  this.lmsi.setStyle({ display: 'none' }, plainBody);  
+  
+  // Add the save button
+  var save = saveIcon();
+  this.lmsi.setAttr({ name: results.contentId }, save);
+  save.addEventListener('click', this.saveEdit.bind(this));
+  titleEdit.parentElement.appendChild(save);
+};
+
+SPA.prototype.saveEdit = function (event) {
+  var that = this;
+  var item = this.getItemFromTarget(event.target);
+  var results = item.getEditContent();
+  // var parser = new DOMParser();
+  // var doc = parser.parseFromString(res.text, "text/html");
+
+  // update the content with the editted content
+  // title
+  results.title = this.lmsi.getId(`${item.id}_user_title`, document).value;
+  // body
+  results.body = this.lmsi.getId(`${item.id}_body`, document).getValue();
+  // etc
+
+  item.setEditContent(results);
+
+  // should be a promise
+  this.lmsi.editItem(item)
+    .then(function (dom) {
+      // should update the item's dom with this one.
+      item.setDom(dom);
+      that.updateContent(that.course.getItemsPage(item.id));
+    }).catch(genPromiseErr);
+  // update item/page. probably for now just fast reload the page.
+};
+
+SPA.prototype.addEditAreas = function (item, dom) {
+  var editArea = this.lmsi.makeNode(`div#${item.id}_edit_area.edit-area`);
+  var titleEdit = this.lmsi.makeNode(`input#${item.id}_user_title`);
+  this.lmsi.setAttr({ type: 'text' }, titleEdit);
+  this.lmsi.setStyle({ display: 'none' }, titleEdit);
+  editArea.appendChild(titleEdit);
+
+  var bodyEdit = this.lmsi.makeNode(`textarea#${item.id}_body`);
+  this.lmsi.setStyle({ display: 'none' }, bodyEdit);
+  this.lmsi.setAttr({ rows: '20', cols: '100' }, bodyEdit);
+  editArea.appendChild(bodyEdit);
+  // dom doesn't have a .getElementById() for some reason
+  this.lmsi.getChild(`#${item.id}`, 0, dom).appendChild(editArea);
+};
+
+SPA.prototype.getItemFromTarget = function (target) {
+  if (target.tagName === 'path') {
+    target = target.parentElement;
+  }
+
+  var id = this.lmsi.getAttr('name', target);
+
+  return this.course.getItem(id);
 };
 
 function genPromiseErr (err) {

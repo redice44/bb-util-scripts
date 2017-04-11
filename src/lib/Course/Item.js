@@ -5,7 +5,16 @@ function Item (courseId, id, title, dom) {
   this.__links__ = {};
   this.__results__ = {};
   this.__dom__ = dom;
+  this.__editContent__ = null;
 }
+
+Item.prototype.getEditContent = function () {
+  return Object.assign({}, this.__editContent__);
+};
+
+Item.prototype.setEditContent = function (results) {
+  this.__editContent__ = Object.assign({}, results);
+};
 
 Item.prototype.getDom = function () {
   return this.__dom__.cloneNode(true);
