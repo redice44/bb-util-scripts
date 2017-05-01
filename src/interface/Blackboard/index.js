@@ -252,6 +252,9 @@ BlackboardInterface.prototype.getNonceAjax = function (doc) {
     start - input#bbDateTimePickerstart.value format: YYYY-M-D HH:MM:SS Only double digits if needed
     end - input#bbDateTimePickerend.value
 */
+
+
+
 BlackboardInterface.prototype.startEdit = function (item) {
   var that = this;
   return new Promise(function (resolve, reject) {
@@ -262,9 +265,7 @@ BlackboardInterface.prototype.startEdit = function (item) {
           reject(err);
         }
         var doc = that.stringToDom(res.text);
-        console.log(doc);
         doc = that.getId('the_form', doc);
-        console.log(doc);
         var results = {};
 
         results.contentId = item.id;
@@ -292,7 +293,7 @@ BlackboardInterface.prototype.startEdit = function (item) {
 
         results.body = that.getChild('textarea[name="htmlData_text"]', 0, doc);
         if (results.body) {
-          results.body = results.body.value;
+          results.body = results.body.getValue();
         }
 
         results.isVisible = that.getChild('#isAvailable_true', 0, doc);
@@ -318,6 +319,106 @@ BlackboardInterface.prototype.startEdit = function (item) {
         resolve(results);
       });
     });
+};
+
+
+/* Content Folder
+content_id:_6030145_1
+course_id:_44712_1
+blackboard.platform.security.NonceUtil.nonce:f1d1b86a-b887-4003-8e5c-0835ad8db0c7
+user_title:depth lv 1
+title_color:#000000
+htmlData_text:<p>sadfasdfasfdsadf</p>
+contentView:T
+
+
+do:
+area:
+top_Submit:Submit
+htmlData_text_f:/usr/local/blackboard/content/vi/BBLEARN/courses/1/Matthew_Thomson_SandBox/content/_6030145_1/embedded
+htmlData_text_w:https://fiu.blackboard.com/courses/1/Matthew_Thomson_SandBox/content/_6030145_1/embedded/
+htmlData_type:H
+textbox_prefix:htmlData_text
+isAvailable:true
+isTrack:false
+bbDateTimePicker_start_date:
+bbDateTimePicker_start_datetime:
+pickdate:
+pickname:
+bbDateTimePicker_start_time:
+bbDateTimePicker_end_date:
+bbDateTimePicker_end_datetime:
+pickdate:
+pickname:
+bbDateTimePicker_end_time:
+*/
+
+
+BlackboardInterface.prototype.startEditFolder = function (item) {
+  return new Promise(function (resolve, reject) {
+    request
+      .get(item.getLinks().Edit)
+      .end(function (err, res) {
+        if (err) {
+          reject(err);
+        }
+        var doc = that.stringToDom(res.text);
+        doc = that.getId('the_form', doc);
+        var results = {};
+        results.contentId = item.id;
+        results.courseId = item.courseId;
+
+        results.nonce = that.getChild('input[name="blackboard.platform.security.NonceUtil.nonce"]', 0, doc);
+        if (results.nonce) {
+          results.nonce = results.nonce.value;
+        }
+
+        results.title = that.getChild('input[name="user_title"]', 0, doc);
+        if (results.title) {
+          results.title = results.title.value;
+        }
+
+        results.titleColor = that.getChild('input[name="title_color"]', 0, doc);
+        if (results.titleColor) {
+          results.titleColor = results.titleColor.value;
+        }
+
+        results.body = that.getChild('textarea[name="htmlData_text"]', 0, doc);
+        if (results.body) {
+          results.body = results.body.getValue();
+        }
+
+        results.contentView = that.getChild('#iconOnlyView', 0, doc);
+        if (results.contentView && results.contentView.checked) {
+          // I
+          results.contentView = results.contentView.value;
+        }
+
+        results.contentView = that.getChild('#textOnlyView', 0, doc);
+        if (results.contentView && results.contentView.checked) {
+          // T
+          results.contentView = results.contentView.value;
+        }
+
+        results.contentView = that.getChild('#iconAndTextView', 0, doc);
+        if (results.contentView && results.contentView.checked) {
+          // X
+          results.contentView = results.contentView.value;
+        }
+
+        results.isVisible = that.getChild('#availableYes', 0, doc);
+        if (results.isVisible) {
+          results.isVisible = results.isVisible.checked;
+        }
+
+        results.isTracking = that.getChild('#trackYes', 0, doc);
+        if(results.isTracking) {
+          results.isTracking = results.isTracking.checked;
+        }
+
+        resolve(results);
+      });
+  });
 };
 
 /**

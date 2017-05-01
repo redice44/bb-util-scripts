@@ -96,6 +96,10 @@ SPA.prototype.updateContent = function (page) {
     this.lmsi.getChild('form#content', 0, document).appendChild(contentItemsNode);
   }
 
+  // Update the title and breadcrumbs
+  this.updateContentTitle(page);
+  this.updateBreadCrumbs(page);
+
   items = page.getItems();
   items.forEach(function (item) {
     var dom = item.getDom();
@@ -109,6 +113,29 @@ SPA.prototype.updateContent = function (page) {
   }, this);
 
   window.scrollTo(0, 0);
+};
+
+SPA.prototype.updateContentTitle = function (page) {
+  var titleBar = this.lmsi.getChild('#pageTitleBar', 0, document);
+  var title = this.lmsi.getChild('h1 > span > span', 0, titleBar);
+  // this.lmsi.replaceText(page.title, title);
+  title.innerText = page.title
+  var actionMenu = this.lmsi.getChild('span.contextMenuContainer', 0, titleBar);
+
+  if (actionMenu) {
+    actionMenu.remove();
+  }
+};
+
+SPA.prototype.updateBreadCrumbs = function (page) {
+  var breadcrumbBar = this.lmsi.getChild('#breadcrumbs', 0, document);
+  var breadcrumbs = this.lmsi.getChildren('div.path > ol > li', breadcrumbBar);
+
+  while (breadcrumbs.length > 1) {
+    breadcrumbs[breadcrumbs.length - 1].remove();
+    breadcrumbs.pop();
+  }
+
 };
 
 SPA.prototype.updateContentFolderLinks = function (dom, contentId) {
