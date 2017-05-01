@@ -16,6 +16,10 @@ Item.prototype.setEditContent = function (results) {
   this.__editContent__ = Object.assign({}, results);
 };
 
+Item.prototype.clearEditContent = function () {
+  this.__editContent__ = null;
+};
+
 Item.prototype.getDom = function () {
   return this.__dom__.cloneNode(true);
 };

@@ -4,6 +4,7 @@ import editIcon from 'Icons/edit';
 import copyIcon from 'Icons/copy';
 import moveIcon from 'Icons/move';
 import saveIcon from 'Icons/save';
+import cancelIcon from 'Icons/cancel';
 
 function SPA (LMSInterface) {
   this.course = new Course(LMSInterface.getCourseId(), LMSInterface, []);
@@ -221,9 +222,16 @@ SPA.prototype.editing = function (results) {
   this.lmsi.setAttr({ name: results.contentId }, save);
   save.addEventListener('click', this.saveEdit.bind(this));
   titleEdit.parentElement.appendChild(save);
+
+  // Add cancel button
+  var cancel = cancelIcon();
+  this.lmsi.setAttr({ name: results.contentId }, cancel);
+  cancel.addEventListener('click', this.cancelEdit.bind(this));
+  titleEdit.parentElement.appendChild(cancel);
 };
 
 SPA.prototype.saveEdit = function (event) {
+  console.log('Saving');
   var that = this;
   var item = this.getItemFromTarget(event.target);
   var results = item.getEditContent();
@@ -237,7 +245,6 @@ SPA.prototype.saveEdit = function (event) {
 
   item.setEditContent(results);
 
-  // should be a promise
   this.lmsi.editItem(item)
     .then(function (dom) {
       // should update the item's dom with this one.
@@ -245,6 +252,13 @@ SPA.prototype.saveEdit = function (event) {
       that.updateContent(that.course.getItemsPage(item.id));
     }).catch(genPromiseErr);
   // update item/page. probably for now just fast reload the page.
+};
+
+SPA.prototype.cancelEdit = function (event) {
+  console.log('Canceling Edit');
+  var item = this.getItemFromTarget(event.target);
+  item.clearEditContent();
+  this.updateContent(this.course.getItemsPage(item.id));
 };
 
 SPA.prototype.addEditAreas = function (item, dom) {
