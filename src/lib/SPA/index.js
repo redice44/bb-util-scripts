@@ -5,6 +5,8 @@ import copyIcon from 'Icons/copy';
 import moveIcon from 'Icons/move';
 import saveIcon from 'Icons/save';
 import cancelIcon from 'Icons/cancel';
+import visibleIcon from 'Icons/visible';
+import hiddenIcon from 'Icons/hidden';
 
 function SPA (LMSInterface) {
   this.course = new Course(LMSInterface.getCourseId(), LMSInterface, []);
@@ -120,7 +122,7 @@ SPA.prototype.updateContentTitle = function (page) {
   var titleBar = this.lmsi.getChild('#pageTitleBar', 0, document);
   var title = this.lmsi.getChild('h1 > span > span', 0, titleBar);
   // this.lmsi.replaceText(page.title, title);
-  title.innerText = page.title
+  title.innerText = page.title;
   var actionMenu = this.lmsi.getChild('span.contextMenuContainer', 0, titleBar);
 
   if (actionMenu) {
@@ -208,6 +210,20 @@ SPA.prototype.editing = function (results) {
   // this.lmsi.setAttr({ innerText: results.body }, bodyEdit);
   bodyEdit.setValue(results.body);
 
+  // Visibility Icons
+  var visibleToggle = this.lmsi.getId(`${results.contentId}_visibility`, document);
+  this.lmsi.setStyle({ display: 'block' }, visibleToggle);
+  var visibleIcon = this.lmsi.getChild('svg', 0, visibleToggle);
+  var hiddenIcon = this.lmsi.getChild('svg', 1, visibleToggle);
+
+  this.lmsi.toggleClasses('hidden', !results.isVisible, visibleIcon);
+  visibleIcon.addEventListener('click', this.toggleVisibilityIcons.bind(this));
+  this.lmsi.setAttr({ name: results.contentId }, visibleIcon);
+
+  this.lmsi.toggleClasses('hidden', results.isVisible, hiddenIcon);
+  hiddenIcon.addEventListener('click', this.toggleVisibilityIcons.bind(this));
+  this.lmsi.setAttr({ name: results.contentId }, hiddenIcon);
+
   // Find and hide the old title
   var plainTitle = this.lmsi.getChild(`#${results.contentId} > h3 > span`, 1, document);
   this.lmsi.setStyle({ display: 'none' }, plainTitle);
@@ -228,6 +244,20 @@ SPA.prototype.editing = function (results) {
   this.lmsi.setAttr({ name: results.contentId }, cancel);
   cancel.addEventListener('click', this.cancelEdit.bind(this));
   titleEdit.parentElement.appendChild(cancel);
+};
+
+SPA.prototype.toggleVisibilityIcons = function (event) {
+  var item = this.getItemFromTarget(event.target);
+  var visibleToggle = this.lmsi.getId(`${item.id}_visibility`, document);
+
+  var results = item.getEditContent();
+  results.isVisible = !results.isVisible;
+  item.setEditContent(results);
+
+  var visibleIcon = this.lmsi.getChild('svg', 0, visibleToggle);
+  var hiddenIcon = this.lmsi.getChild('svg', 1, visibleToggle);
+  this.lmsi.toggleClasses('hidden', null, visibleIcon);
+  this.lmsi.toggleClasses('hidden', null, hiddenIcon);
 };
 
 SPA.prototype.saveEdit = function (event) {
@@ -272,6 +302,18 @@ SPA.prototype.addEditAreas = function (item, dom) {
   this.lmsi.setStyle({ display: 'none' }, bodyEdit);
   this.lmsi.setAttr({ rows: '20', cols: '100' }, bodyEdit);
   editArea.appendChild(bodyEdit);
+
+  var visibilityToggle = this.lmsi.makeNode(`div#${item.id}_visibility`);
+  this.lmsi.setStyle({ display: 'none' }, visibilityToggle);
+  var visIcon = visibleIcon();
+  var hidIcon = hiddenIcon();
+  // this.lmsi.addClasses('hidden', hidIcon);
+  visibilityToggle.appendChild(visIcon);
+  visibilityToggle.appendChild(hidIcon);
+  editArea.appendChild(visibilityToggle);
+
+
+
   // dom doesn't have a .getElementById() for some reason
   this.lmsi.getChild(`#${item.id}`, 0, dom).appendChild(editArea);
 };

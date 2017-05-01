@@ -123,6 +123,49 @@ DOMInterface.prototype.addClasses = function (classes, dom, updateActiveDom) {
   return domNode.cloneNode(true);
 };
 
+DOMInterface.prototype.removeClasses = function (classes, dom, updateActiveDom) {
+  var domNode = this.chainDom(dom, updateActiveDom);
+
+  if (!domNode) {
+    return null;
+  }
+
+  if (classes instanceof Array) {
+    classes.forEach(function (c) {
+      domNode.classList.remove(c);
+    });
+  } else {
+    domNode.classList.remove(classes);
+  }
+  return domNode.cloneNode(true);
+};
+
+DOMInterface.prototype.toggleClasses = function (classes, value, dom, updateActiveDom) {
+  var domNode = this.chainDom(dom, updateActiveDom);
+
+  if (!domNode) {
+    return null;
+  }
+
+  if (classes instanceof Array) {
+    classes.forEach(function (c) {
+      if (value !== null) {      
+        domNode.classList.toggle(c, value);
+      } else {
+        domNode.classList.toggle(c);
+      }
+    });
+  } else {
+    if (value !== null) {
+      domNode.classList.toggle(classes, value);
+    } else {
+      domNode.classList.toggle(classes);
+    }
+
+  }
+  return domNode.cloneNode(true);
+};
+
 /**
   Gets the DOM Node with the id.
   Part of the set of Mutatable DOM functions.
