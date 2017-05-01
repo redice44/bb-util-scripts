@@ -265,6 +265,23 @@ BlackboardInterface.prototype.startEdit = function (item) {
           reject(err);
         }
         var doc = that.stringToDom(res.text);
+        var scriptDates = that.getChildren('script', doc);
+        scriptDates = scriptDates[scriptDates.length - 3].innerText.split(';');
+
+        scriptDates = scriptDates.filter(function (d) {
+          return d.includes('new calendar.DatePicker');
+        });
+
+        scriptDates = scriptDates.map(function (d) {
+          return d.trim().split(',')[1];
+        });
+
+        scriptDates = scriptDates.map(function (d) {
+          return d.substr(1, d.length-2);
+        });
+
+
+
         doc = that.getId('the_form', doc);
         var results = {};
 
@@ -283,7 +300,7 @@ BlackboardInterface.prototype.startEdit = function (item) {
 
         results.title = that.getChild('input[name="user_title"]', 0, doc);
         if (results.title) {
-          results.title = results.title.value;
+            results.title = results.title.value;
         }
 
         results.titleColor = that.getChild('input[name="title_color"]', 0, doc);
@@ -306,15 +323,19 @@ BlackboardInterface.prototype.startEdit = function (item) {
           results.isTracking = results.isTracking.checked;
         }
 
-        results.dateStart = that.getChild('#bbDateTimePickerstart', 0, doc);
-        if (results.dateStart) {
-          results.dateStart = results.dateStart.value;
-        }
+        results.dateStart = scriptDates[0];
 
-        results.dateEnd = that.getChild('#bbDateTimePickerend', 0, doc);
-        if (results.dateEnd) {
-          results.dateEnd = results.dateEnd.value;
-        }
+        // results.dateStart = that.getChild('#bbDateTimePickerstart', 0, doc);
+        // if (results.dateStart) {
+        //   results.dateStart = results.dateStart.value;
+        // }
+
+        results.dateEnd = scriptDates[1];
+
+        // results.dateEnd = that.getChild('#bbDateTimePickerend', 0, doc);
+        // if (results.dateEnd) {
+        //   results.dateEnd = results.dateEnd.value;
+        // }
 
         resolve(results);
       });
