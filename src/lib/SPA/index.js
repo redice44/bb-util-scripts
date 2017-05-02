@@ -224,6 +224,16 @@ SPA.prototype.editing = function (results) {
   hiddenIcon.addEventListener('click', this.toggleVisibilityIcons.bind(this));
   this.lmsi.setAttr({ name: results.contentId }, hiddenIcon);
 
+  // Start Date
+  var startDateEdit = this.lmsi.getId(`${results.contentId}_start_date`, document);
+  this.lmsi.setAttr({ name: results.contentId, value: results.dateStart }, startDateEdit);
+  this.lmsi.setStyle({ display: 'block' }, startDateEdit);
+
+  // End Date
+  var endDateEdit = this.lmsi.getId(`${results.contentId}_end_date`, document);
+  this.lmsi.setAttr({ name: results.contentId, value: results.dateEnd }, endDateEdit);
+  this.lmsi.setStyle({ display: 'block' }, endDateEdit);
+
   // Find and hide the old title
   var plainTitle = this.lmsi.getChild(`#${results.contentId} > h3 > span`, 1, document);
   this.lmsi.setStyle({ display: 'none' }, plainTitle);
@@ -271,6 +281,65 @@ SPA.prototype.saveEdit = function (event) {
   results.title = this.lmsi.getId(`${item.id}_user_title`, document).value;
   // body
   results.body = this.lmsi.getId(`${item.id}_body`, document).getValue();
+  // Start Date/Time: 2017-05-01 23:59:00
+  var ampm;
+  var start = this.lmsi.getId(`${results.contentId}_start_date`, document).value;
+  results.dateStart = start;
+  start = start.split(' ');
+  results.startDate = '';
+  results.startTime = '';
+  results.startCheck = '';
+  if (start.length > 1) {
+    // 05/17/2017
+    results.startDate = start[0].split('-');
+    results.startDate = results.startDate[1] + '/' + results.startDate[2] + '/' + results.startDate[0];
+    // 11:59 PM
+    results.startTime = start[1].split(':');
+    results.startTime = results.startTime.map(function (d) {
+      return parseInt(d);
+    });
+    
+    ampm = ' AM';
+    if (results.startTime[0] >= 12) {
+      ampm = ' PM';
+    }
+    results.startTime = ((results.startTime[0] - 1) % 12 + 1) + ':' + results.startTime[1] + ampm;
+    results.startCheck = 1;
+  }
+
+
+
+
+  // results.dateStart = this.lmsi.getId(`${results.contentId}_start_date`, document).value;
+
+  // End Date/Time: 2017-05-01 23:59:00
+  var end = this.lmsi.getId(`${results.contentId}_end_date`, document).value;
+  results.dateEnd = end;
+  end = end.split(' ');
+  results.endDate = '';
+  results.endTime = '';
+  results.endCheck = '';
+  if (end.length > 1) {
+    results.endDate = end[0].split('-');
+    console.log(results.endDate);
+    results.endDate = results.endDate[1] + '/' + results.endDate[2] + '/' + results.endDate[0];
+    console.log(results.endDate);
+    // 11:59 PM
+    results.endTime = end[1].split(':');
+    console.log(results.endTime);
+    results.endTime = results.endTime.map(function (d) {
+      return parseInt(d);
+    });
+    console.log(results.endTime);
+    
+    ampm = ' AM';
+    if (results.endTime[0] >= 12) {
+      ampm = ' PM';
+    }
+    results.endTime = ((results.endTime[0] - 1) % 12 + 1) + ':' + results.endTime[1] + ampm;
+    results.endCheck = 1;
+  }
+
   // etc
 
   item.setEditContent(results);
@@ -281,7 +350,6 @@ SPA.prototype.saveEdit = function (event) {
       item.setDom(dom);
       that.updateContent(that.course.getItemsPage(item.id));
     }).catch(genPromiseErr);
-  // update item/page. probably for now just fast reload the page.
 };
 
 SPA.prototype.cancelEdit = function (event) {
@@ -307,12 +375,20 @@ SPA.prototype.addEditAreas = function (item, dom) {
   this.lmsi.setStyle({ display: 'none' }, visibilityToggle);
   var visIcon = visibleIcon();
   var hidIcon = hiddenIcon();
-  // this.lmsi.addClasses('hidden', hidIcon);
   visibilityToggle.appendChild(visIcon);
   visibilityToggle.appendChild(hidIcon);
   editArea.appendChild(visibilityToggle);
 
+  var startDateEdit = this.lmsi.makeNode(`input#${item.id}_start_date`);
+  this.lmsi.setStyle({ display: 'none' }, startDateEdit);
+  this.lmsi.setAttr({ type: 'text' }, startDateEdit);
+  editArea.appendChild(startDateEdit);
 
+
+  var endDateEdit = this.lmsi.makeNode(`input#${item.id}_end_date`);
+  this.lmsi.setStyle({ display: 'none' }, endDateEdit);
+  this.lmsi.setAttr({ type: 'text' }, endDateEdit);
+  editArea.appendChild(endDateEdit);
 
   // dom doesn't have a .getElementById() for some reason
   this.lmsi.getChild(`#${item.id}`, 0, dom).appendChild(editArea);

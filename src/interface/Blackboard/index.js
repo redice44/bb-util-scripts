@@ -464,6 +464,14 @@ BlackboardInterface.prototype.editItem = function (item) {
       .field('isAvailable', content.isVisible)
       .field('isTrack', content.isTracking)
       .field('title_color', content.titleColor)
+      .field('bbDateTimePicker_start_datetime', content.dateStart)
+      .field('bbDateTimePicker_end_datetime', content.dateEnd)
+      // .field('bbDateTimePicker_start_date', content.startDate)
+      // .field('bbDateTimePicker_start_time', content.startTime)
+      .field('bbDateTimePicker_start_checkbox', content.startCheck)
+      // .field('bbDateTimePicker_end_date', content.endDate)
+      // .field('bbDateTimePicker_end_time', content.endTime)
+      .field('bbDateTimePicker_end_checkbox', content.endCheck)
       .end(function (err, res) {
         console.log('edit response');
         // console.log(res);
@@ -472,6 +480,7 @@ BlackboardInterface.prototype.editItem = function (item) {
         var errText = doc.getElementById('bbNG.receiptTag.content');
         if (errText) {
           // console.log(errText.innerText);
+          console.log('Error in saving edit');
           reject(errText.innerText);
         } else {
           console.log('Saved');
