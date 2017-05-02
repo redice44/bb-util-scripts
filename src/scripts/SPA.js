@@ -24,19 +24,19 @@ function initSPA () {
     .then(function () {
       // modal.updateDisplay(lmsi.makeNode('div > p {SPA Ready!}'));
       modal.hide();
-      lmsi.addPrimaryMenuButton('Test Edit', testEdit);
+      // lmsi.addPrimaryMenuButton('Test Edit', testEdit);
     })
     .catch(function (err) {
       console.log(err);
     });
 }
 
-function testEdit () {
-  console.log('Testing Async Edit');
-  var testItem = app.course.getMenu()[0].getItems()[0];
-  console.log(testItem);
-  lmsi.startEdit(testItem);
+// function testEdit () {
+//   console.log('Testing Async Edit');
+//   var testItem = app.course.getMenu()[0].getItems()[0];
+//   console.log(testItem);
+//   lmsi.startEdit(testItem);
 
-}
+// }
 
 init();

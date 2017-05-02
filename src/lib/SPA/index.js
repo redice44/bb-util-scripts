@@ -187,11 +187,19 @@ SPA.prototype.initEdit = function (event) {
   var item = this.getItemFromTarget(event.target);
 
   // Gets the edit page
-  this.lmsi.startEdit(item)
-    .then(this.editing.bind(this))
-    .catch(function (err) {
-      console.log(err);
-    });
+  if (item instanceof Page) {
+    this.lmsi.startEditFolder(item)
+      .then(this.editing.bind(this))
+      .catch(function (err) {
+        console.log(err);
+      });
+  } else {
+    this.lmsi.startEdit(item)
+      .then(this.editing.bind(this))
+      .catch(function (err) {
+        console.log(err);
+      });
+  }
 };
 
 SPA.prototype.editing = function (results) {
@@ -344,12 +352,21 @@ SPA.prototype.saveEdit = function (event) {
 
   item.setEditContent(results);
 
-  this.lmsi.editItem(item)
-    .then(function (dom) {
-      // should update the item's dom with this one.
-      item.setDom(dom);
-      that.updateContent(that.course.getItemsPage(item.id));
-    }).catch(genPromiseErr);
+  if (item instanceof Page) {
+    this.lmsi.editFolder(item)
+      .then(function (dom) {
+        // should update the item's dom with this one.
+        item.setDom(dom);
+        that.updateContent(that.course.getItemsPage(item.id));
+      }).catch(genPromiseErr);
+  } else {
+    this.lmsi.editItem(item)
+      .then(function (dom) {
+        // should update the item's dom with this one.
+        item.setDom(dom);
+        that.updateContent(that.course.getItemsPage(item.id));
+      }).catch(genPromiseErr);
+  }
 };
 
 SPA.prototype.cancelEdit = function (event) {

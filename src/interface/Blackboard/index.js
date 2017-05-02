@@ -376,6 +376,7 @@ bbDateTimePicker_end_time:
 
 
 BlackboardInterface.prototype.startEditFolder = function (item) {
+  var that = this;
   return new Promise(function (resolve, reject) {
     request
       .get(item.getLinks().Edit)
@@ -384,6 +385,23 @@ BlackboardInterface.prototype.startEditFolder = function (item) {
           reject(err);
         }
         var doc = that.stringToDom(res.text);
+        console.log(doc);
+        var scriptDates = that.getChildren('script', doc);
+
+        scriptDates = scriptDates[scriptDates.length - 3].innerText.split(';');
+
+        scriptDates = scriptDates.filter(function (d) {
+          return d.includes('new calendar.DatePicker');
+        });
+
+        scriptDates = scriptDates.map(function (d) {
+          return d.trim().split(',')[1];
+        });
+
+        scriptDates = scriptDates.map(function (d) {
+          return d.substr(1, d.length-2);
+        });
+
         doc = that.getId('the_form', doc);
         var results = {};
         results.contentId = item.id;
@@ -437,10 +455,67 @@ BlackboardInterface.prototype.startEditFolder = function (item) {
           results.isTracking = results.isTracking.checked;
         }
 
+        results.dateStart = scriptDates[0];
+
+        results.dateEnd = scriptDates[1];
+
         resolve(results);
       });
   });
 };
+
+
+BlackboardInterface.prototype.editFolder = function (item) {
+  var that = this;
+  return new Promise (function (resolve, reject) {
+    var content = item.getEditContent();
+    console.log('sending content', content);
+    request
+      .post(`https://fiu.blackboard.com/webapps/blackboard/content/manageFolder_proc.jsp?btype=null`)
+      .type('form')
+      .send({ 'blackboard.platform.security.NonceUtil.nonce': content.nonce})
+      .send({ 'course_id': item.courseId })
+      .send({ 'content_id': item.id })
+      // .send({ 'type': 'item' })
+      // .send({ 'dispatch': 'save' })
+      .send({ 'user_title': content.title })
+      .send({ 'htmlData_text': content.body })
+      .send({ 'isAvailable': content.isVisible })
+      .send({ 'isTrack': content.isTracking })
+      .send({ 'title_color': content.titleColor })
+      .send({ 'bbDateTimePicker_start_datetime': content.dateStart })
+      .send({ 'bbDateTimePicker_end_datetime': content.dateEnd })
+      // .send({ 'bbDateTimePicker_start_date': content.startDate })
+      // .send({ 'bbDateTimePicker_start_time': content.startTime })
+      .send({ 'bbDateTimePicker_start_checkbox': content.startCheck })
+      // .send({ 'bbDateTimePicker_end_date': content.endDate })
+      // .send({ 'bbDateTimePicker_end_time': content.endTime })
+      .send({ 'bbDateTimePicker_end_checkbox': content.endCheck })
+      .end(function (err, res) {
+        console.log('edit response');
+        var doc = that.stringToDom(res.text);
+        // DOMInterface doesn't handle the . in the ID.
+        var errText = doc.getElementById('bbNG.receiptTag.content');
+        if (errText) {
+          // console.log(errText.innerText);
+          console.log('Error in saving edit');
+          reject(errText.innerText);
+        } else {
+          console.log('Saved');
+          var items = that.parsePage(doc, item.courseId);
+          items = items.filter(function (i) {
+            return i.id === item.id;
+          });
+          console.log('Returning ', items[0]);
+          resolve(items[0].getDom());
+        }
+      });
+  });
+};
+
+
+
+
 
 /**
   @param {Item} item - Item being sent.
