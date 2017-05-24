@@ -4,7 +4,8 @@ module.exports = {
   entry: {
     // nameOfOutputFile: './path/to/file.js'
     CourseScanner: './src/scripts/CourseScanner.js',
-    SPA: './src/scripts/SPA.js'
+    SPA: './src/scripts/SPA.js',
+    TinymceTemplates: './src/scripts/TinymceTemplates.js'
   },
   output: {
     path: path.resolve(__dirname, 'build'),
