@@ -54,6 +54,10 @@ NewWindowPlugin.prototype.getResults = function (item) {
 
 NewWindowPlugin.prototype.__validLink__ = function (link) {
   var target = link.getAttribute('target');
+  if (target) {
+    target = target.trim().toLowerCase();
+  }
+  
   var href = this.getUrl(link);
   var exclusions = [
     new RegExp(/^#/g),
@@ -68,7 +72,7 @@ NewWindowPlugin.prototype.__validLink__ = function (link) {
     // Ignore Blackboard links
     return true;
   }
-  return target && target.trim().toLowerCase() === '_blank';
+  return target && (target === '_blank' || target === '_new');
 };
 
 NewWindowPlugin.prototype.__encode__ = function (link) {
