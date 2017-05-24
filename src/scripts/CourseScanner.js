@@ -26,8 +26,8 @@ if (document.URL.includes('redice44.github.io/bb-util-scripts/results.html')) {
     results.appendChild(course.displayResults());
   }
 } else {
-  // modal = buildModal();
-  // document.body.appendChild(modal);
+  modal = buildModal();
+  document.body.appendChild(modal);
   modal = new Modal('Scan');
   document.body.appendChild(modal.getModal());
   BBI.addPrimaryMenuButton('Scan Course', makeCourse);

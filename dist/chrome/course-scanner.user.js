@@ -9,11 +9,15 @@
 // @author       Matt Thomson <red.cataclysm@gmail.com>
 // @match        https://fiu.blackboard.com/webapps/blackboard/content/listContentEditable.jsp?*
 // @match        https://redice44.github.io/bb-util-scripts/results.html*
+// @resource     coreCSS https://raw.githubusercontent.com/redice44/bb-util-scripts/dev/src/lib/Modal/core.css
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_deleteValue
 // @grant        GM_listValues
+// @grant        GM_addStyle
+// @grant        GM_getResourceText
 // ==/UserScript==
+GM_addStyle (GM_getResourceText('coreCSS'));
 /******/ (function(modules) { // webpackBootstrap
 /******/  // The module cache
 /******/  var installedModules = {};
