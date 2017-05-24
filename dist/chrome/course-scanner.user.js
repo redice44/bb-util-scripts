@@ -14,7 +14,6 @@
 // @grant        GM_deleteValue
 // @grant        GM_listValues
 // ==/UserScript==
-
 /******/ (function(modules) { // webpackBootstrap
 /******/  // The module cache
 /******/  var installedModules = {};
@@ -80,7 +79,7 @@
 /******/  __webpack_require__.p = "";
 /******/
 /******/  // Load entry module and return exports
-/******/  return __webpack_require__(__webpack_require__.s = 40);
+/******/  return __webpack_require__(__webpack_require__.s = 43);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -829,9 +828,9 @@ Page.prototype.getItems = function () {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_superagent__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_superagent__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_superagent___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_superagent__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_LMSInterface__ = __webpack_require__(16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_LMSInterface__ = __webpack_require__(18);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_Course_Page__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_Course_Item__ = __webpack_require__(3);
 
@@ -1472,11 +1471,11 @@ Modal.prototype.show = function () {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_dom__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_Icons_edit__ = __webpack_require__(17);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_Icons_error__ = __webpack_require__(29);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_Icons_errorOutline__ = __webpack_require__(30);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_Icons_newWindow__ = __webpack_require__(21);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_Icons_warning__ = __webpack_require__(35);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_Icons_edit__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_Icons_error__ = __webpack_require__(32);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_Icons_errorOutline__ = __webpack_require__(33);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_Icons_newWindow__ = __webpack_require__(24);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_Icons_warning__ = __webpack_require__(38);
 
 
 
@@ -1548,9 +1547,9 @@ ScannerPluginInterface.prototype.getErrorOutlineIcon = function () {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_Course_Page__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_Course_Item__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_Icons_item__ = __webpack_require__(20);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_Icons_folderClosed__ = __webpack_require__(18);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_Icons_folderOpen__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_Icons_item__ = __webpack_require__(22);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_Icons_folderClosed__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_Icons_folderOpen__ = __webpack_require__(21);
 
 
 
@@ -1565,18 +1564,10 @@ function Course (id, LMSInterface, plugins) {
   this.plugins = plugins;
 }
 
-/**
-  @return {Page[]} Pages of the course menu. 
-*/
 Course.prototype.getMenu = function () {
   return this.__root__;
 };
 
-/**
-  @param {String} contentId - The content ID of the Page to find.
-
-  @return {Page} - The Page with the content ID that was passed. Null if not found.
-*/
 Course.prototype.getPage = function (contentId) {
   var result = null;
 
@@ -1605,11 +1596,6 @@ Course.prototype.__getPage__ = function (page, contentId) {
   return result;
 };
 
-/**
-  @param {String} contentId - The content ID of the Item to find.
-
-  @return {Item} - The Item with the content ID that was passed. Null if not found.
-*/
 Course.prototype.getItem = function (contentId) {
   var result = null;
 
@@ -1642,11 +1628,6 @@ Course.prototype.__getItem__ = function (page, contentId) {
   return result;
 };
 
-/**
-  @param {String} contentId - The content ID of the Item to find.
-
-  @return {Page} - The Page that contains the found item.
-*/
 Course.prototype.getItemsPage = function (contentId) {
   var result = null;
   
@@ -1679,6 +1660,7 @@ Course.prototype.__getItemsPage__ = function (page, contentId) {
   Scans all top level pages
 */
 Course.prototype.getCourse = function () {
+  // get course dom
   var that = this;
   return new Promise(function (resolve, reject) {
     var menuLinks = that.LMSInterface.getMainPage(that.id);
@@ -1944,6 +1926,32 @@ Course.prototype.decodeItem = function (item) {
 
 /***/ }),
 /* 9 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (immutable) */ __webpack_exports__["a"] = getFromStorage;
+function getFromStorage (key) {
+  // return JSON.parse(__storage__.getItem(key));
+  // console.log('get: ', key,GM_getValue(key, null));
+  // return JSON.parse(GM_getValue(key, null));
+  return GM_getValue(key, null);
+}
+
+
+/***/ }),
+/* 10 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (immutable) */ __webpack_exports__["a"] = setToStorage;
+function setToStorage (key, value) {
+  // __storage__.setItem(key, JSON.stringify(value));
+  GM_setValue(key, value);
+}
+
+
+/***/ }),
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
@@ -2112,7 +2120,7 @@ Emitter.prototype.hasListeners = function(event){
 
 
 /***/ }),
-/* 10 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -2129,12 +2137,12 @@ if (typeof window !== 'undefined') { // Browser window
   root = this;
 }
 
-var Emitter = __webpack_require__(9);
-var RequestBase = __webpack_require__(12);
+var Emitter = __webpack_require__(11);
+var RequestBase = __webpack_require__(14);
 var isObject = __webpack_require__(2);
-var isFunction = __webpack_require__(11);
-var ResponseBase = __webpack_require__(13);
-var shouldRetry = __webpack_require__(14);
+var isFunction = __webpack_require__(13);
+var ResponseBase = __webpack_require__(15);
+var shouldRetry = __webpack_require__(16);
 
 /**
  * Noop.
@@ -3051,7 +3059,7 @@ request.put = function(url, data, fn){
 
 
 /***/ }),
-/* 11 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -3072,7 +3080,7 @@ module.exports = isFunction;
 
 
 /***/ }),
-/* 12 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -3669,7 +3677,7 @@ RequestBase.prototype._setTimeouts = function() {
 
 
 /***/ }),
-/* 13 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
@@ -3677,7 +3685,7 @@ RequestBase.prototype._setTimeouts = function() {
  * Module dependencies.
  */
 
-var utils = __webpack_require__(15);
+var utils = __webpack_require__(17);
 
 /**
  * Expose `ResponseBase`.
@@ -3808,7 +3816,7 @@ ResponseBase.prototype._setStatusProperties = function(status){
 
 
 /***/ }),
-/* 14 */
+/* 16 */
 /***/ (function(module, exports) {
 
 var ERROR_CODES = [
@@ -3837,7 +3845,7 @@ module.exports = function shouldRetry(err, res) {
 
 
 /***/ }),
-/* 15 */
+/* 17 */
 /***/ (function(module, exports) {
 
 
@@ -3910,7 +3918,7 @@ exports.cleanHeader = function(header, shouldStripCookie){
 };
 
 /***/ }),
-/* 16 */
+/* 18 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -3953,7 +3961,7 @@ LMSInterface.prototype.getContentId = function (item) {
 
 
 /***/ }),
-/* 17 */
+/* 19 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -3982,7 +3990,7 @@ function editIcon (color) {
 
 
 /***/ }),
-/* 18 */
+/* 20 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -4011,7 +4019,7 @@ function folderClosedIcon (color) {
 
 
 /***/ }),
-/* 19 */
+/* 21 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -4040,7 +4048,7 @@ function folderOpenIcon (color) {
 
 
 /***/ }),
-/* 20 */
+/* 22 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -4069,7 +4077,8 @@ function itemIcon (color) {
 
 
 /***/ }),
-/* 21 */
+/* 23 */,
+/* 24 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -4098,15 +4107,17 @@ function newWindowIcon (color) {
 
 
 /***/ }),
-/* 22 */,
-/* 23 */
+/* 25 */,
+/* 26 */,
+/* 27 */,
+/* 28 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_Scanner_Plugins_ImageTextPlugin__ = __webpack_require__(36);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_Scanner_Plugins_NewWindowPlugin__ = __webpack_require__(37);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_Scanner_Plugins_OldMediasitesPlugin__ = __webpack_require__(38);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_Scanner_Plugins_OldVivoPlugin__ = __webpack_require__(39);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_Scanner_Plugins_ImageTextPlugin__ = __webpack_require__(39);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_Scanner_Plugins_NewWindowPlugin__ = __webpack_require__(40);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_Scanner_Plugins_OldMediasitesPlugin__ = __webpack_require__(41);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_Scanner_Plugins_OldVivoPlugin__ = __webpack_require__(42);
 
 
 
@@ -4123,7 +4134,7 @@ var plugins = [
 
 
 /***/ }),
-/* 24 */
+/* 29 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -4135,35 +4146,9 @@ function delFromStorage (key) {
 
 
 /***/ }),
-/* 25 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (immutable) */ __webpack_exports__["a"] = getFromStorage;
-function getFromStorage (key) {
-  // return JSON.parse(__storage__.getItem(key));
-  // console.log('get: ', key,GM_getValue(key, null));
-  // return JSON.parse(GM_getValue(key, null));
-  return GM_getValue(key, null);
-}
-
-
-/***/ }),
-/* 26 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (immutable) */ __webpack_exports__["a"] = setToStorage;
-function setToStorage (key, value) {
-  // __storage__.setItem(key, JSON.stringify(value));
-  GM_setValue(key, value);
-}
-
-
-/***/ }),
-/* 27 */,
-/* 28 */,
-/* 29 */
+/* 30 */,
+/* 31 */,
+/* 32 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -4191,7 +4176,7 @@ function errorIcon (color) {
 
 
 /***/ }),
-/* 30 */
+/* 33 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -4220,11 +4205,11 @@ function errorOutlineIcon (color) {
 
 
 /***/ }),
-/* 31 */,
-/* 32 */,
-/* 33 */,
 /* 34 */,
-/* 35 */
+/* 35 */,
+/* 36 */,
+/* 37 */,
+/* 38 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -4253,7 +4238,7 @@ function warningIcon (color) {
 
 
 /***/ }),
-/* 36 */
+/* 39 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -4343,7 +4328,7 @@ ImageTextPlugin.prototype.__encode__ = function (link) {
 
 
 /***/ }),
-/* 37 */
+/* 40 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -4436,7 +4421,7 @@ NewWindowPlugin.prototype.__encode__ = function (link) {
 
 
 /***/ }),
-/* 38 */
+/* 41 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -4511,7 +4496,7 @@ OldMediasitesPlugin.prototype.__encode__ = function (link) {
 
 
 /***/ }),
-/* 39 */
+/* 42 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -4586,19 +4571,19 @@ OldVivoPlugin.prototype.__encode__ = function (link) {
 
 
 /***/ }),
-/* 40 */
+/* 43 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_Blackboard__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_Course__ = __webpack_require__(8);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_Scanner_Plugins__ = __webpack_require__(23);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_Scanner_Plugins__ = __webpack_require__(28);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_Modal__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_Storage_get__ = __webpack_require__(25);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_Storage_set__ = __webpack_require__(26);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_Storage_del__ = __webpack_require__(24);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_Icons_newWindow__ = __webpack_require__(21);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_Storage_get__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_Storage_set__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_Storage_del__ = __webpack_require__(29);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_Icons_newWindow__ = __webpack_require__(24);
 
 
 
@@ -4627,8 +4612,8 @@ if (document.URL.includes('redice44.github.io/bb-util-scripts/results.html')) {
     results.appendChild(course.displayResults());
   }
 } else {
-  // modal = buildModal();
-  // document.body.appendChild(modal);
+  modal = buildModal();
+  document.body.appendChild(modal);
   modal = new __WEBPACK_IMPORTED_MODULE_3_Modal__["a" /* default */]('Scan');
   document.body.appendChild(modal.getModal());
   BBI.addPrimaryMenuButton('Scan Course', makeCourse);
@@ -4747,6 +4732,14 @@ function finishedModal(courseId) {
   // BBI.getChild('#scanner-modal-box', 0, modal).appendChild(modalNode);
   return modalNode;
 }
+
+
+
+
+
+
+
+
 
 /***/ })
 /******/ ]);
