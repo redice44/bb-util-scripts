@@ -4,39 +4,4749 @@
 // @source       https://github.com/redice44/bb-util-scripts/dist/chrome/course-scanner.user.js
 // @updateURL    https://github.com/redice44/bb-util-scripts/dist/chrome/course-scanner.user.js
 // @supportURL   https://github.com/redice44/bb-util-scripts/issues
-// @version      0.1.0
+// @version      0.2.0
 // @description  Scans course and displays scan results
 // @author       Matt Thomson <red.cataclysm@gmail.com>
 // @match        https://fiu.blackboard.com/webapps/blackboard/content/listContentEditable.jsp?*
 // @match        https://redice44.github.io/bb-util-scripts/results.html*
-// @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/common/getParameters.js
-// @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/storage/storage.js
-// @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/dom/primary-menu-button.js
-// @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/course-scan/plugins/newWindowPlugin.js
-// @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/course-scan/plugins/oldVivoPlugin.js
-// @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/course-scan/plugins/oldMediaSitesPlugin.js
-// @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/dom/parsePage.js
-// @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/course-scan/scanner.js
-// @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/scan-results/scan-results.js
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_deleteValue
 // @grant        GM_listValues
 // ==/UserScript==
 
-var scannerPlugins = [
-  linkNewWindowPlugin,
-  mediaSitesOldLinkPlugin,
-  vivoOldLinkPlugin
+/******/ (function(modules) { // webpackBootstrap
+/******/  // The module cache
+/******/  var installedModules = {};
+/******/
+/******/  // The require function
+/******/  function __webpack_require__(moduleId) {
+/******/
+/******/    // Check if module is in cache
+/******/    if(installedModules[moduleId])
+/******/      return installedModules[moduleId].exports;
+/******/
+/******/    // Create a new module (and put it into the cache)
+/******/    var module = installedModules[moduleId] = {
+/******/      i: moduleId,
+/******/      l: false,
+/******/      exports: {}
+/******/    };
+/******/
+/******/    // Execute the module function
+/******/    modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/
+/******/    // Flag the module as loaded
+/******/    module.l = true;
+/******/
+/******/    // Return the exports of the module
+/******/    return module.exports;
+/******/  }
+/******/
+/******/
+/******/  // expose the modules object (__webpack_modules__)
+/******/  __webpack_require__.m = modules;
+/******/
+/******/  // expose the module cache
+/******/  __webpack_require__.c = installedModules;
+/******/
+/******/  // identity function for calling harmony imports with the correct context
+/******/  __webpack_require__.i = function(value) { return value; };
+/******/
+/******/  // define getter function for harmony exports
+/******/  __webpack_require__.d = function(exports, name, getter) {
+/******/    if(!__webpack_require__.o(exports, name)) {
+/******/      Object.defineProperty(exports, name, {
+/******/        configurable: false,
+/******/        enumerable: true,
+/******/        get: getter
+/******/      });
+/******/    }
+/******/  };
+/******/
+/******/  // getDefaultExport function for compatibility with non-harmony modules
+/******/  __webpack_require__.n = function(module) {
+/******/    var getter = module && module.__esModule ?
+/******/      function getDefault() { return module['default']; } :
+/******/      function getModuleExports() { return module; };
+/******/    __webpack_require__.d(getter, 'a', getter);
+/******/    return getter;
+/******/  };
+/******/
+/******/  // Object.prototype.hasOwnProperty.call
+/******/  __webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
+/******/
+/******/  // __webpack_public_path__
+/******/  __webpack_require__.p = "";
+/******/
+/******/  // Load entry module and return exports
+/******/  return __webpack_require__(__webpack_require__.s = 40);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_dom__ = __webpack_require__(1);
+
+
+var dom = new __WEBPACK_IMPORTED_MODULE_0_dom__["a" /* default */]();
+
+function makeIcon (color, pathAttrs) {
+  color = color || '#000000';
+  var icon = dom.makeSvg(`svg > path * ${pathAttrs.length}`);
+  var svgAttr = {
+    fill: color,
+    height: '24',
+    width: '24',
+    viewBox: '0 0 24 24',
+    xmlns: 'http://www.w3.org/2000/svg'
+  };
+  dom.setAttr(svgAttr, icon);
+  pathAttrs.forEach(function (pathAttr, i) {
+    dom.setAttr(pathAttr, dom.getChild('path', i, icon));
+  });
+
+  return icon;
+}
+
+/* harmony default export */ __webpack_exports__["a"] = makeIcon;
+
+
+/***/ }),
+/* 1 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+function DOMInterface () {
+  this.__activeDom__ = null;
+  this.__parser__ = new DOMParser();
+}
+/**
+  @param {DOM Node} dom - The DOM Node to set as the active DOM Node for applicable functions.
+*/
+DOMInterface.prototype.setActiveDom = function (dom) {
+  this.__activeDom__ = dom;
+};
+
+/**
+  Sets the active DOM Node to null.
+*/
+DOMInterface.prototype.clearActiveDom = function () {
+  this.__activeDom__ = null;
+};
+
+
+DOMInterface.prototype.useDocument = function () {
+  return document;
+};
+
+DOMInterface.prototype.stringToDom = function (str) {
+  return this.__parser__.parseFromString(str, "text/html");
+};
+
+/**********************************
+  Set of Mutatable DOM functions
+**********************************/
+
+DOMInterface.prototype.addText = function (text, dom, updateActiveDom) {
+  var domNode = this.chainDom(dom, updateActiveDom);
+
+  if (!domNode) {
+    return null;
+  }
+
+  domNode.appendChild(document.createTextNode(text));
+
+  return domNode.cloneNode(true);
+};
+
+DOMInterface.prototype.replaceText = function (text, dom, updateActiveDom) {
+  var domNode = this.chainDom(dom, updateActiveDom);
+
+  if (!domNode) {
+    return null;
+  }
+
+  domNode.innerText = text;
+
+  return domNode.cloneNode(true);
+};
+
+/**
+  Sets a set of attributes to the DOM Node.
+  Part of the set of Mutatable DOM functions.
+
+  @param {Object} attributes - The set of attributes to apply to the DOM Node.
+  @param {DOM Node} dom - (Optional) The DOM Node to apply the attributes to.
+  @param {boolean} updateActiveDom - (Optional) If this dom should update the active DOM Node.
+
+  @return {DOM Node} - DOM Node with the new attributes. 
+*/
+DOMInterface.prototype.setAttr = function (attributes, dom, updateActiveDom) {
+  var attr;
+  var domNode = this.chainDom(dom, updateActiveDom);
+
+  if (!domNode) {
+    return null;
+  }
+
+  for (attr in attributes) {
+    domNode.setAttribute(attr, attributes[attr]);
+  }
+
+  return domNode.cloneNode(true);
+};
+
+DOMInterface.prototype.setStyle = function (styles, dom, updateActiveDom) {
+  var domNode = this.chainDom(dom, updateActiveDom);
+  var style;
+  var styleStr = '';
+  if (!domNode) {
+    return null;
+  }
+
+  for (style in styles) {
+    // styleStr += `${style}: ${styles[style]};`;
+    domNode.style[style] = styles[style];
+  }
+  // console.log(styleStr);
+  // domNode.setAttribute('style', styleStr);
+
+  return domNode.cloneNode(true);
+};
+
+/**
+  Adds the classes to the DOM Node.
+  Part of the set of Mutatable DOM functions.
+
+  @param {String[]} classes - Array of CSS classes to apply to the dom.
+  @param {DOM Node} dom - (Optional) The DOM Node to apply the attributes to.
+  @param {boolean} updateActiveDom - (Optional) If this dom should update the active DOM Node.
+
+  @return {DOM Node} - DOM Node with the new attributes. 
+*/
+DOMInterface.prototype.addClasses = function (classes, dom, updateActiveDom) {
+  var domNode = this.chainDom(dom, updateActiveDom);
+
+  if (!domNode) {
+    return null;
+  }
+
+  if (classes instanceof Array) {
+    classes.forEach(function (c) {
+      domNode.classList.add(c);
+    });
+  } else {
+    domNode.classList.add(classes);
+  }
+  return domNode.cloneNode(true);
+};
+
+DOMInterface.prototype.removeClasses = function (classes, dom, updateActiveDom) {
+  var domNode = this.chainDom(dom, updateActiveDom);
+
+  if (!domNode) {
+    return null;
+  }
+
+  if (classes instanceof Array) {
+    classes.forEach(function (c) {
+      domNode.classList.remove(c);
+    });
+  } else {
+    domNode.classList.remove(classes);
+  }
+  return domNode.cloneNode(true);
+};
+
+DOMInterface.prototype.toggleClasses = function (classes, value, dom, updateActiveDom) {
+  var domNode = this.chainDom(dom, updateActiveDom);
+
+  if (!domNode) {
+    return null;
+  }
+
+  if (classes instanceof Array) {
+    classes.forEach(function (c) {
+      if (value !== null) {      
+        domNode.classList.toggle(c, value);
+      } else {
+        domNode.classList.toggle(c);
+      }
+    });
+  } else {
+    if (value !== null) {
+      domNode.classList.toggle(classes, value);
+    } else {
+      domNode.classList.toggle(classes);
+    }
+
+  }
+  return domNode.cloneNode(true);
+};
+
+/**
+  Gets the DOM Node with the id.
+  Part of the set of Mutatable DOM functions.
+
+  @param {String} id - ID of the DOM Node to return.
+  @param {DOM Node} dom - (Optional) The DOM Node to apply the attributes to.
+  @param {boolean} updateActiveDom - (Optional) If this dom should update the active DOM Node.
+
+  @return {DOM Node}
+*/
+DOMInterface.prototype.getId = function (id, dom, updateActiveDom) {
+  var domNode = this.chainDom(dom, updateActiveDom);
+
+  if (!domNode) {
+    return null;
+  }
+
+  return domNode.getElementById(id);
+};
+
+/**
+  Gets the children of the DOM Node.
+  Part of the set of Mutatable DOM functions.
+
+  @param {String} q - (Optional) Query string. If not provided, then all children are returned.
+  @param {DOM Node} dom - (Optional) The DOM Node to apply the attributes to.
+  @param {boolean} updateActiveDom - (Optional) If this dom should update the active DOM Node.
+
+  @return: {DOM Node[]}
+*/
+DOMInterface.prototype.getChildren = function (q, dom, updateActiveDom) {
+  var domNode = this.chainDom(dom, updateActiveDom);
+
+  if (!domNode) {
+    return null;
+  }
+
+  if (q) {
+    return toArray(domNode.querySelectorAll(q));
+  } else {
+    return toArray(domNode.children);
+  }
+};
+
+/**
+  Gets a child of the DOM Node.
+  Part of the set of Mutatable DOM functions.
+
+  @param {String} q - (Optional) Query string. If not provided, then all children are returned.
+  @param {Int} i - (Optional) index of the child. If not provided, then first child is returned.
+  @param {DOM Node} dom - (Optional) The DOM Node to apply the attributes to.
+  @param {boolean} updateActiveDom - (Optional) If this dom should update the active DOM Node.
+  @return: DOM node
+*/
+DOMInterface.prototype.getChild = function (q, i, dom, updateActiveDom) {
+  var children;
+  var index;
+  var domNode = this.chainDom(dom, updateActiveDom);
+  if (!domNode) {
+    return null;
+  }
+
+  index = i || 0;
+  children = this.getChildren(q, domNode);
+
+  if (index === 0 && (!children || children.length === 0)) {
+    return null;
+  }
+  return children[index];
+};
+
+DOMInterface.prototype.deleteChild = function (q, i, dom, updateActiveDom) {
+  var children;
+  var index;
+  var domNode = this.chainDom(dom, updateActiveDom);
+  if (!domNode) {
+    return null;
+  }
+
+  index = i || 0;
+  children = this.getChildren(q, domNode);
+
+  if (index === 0 && (!children || children.length === 0)) {
+    return null;
+  }
+  children[index].remove();
+  return domNode.cloneNode(true);
+};
+
+/**
+  @private
+  Private helper for the Mutatable DOM functions.
+
+  @param {DOM Node} dom - Passed DOM Node to use.
+  @param {boolean} updateActiveDom - If this dom should update the active DOM Node.
+*/
+DOMInterface.prototype.chainDom = function (dom, updateActiveDom) {
+  if (updateActiveDom) {
+    this.setActiveDom(dom);
+  }
+
+  return dom || this.__activeDom__;
+};
+
+
+/*********************************
+  Set of DOM Creation functions
+*********************************/
+
+
+/**
+  Builds an SVG DOM Node from an Emmet styled string. See https://emmet.io/ for more details.
+  Only supports >, +, and * currently.
+
+  @param {String} emmetString - Emmet styled string.
+
+  @return {DOM Node}
+*/
+DOMInterface.prototype.makeSvg = function (emmetString) {
+  return this.__makeNode__(emmetString, function (node) {
+    return document.createElementNS("http://www.w3.org/2000/svg", node);
+  });
+};
+
+/**
+  Builds a DOM Node from an Emmet styled string. See https://emmet.io/ for more details.
+  Only supports >, +, and * currently.
+
+  @param {String} emmetString - Emmet styled string.
+
+  @return {DOM Node}
+*/
+DOMInterface.prototype.makeNode = function (emmetString) {
+  return this.__makeNode__(emmetString, function (node) {
+    return document.createElement(node);
+  });
+};
+
+/**
+  @private
+  Private helper to make DOM Nodes.
+
+  @param {String} emmetString - Emmet styled string.
+  @param {function} create - Function to return a DOM Node
+*/
+DOMInterface.prototype.__makeNode__ = function (emmetString, create) {
+  var ops = {
+    '>': 1,
+    '+': 2,
+    //'^',
+    '*': 0
+  };
+  
+  var tokens = tokenize(emmetString);
+  // console.log(tokens);
+  var opStack = [];
+  var nodeStack = [];
+  var dom = null;
+  while (tokens.length > 0) {
+    var t = tokens.shift();
+    // console.log(`token: ${t}`);
+    var isOp = null;
+    var op;
+    for (op in ops) {
+      if (t === op) {
+        isOp = t;
+      }
+    }
+    // Opperator
+    if (isOp) {
+      if (opStack.length > 0) {
+        if (isOp === '*') {
+          // Is multiplication op
+          // console.log('Multiplying');
+          var count = parseInt(tokens.shift());
+          var nodes = [];
+          var temp = nodeStack.pop();
+          var i;
+          for (i = 0; i < count; i++) {
+            nodes.push(temp.cloneNode(true));
+            // nodeStack.push(temp.cloneNode(true));
+            // opStack.push('+');
+          }
+          // nodeStack.push(temp.cloneNode(true));
+          nodeStack.push(nodes);
+        } else if (opStack.length === 0 || ops[opStack[opStack.length - 1]] <= ops[isOp]) {
+          // Peek to see if you can add to op stack
+          opStack.push(isOp);
+          // console.log(`Adding ${isOp} to opStack`);
+        } else {
+          // evaluate
+          nodeStack.push(this.__evaluateNodeStack__(opStack, nodeStack));
+          opStack.push(isOp);
+          // console.log(`Adding ${isOp} to opStack post eval`);
+          // console.log(`Adding ${nodeStack[nodeStack.length - 1]} to nodeStack`);
+        }
+      } else {
+        opStack.push(isOp);
+        // console.log(`Adding ${isOp} to opStack`);
+      }
+    } else {
+      // Node
+      var node = t.split('#');
+      var id = null;
+      var classes = [];
+      if (node.length > 1) {
+        classes = node[1].split('.');
+        id = classes[0];
+        classes.shift();
+        node = node[0];
+      } else {
+        classes = node[0].split('.');
+        node = classes[0];
+        classes.shift();
+      }
+
+      // generate node with ID and classes
+      // add to node stack
+      if (node.includes('{')) {
+        var n = nodeStack.pop();
+        n.append(this.__makeTextNode__(node));
+        this.setActiveDom(n);
+      } else {
+        this.setActiveDom(create(node));
+        if (id) {
+          this.setAttr({"id": id});
+        }
+        if (classes.length > 0) {
+          this.addClasses(classes);
+        }
+      }
+      nodeStack.push(this.__activeDom__.cloneNode(true));
+      this.clearActiveDom();
+      // console.log(`adding ${nodeStack[nodeStack.length - 1]} to nodeStack`);
+    }
+  }
+
+  return this.__evaluateNodeStack__(opStack, nodeStack);
+};
+
+/**
+  @private
+  Private helper to join DOM Nodes
+
+  @param {String[]} opStack - Stack of opperators
+  @param {DOM Node[]} nodeStack - Stack of DOM Nodes
+
+  @return {DOM Node} - The resulting DOM Node after evaluating the stacks.
+*/
+DOMInterface.prototype.__evaluateNodeStack__ = function (opStack, nodeStack) {
+  // console.log('Evaluating stack');
+  // console.log(opStack, nodeStack);
+  var n1;
+  var n2;
+  var op;
+
+  while (opStack.length > 0) {
+    n1 = nodeStack.pop();
+    op = opStack.pop();
+    n2 = nodeStack.pop();
+    // console.log('n1', n1);
+    // console.log(`op: ${op}`);
+    // console.log('n2', n2);
+    switch (op) {
+      case '>':
+        if (n2 instanceof Array) {
+          // console.log('n2 is array', n1, n2);
+          n2 = n2.map(function (item) {
+            item.appendChild(n1);
+            return item.cloneNode(true);
+          });
+        } else if (n1 instanceof Array) {
+          // console.log('n1 is array', n1, n2);
+          var lastChild = n2;
+          while (lastChild.children.length > 0) {
+            lastChild = lastChild.children[lastChild.children.length - 1];
+          }
+          n1.forEach(function (item) {
+            lastChild.appendChild(item.cloneNode(true));
+          });
+        } else {
+          // console.log('neither are arrays', n1, n2);
+          // n2.appendChild(n1);
+          var lastChild = n2;
+          while (lastChild.children.length > 0) {
+            lastChild = lastChild.children[lastChild.children.length - 1];
+          }
+          // console.log('last child');
+          // console.log(lastChild);
+
+          lastChild.append(n1);
+        }
+        nodeStack.push(n2);
+        break;
+      case '+':
+        // var lastChild = n2;
+        // if (lastChild.parentElement) {
+        //   console.log('has a parent');
+        //   while (lastChild.children.length > 0) {
+        //     lastChild = lastChild.children[lastChild.children.length - 1];
+        //   }
+        //   if (n1 instanceof Array) {
+        //     n1.forEach(function (item) {
+        //       lastChild.parentElement.appendChild(item);
+        //     });
+        //   } else {
+        //     lastChild.parentElement.appendChild(n1);
+        //   }
+        //   nodeStack.push(n2);          
+        // } else {
+        //   console.log('no parent');
+        //   if (n1 instanceof Array) {
+        //     nodeStack.push(n1.push(n2));
+        //   } else {
+        //     nodeStack.push([n2, n1]);
+        //   }
+        // }
+        if (n2 instanceof Array) {
+          if (n1 instanceof Array) {
+            n1.forEach(function (item) {
+              n2.push(item);
+            });
+            nodeStack.push(n2);
+          } else {
+            n2.push(n1);
+            nodeStack.push(n2);
+          }
+        } else if (n1 instanceof Array) {
+          n1.unshift(n2);
+          nodeStack.push(n1);
+        } else {
+          nodeStack.push([n2, n1]);
+        }
+        break;
+      case '^':
+        break;
+      default: 
+    }
+  }
+
+  // console.log('result', nodeStack[nodeStack.length - 1]);
+  return nodeStack.pop();
+};
+
+DOMInterface.prototype.__makeTextNode__ = function (text) {
+  return document.createTextNode(text.substr(1, text.length-2).trim());
+};
+
+
+/********************************
+  Set of DOM Utility functions
+********************************/
+
+
+DOMInterface.prototype.getUrl = function (link) {
+  if (link) {
+    return link.getAttribute('href');
+  }
+  return null;
+};
+
+DOMInterface.prototype.getAttr = function (attr, dom) {
+  return dom.getAttribute(attr);
+};
+
+/**
+  @param {String} url - URL to get the parameters from. If empty: uses current document url.
+  @return {Object} - key:value from the parameters.
+*/
+DOMInterface.prototype.getParameters = function (url) {
+  url = url || document.URL;
+  var parameters = {};
+  var parseParams = url.split('?')[1];
+  parseParams = parseParams.split('&');
+  parseParams = parseParams.forEach(function (pair) {
+    var temp = {};
+    var splitPair = pair.split('=');
+    temp[splitPair[0]] = splitPair[1];
+    parameters = Object.assign({}, temp, parameters);
+  });
+
+  return parameters;
+};
+
+
+
+/****************************
+  Set of Helper functions
+*****************************/
+
+
+function tokenize (emmetString) {
+  // Handle text spaces later
+  var tokens = emmetString.split(' ');
+  for (var i = 0; i < tokens.length; i++) {
+    if (tokens[i].includes('{')) {
+      // console.log(`Found starting token ${tokens[i]}`);
+      while (tokens.length > i + 1 &&
+        !tokens[i].includes('}') &&
+        !tokens[i+1].includes('}')) {
+          // console.log(`Joining next token ${tokens[i+1]}`);
+          tokens[i] = `${tokens[i]} ${tokens.splice(i+1, 1)[0].trim()}`;
+          // console.log(`Updated text token ${tokens[i]}`);
+      }
+      if (tokens.length > i + 1 && !tokens[i].includes('}')) {
+        // Add the last } token
+        // console.log(`Joining last token ${tokens[i+1]}`);
+        tokens[i] = `${tokens[i]} ${tokens.splice(i+1, 1)[0].trim()}`;
+      }
+      tokens[i] = tokens[i].trim();
+    }
+  }
+  return tokens;
+}
+
+function toArray (arrayCollection) {
+  var foo = [];
+  var i = 0;
+
+  for (; i < arrayCollection.length; i++) {
+    foo.push(arrayCollection[i]);
+  }
+
+  return foo;
+}
+
+/* harmony default export */ __webpack_exports__["a"] = DOMInterface;
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports) {
+
+/**
+ * Check if `obj` is an object.
+ *
+ * @param {Object} obj
+ * @return {Boolean}
+ * @api private
+ */
+
+function isObject(obj) {
+  return null !== obj && 'object' === typeof obj;
+}
+
+module.exports = isObject;
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+function Item (courseId, id, title, dom) {
+  this.courseId = courseId;
+  this.id = id;
+  this.title = title;
+  this.__links__ = {};
+  this.__results__ = {};
+  this.__dom__ = dom;
+  this.__editContent__ = null;
+}
+
+Item.prototype.getEditContent = function () {
+  return Object.assign({}, this.__editContent__);
+};
+
+Item.prototype.setEditContent = function (results) {
+  this.__editContent__ = Object.assign({}, results);
+};
+
+Item.prototype.clearEditContent = function () {
+  this.__editContent__ = null;
+};
+
+Item.prototype.getDom = function () {
+  return this.__dom__.cloneNode(true);
+};
+
+Item.prototype.setDom = function (dom) {
+  this.__dom__ = dom.cloneNode(true);
+};
+
+Item.prototype.addLink = function (link) {
+  this.__links__ = Object.assign({}, this.__links__, link);
+};
+
+Item.prototype.getLinks = function () {
+  return Object.assign({}, this.__links__);
+};
+
+Item.prototype.addResult = function (result) {
+  this.__results__ = Object.assign({}, result, this.__results__);
+}; 
+
+Item.prototype.getResults = function () {
+  return Object.assign({}, this.__results__);
+};
+
+/* harmony default export */ __webpack_exports__["a"] = Item;
+
+
+/***/ }),
+/* 4 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_Course_Item__ = __webpack_require__(3);
+
+
+function Page (course, id, title, dom) {
+  __WEBPACK_IMPORTED_MODULE_0_Course_Item__["a" /* default */].call(this, course, id, title, dom);
+  this.__items__ = [];
+}
+
+// Inherit Item
+Page.prototype = Object.create(__WEBPACK_IMPORTED_MODULE_0_Course_Item__["a" /* default */].prototype);
+Page.prototype.constructor = Page;
+
+/**
+  @param {Item} item
+*/
+Page.prototype.addItem = function (item) {
+  this.__items__.push(item);
+};
+
+Page.prototype.addItems = function (items) {
+  this.__items__ = this.__items__.concat(items);
+};
+
+Page.prototype.getItems = function () {
+  return this.__items__;
+};
+
+/* harmony default export */ __webpack_exports__["a"] = Page;
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_superagent__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_superagent___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_superagent__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_LMSInterface__ = __webpack_require__(16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_Course_Page__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_Course_Item__ = __webpack_require__(3);
+
+
+
+
+
+
+function BlackboardInterface(domain) {
+  __WEBPACK_IMPORTED_MODULE_1_LMSInterface__["a" /* default */].call(this, domain);
+  this.ids = {
+    courseMenu: 'courseMenuPalette_contents',
+    contentItems: 'content_listContainer',
+    menuButtons: 'nav'
+  };
+
+  this.q = {
+    courseMenuLink: 'li.clearfix > a',    // Course Menu Link
+    contentItems: 'li.liItem',            // Content Items
+    itemLink: 'div.item > h3 > a',        // Content Item Link
+    contentItemTitle: 'div.item > h3',    // Content Item Title
+    contentItemId: 'div.item',            // Content Item Id
+    nonceAjax: 'input[name="blackboard.platform.security.NonceUtil.nonce.ajax"]',
+    nonce: 'input[name="blackboard.platform.security.NonceUtil.nonce"]'
+  };
+
+  this.endpoints = {
+    courseLauncher: '/webapps/blackboard/execute/launcher?',
+    contentFolder: '/webapps/blackboard/content/listContentEditable.jsp?'
+  };
+}
+
+// Inherit LMSInterface
+BlackboardInterface.prototype = Object.create(__WEBPACK_IMPORTED_MODULE_1_LMSInterface__["a" /* default */].prototype);
+BlackboardInterface.prototype.constructor = BlackboardInterface;
+
+/**
+  @param {String} courseId - The ID of the course.
+  @return {Promise.<Page[]>} - Array of Pages that are at the top level of the course.
+*/
+BlackboardInterface.prototype.getMainPage = function (id) {
+  var that = this;
+  return new Promise(function (resolve, reject) {
+    __WEBPACK_IMPORTED_MODULE_0_superagent___default.a
+      .get(`${that.domain}${that.endpoints.courseLauncher}type=Course&id=${id}&url=`)
+      .end(function (err, res) {
+        if (err) {
+          reject(err);
+        } else {
+          var doc = that.stringToDom(res.text);
+          var links = that.getChildren(that.q.courseMenuLink, that.getId(that.ids.courseMenu, doc))
+            .filter(function (link) {
+              return that.getUrl(link).includes(that.endpoints.contentFolder);
+            });
+          var pages = links.map(function (link) {
+            var p = that.getParameters(that.getUrl(link));
+            return new __WEBPACK_IMPORTED_MODULE_2_Course_Page__["a" /* default */](id, p.content_id, link.innerText);
+          });
+
+          resolve(pages);
+        }
+      });
+  });
+};
+
+/**
+  @param {Page} page - Page to get content for.
+  @return {Promise.<Item[]>} - Array of Items found on the page.
+*/
+BlackboardInterface.prototype.getPage = function (page) {
+  var that = this;
+  return new Promise(function (resolve, reject) {
+    __WEBPACK_IMPORTED_MODULE_0_superagent___default.a
+      .get(`${that.domain}${that.endpoints.contentFolder}content_id=${page.id}&course_id=${page.courseId}`)
+      .end(function (err, res) {
+        if (err) {
+          reject(err);
+        } else {
+          var doc = that.stringToDom(res.text);
+          page.addItems(that.parsePage(doc, page.courseId));
+
+          resolve(page);
+        }
+      });
+  });
+};
+
+BlackboardInterface.prototype.parsePage = function (doc, courseId) {
+  var items = this.getChildren(this.q.contentItems, this.getId(this.ids.contentItems, doc));
+  var results = [];
+  if (items) {
+    items.forEach(function (dom) {
+      var contentId = this.getContentId(dom);
+      var tempItem;
+      // console.log(dom);
+      if (this.isPage(dom)) {
+        tempItem = new __WEBPACK_IMPORTED_MODULE_2_Course_Page__["a" /* default */](courseId, contentId, this.getContentTitle(dom), dom);
+      } else {
+        tempItem = new __WEBPACK_IMPORTED_MODULE_3_Course_Item__["a" /* default */](courseId, contentId, this.getContentTitle(dom), dom);
+      }
+      tempItem.addLink(this.__getActionLinks__(dom));
+      tempItem.addLink(this.makeContentLink(tempItem));
+      results.push(tempItem);
+    }, this);
+  }
+
+  return results;
+};
+
+/**
+  @param {String} linkName - Name of the link for the button.
+  @param {function} action - Event handler for 'click' event.
+*/
+BlackboardInterface.prototype.addPrimaryMenuButton = function (linkName, action) {
+  var navNode = this.getId(this.ids.menuButtons, this.useDocument());
+  var menuBtn = this.makeNode(`li.mainButton > h2 > a {${linkName}}`);
+  this.setAttr({ href: '#' }, this.getChild('h2 > a', 0, menuBtn));
+  menuBtn.addEventListener('click', action); 
+  navNode.appendChild(menuBtn);
+};
+
+BlackboardInterface.prototype.addPrimarySubMenuButton = function (linkName, subItems) {
+  var navNode = this.getId(this.ids.menuButtons, this.useDocument());
+  var menuBtn = this.makeNode(`li.mainButton.sub > h2 > a {${linkName}} > span.chevron > img`);
+  // var icon = this.makeNode('span.chevron > img');
+  this.setAttr({ src: '/images/ci/ng/expand.gif' }, this.getChild('h2 > a > span > img', 0, menuBtn));
+  var subMenu = this.makeNode(`ul > li.actionMenuItem * ${subItems.length}`);
+  subItems.forEach(function (item, i) {
+    var parent = this.getChild('li', i, subMenu);
+    var itemNode = this.makeNode(`a {${item.linkName}}`);
+    itemNode.addEventListener('click', item.action);
+    parent.appendChild(itemNode);
+  }, this);
+
+  menuBtn.appendChild(subMenu);
+  navNode.appendChild(menuBtn);
+};
+
+/**
+  @param {Item} item - Item in which to find the content ID for.
+  @return {String} - Item's content ID.
+*/
+BlackboardInterface.prototype.getContentId = function (item) {
+  return this.getChild(this.q.contentItemId, 0, item).getAttribute('id');
+};
+
+/**
+  @param {String} url - URL of the course to get the ID from. If empty: uses current page's url.
+*/
+BlackboardInterface.prototype.getCourseId = function (url) {
+  var courseId = this.getParameters(url).course_id.split('#');
+
+  return courseId[0];
+};
+
+/**
+  @param {DOM Node} dom - DOM Node of the content item
+  @return {String} - Title of the content item
+*/
+BlackboardInterface.prototype.getContentTitle = function (dom) {
+  return this.getChild(this.q.contentItemTitle, 0, dom).innerText.trim();
+};
+
+/**
+  @param {Item} item - Item to determine if it is a Page
+  @return {boolean}
+*/
+BlackboardInterface.prototype.isPage = function (item) {
+  var href = this.getUrl(this.getChild(this.q.itemLink, 0, item));
+
+  if (href) {
+    return href.includes(this.endpoints.contentFolder);
+  }
+  return false;
+};
+
+BlackboardInterface.prototype.__getActionLinks__ = function (dom) {
+  var linkNodes = this.getChildren('li > a', this.getChild('div.cmdiv > ul', 0, dom));
+  var actionLinks = {};
+
+  linkNodes.forEach(function (link) {
+    var foo = {};
+    var name = this.getAttr('title', link);
+    if (name) {
+      var url = this.getUrl(link);
+      if (url[0] === '/') {
+        url = `${this.domain}${url}`;
+      } else if (name === 'Delete') {
+        url = url.split('(\'')[1];
+        url = url.split('\'')[0];
+        url = `${this.domain}${url}`;
+      } else {
+        console.log(`Unhandled Link type: ${name}`);
+      }
+      foo[name] = url;
+      actionLinks = Object.assign({}, actionLinks, foo);
+    }
+  }, this);
+  // console.log(actionLinks);
+
+  return actionLinks;
+};
+
+BlackboardInterface.prototype.makeContentLink = function (item) {
+  var courseId = item.courseId;
+  var contentId = item.id;
+  return {
+    Content: `${domain}${this.endpoints.contentFolder}content_id=${contentId}&course_id=${courseId}#${contentId}`
+  };
+};
+
+BlackboardInterface.prototype.getNonce = function (doc) {
+  doc = doc || document;
+  return this.getChild(this.q.nonce, 0, doc).value;
+};
+
+BlackboardInterface.prototype.getNonceAjax = function (doc) {
+  doc = doc || document;
+  return this.getChild(this.q.nonceAjax, 0, doc).value;
+};
+
+
+/*
+  Current known list of values for items
+  key - query
+
+  nonce - input[name="blackboard.platform.security.NonceUtil.nonce"]
+  contentId - input[name="content_id"]
+  courseId - input[name="course_id"]
+  type - input[name="type"]
+  ??? - input[name="do"]
+  dispatch - input[name="dispatch"]
+  ???- input[name="remove_file_id"]
+  ??? - input[name="modify_file_id"]
+  ??? - input[name="tab_id"]
+  ??? - input[name="area"]
+  ??? - input[name="btype"]
+
+  item title - input[name="user_title"]
+  title color - input[name="title_color"]
+  item body - textarea[name="htmlData_text"]
+
+  stuff to handle attachments...omit for now
+
+  availability
+    yes - input#isAvailable_true
+    no - input#isAvailable_false
+
+  tracking
+    yes - input#isTrack_true
+    no - input#isTrack_false
+
+  date availability
+    start - input#bbDateTimePickerstart.value format: YYYY-M-D HH:MM:SS Only double digits if needed
+    end - input#bbDateTimePickerend.value
+*/
+
+
+
+BlackboardInterface.prototype.startEdit = function (item) {
+  var that = this;
+  return new Promise(function (resolve, reject) {
+    __WEBPACK_IMPORTED_MODULE_0_superagent___default.a
+      .get(item.getLinks().Edit)
+      .end(function (err, res) {
+        if (err) {
+          reject(err);
+        }
+        var doc = that.stringToDom(res.text);
+        var scriptDates = that.getChildren('script', doc);
+        scriptDates = scriptDates[scriptDates.length - 3].innerText.split(';');
+
+        scriptDates = scriptDates.filter(function (d) {
+          return d.includes('new calendar.DatePicker');
+        });
+
+        scriptDates = scriptDates.map(function (d) {
+          return d.trim().split(',')[1];
+        });
+
+        scriptDates = scriptDates.map(function (d) {
+          return d.substr(1, d.length-2);
+        });
+
+
+
+        doc = that.getId('the_form', doc);
+        var results = {};
+
+        results.contentId = item.id;
+        results.courseId = item.courseId;
+
+        results.nonce = that.getChild('input[name="blackboard.platform.security.NonceUtil.nonce"]', 0, doc);
+        if (results.nonce) {
+          results.nonce = results.nonce.value;
+        }
+
+        results.type = that.getChild('input[name="type"]', 0, doc);
+        if (results.type) {
+          results.type = results.type.value;
+        }
+
+        results.title = that.getChild('input[name="user_title"]', 0, doc);
+        if (results.title) {
+            results.title = results.title.value;
+        }
+
+        results.titleColor = that.getChild('input[name="title_color"]', 0, doc);
+        if (results.titleColor) {
+          results.titleColor = results.titleColor.value;
+        }
+
+        results.body = that.getChild('textarea[name="htmlData_text"]', 0, doc);
+        if (results.body) {
+          results.body = results.body.getValue();
+        }
+
+        results.isVisible = that.getChild('#isAvailable_true', 0, doc);
+        if (results.isVisible) {
+          results.isVisible = results.isVisible.checked;
+        }
+
+        results.isTracking = that.getChild('#isTrack_true', 0, doc);
+        if(results.isTracking) {
+          results.isTracking = results.isTracking.checked;
+        }
+
+        results.dateStart = scriptDates[0];
+
+        // results.dateStart = that.getChild('#bbDateTimePickerstart', 0, doc);
+        // if (results.dateStart) {
+        //   results.dateStart = results.dateStart.value;
+        // }
+
+        results.dateEnd = scriptDates[1];
+
+        // results.dateEnd = that.getChild('#bbDateTimePickerend', 0, doc);
+        // if (results.dateEnd) {
+        //   results.dateEnd = results.dateEnd.value;
+        // }
+
+        resolve(results);
+      });
+    });
+};
+
+
+/* Content Folder
+content_id:_6030145_1
+course_id:_44712_1
+blackboard.platform.security.NonceUtil.nonce:f1d1b86a-b887-4003-8e5c-0835ad8db0c7
+user_title:depth lv 1
+title_color:#000000
+htmlData_text:<p>sadfasdfasfdsadf</p>
+contentView:T
+
+
+do:
+area:
+top_Submit:Submit
+htmlData_text_f:/usr/local/blackboard/content/vi/BBLEARN/courses/1/Matthew_Thomson_SandBox/content/_6030145_1/embedded
+htmlData_text_w:https://fiu.blackboard.com/courses/1/Matthew_Thomson_SandBox/content/_6030145_1/embedded/
+htmlData_type:H
+textbox_prefix:htmlData_text
+isAvailable:true
+isTrack:false
+bbDateTimePicker_start_date:
+bbDateTimePicker_start_datetime:
+pickdate:
+pickname:
+bbDateTimePicker_start_time:
+bbDateTimePicker_end_date:
+bbDateTimePicker_end_datetime:
+pickdate:
+pickname:
+bbDateTimePicker_end_time:
+*/
+
+
+BlackboardInterface.prototype.startEditFolder = function (item) {
+  var that = this;
+  return new Promise(function (resolve, reject) {
+    __WEBPACK_IMPORTED_MODULE_0_superagent___default.a
+      .get(item.getLinks().Edit)
+      .end(function (err, res) {
+        if (err) {
+          reject(err);
+        }
+        var doc = that.stringToDom(res.text);
+        console.log(doc);
+        var scriptDates = that.getChildren('script', doc);
+
+        scriptDates = scriptDates[scriptDates.length - 3].innerText.split(';');
+
+        scriptDates = scriptDates.filter(function (d) {
+          return d.includes('new calendar.DatePicker');
+        });
+
+        scriptDates = scriptDates.map(function (d) {
+          return d.trim().split(',')[1];
+        });
+
+        scriptDates = scriptDates.map(function (d) {
+          return d.substr(1, d.length-2);
+        });
+
+        doc = that.getId('the_form', doc);
+        var results = {};
+        results.contentId = item.id;
+        results.courseId = item.courseId;
+
+        results.nonce = that.getChild('input[name="blackboard.platform.security.NonceUtil.nonce"]', 0, doc);
+        if (results.nonce) {
+          results.nonce = results.nonce.value;
+        }
+
+        results.title = that.getChild('input[name="user_title"]', 0, doc);
+        if (results.title) {
+          results.title = results.title.value;
+        }
+
+        results.titleColor = that.getChild('input[name="title_color"]', 0, doc);
+        if (results.titleColor) {
+          results.titleColor = results.titleColor.value;
+        }
+
+        results.body = that.getChild('textarea[name="htmlData_text"]', 0, doc);
+        if (results.body) {
+          results.body = results.body.getValue();
+        }
+
+        results.contentView = that.getChild('#iconOnlyView', 0, doc);
+        if (results.contentView && results.contentView.checked) {
+          // I
+          results.contentView = results.contentView.value;
+        }
+
+        results.contentView = that.getChild('#textOnlyView', 0, doc);
+        if (results.contentView && results.contentView.checked) {
+          // T
+          results.contentView = results.contentView.value;
+        }
+
+        results.contentView = that.getChild('#iconAndTextView', 0, doc);
+        if (results.contentView && results.contentView.checked) {
+          // X
+          results.contentView = results.contentView.value;
+        }
+
+        results.isVisible = that.getChild('#availableYes', 0, doc);
+        if (results.isVisible) {
+          results.isVisible = results.isVisible.checked;
+        }
+
+        results.isTracking = that.getChild('#trackYes', 0, doc);
+        if(results.isTracking) {
+          results.isTracking = results.isTracking.checked;
+        }
+
+        results.dateStart = scriptDates[0];
+
+        results.dateEnd = scriptDates[1];
+
+        resolve(results);
+      });
+  });
+};
+
+
+BlackboardInterface.prototype.editFolder = function (item) {
+  var that = this;
+  return new Promise (function (resolve, reject) {
+    var content = item.getEditContent();
+    console.log('sending content', content);
+    __WEBPACK_IMPORTED_MODULE_0_superagent___default.a
+      .post(`https://fiu.blackboard.com/webapps/blackboard/content/manageFolder_proc.jsp?btype=null`)
+      .type('form')
+      .send({ 'blackboard.platform.security.NonceUtil.nonce': content.nonce})
+      .send({ 'course_id': item.courseId })
+      .send({ 'content_id': item.id })
+      // .send({ 'type': 'item' })
+      // .send({ 'dispatch': 'save' })
+      .send({ 'user_title': content.title })
+      .send({ 'htmlData_text': content.body })
+      .send({ 'isAvailable': content.isVisible })
+      .send({ 'isTrack': content.isTracking })
+      .send({ 'title_color': content.titleColor })
+      .send({ 'bbDateTimePicker_start_datetime': content.dateStart })
+      .send({ 'bbDateTimePicker_end_datetime': content.dateEnd })
+      // .send({ 'bbDateTimePicker_start_date': content.startDate })
+      // .send({ 'bbDateTimePicker_start_time': content.startTime })
+      .send({ 'bbDateTimePicker_start_checkbox': content.startCheck })
+      // .send({ 'bbDateTimePicker_end_date': content.endDate })
+      // .send({ 'bbDateTimePicker_end_time': content.endTime })
+      .send({ 'bbDateTimePicker_end_checkbox': content.endCheck })
+      .end(function (err, res) {
+        console.log('edit response');
+        var doc = that.stringToDom(res.text);
+        // DOMInterface doesn't handle the . in the ID.
+        var errText = doc.getElementById('bbNG.receiptTag.content');
+        if (errText) {
+          // console.log(errText.innerText);
+          console.log('Error in saving edit');
+          reject(errText.innerText);
+        } else {
+          console.log('Saved');
+          var items = that.parsePage(doc, item.courseId);
+          items = items.filter(function (i) {
+            return i.id === item.id;
+          });
+          console.log('Returning ', items[0]);
+          resolve(items[0].getDom());
+        }
+      });
+  });
+};
+
+
+
+
+
+/**
+  @param {Item} item - Item being sent.
+  @return {Promise.<DOM Node>} - DOM Node of the resulting page. 
+    The content page that the item is located in.
+*/
+BlackboardInterface.prototype.editItem = function (item) {
+  var that = this;
+  return new Promise (function (resolve, reject) {
+    var content = item.getEditContent();
+    console.log('sending content', content);
+    __WEBPACK_IMPORTED_MODULE_0_superagent___default.a
+      .post(`https://fiu.blackboard.com/webapps/blackboard/execute/manageCourseItem?content_id=${item.id}&btype=&course_id=${item.courseId}`)
+      .field('blackboard.platform.security.NonceUtil.nonce', content.nonce)
+      .field('course_id', item.courseId)
+      .field('content_id', item.id)
+      .field('type', 'item')
+      .field('dispatch', 'save')
+      .field('user_title', content.title)
+      .field('htmlData_text', content.body)
+      .field('isAvailable', content.isVisible)
+      .field('isTrack', content.isTracking)
+      .field('title_color', content.titleColor)
+      .field('bbDateTimePicker_start_datetime', content.dateStart)
+      .field('bbDateTimePicker_end_datetime', content.dateEnd)
+      // .field('bbDateTimePicker_start_date', content.startDate)
+      // .field('bbDateTimePicker_start_time', content.startTime)
+      .field('bbDateTimePicker_start_checkbox', content.startCheck)
+      // .field('bbDateTimePicker_end_date', content.endDate)
+      // .field('bbDateTimePicker_end_time', content.endTime)
+      .field('bbDateTimePicker_end_checkbox', content.endCheck)
+      .end(function (err, res) {
+        console.log('edit response');
+        // console.log(res);
+        var doc = that.stringToDom(res.text);
+        // DOMInterface doesn't handle the . in the ID.
+        var errText = doc.getElementById('bbNG.receiptTag.content');
+        if (errText) {
+          // console.log(errText.innerText);
+          console.log('Error in saving edit');
+          reject(errText.innerText);
+        } else {
+          console.log('Saved');
+          var items = that.parsePage(doc, item.courseId);
+          items = items.filter(function (i) {
+            return i.id === item.id;
+          });
+          console.log('Returning ', items[0]);
+          resolve(items[0].getDom());
+        }
+      });
+  });
+};
+
+/* harmony default export */ __webpack_exports__["a"] = BlackboardInterface;
+
+
+
+/***/ }),
+/* 6 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_dom__ = __webpack_require__(1);
+
+
+function Modal (name) {
+  __WEBPACK_IMPORTED_MODULE_0_dom__["a" /* default */].call(this);
+  this.__prefix__ = 'modal-';
+  this.name = name;
+  this.modal = null;
+  this.display = null;
+
+  this.makeModal();
+}
+
+Modal.prototype = Object.create(__WEBPACK_IMPORTED_MODULE_0_dom__["a" /* default */].prototype);
+Modal.prototype.constructor = Modal;
+
+Modal.prototype.makeModal = function () {
+  this.modal = this.makeNode(`div#${this.__prefix__}${this.name}.modal > div.bg + div.display`);
+  this.display = this.getChild('.display', 0, this.modal);
+  this.getChild('.bg', 0, this.modal).addEventListener('click', this.hide.bind(this));
+};
+
+Modal.prototype.getModal = function () {
+  return this.modal;
+};
+
+Modal.prototype.updateDisplay = function (node) {
+  this.clearDisplay();
+  this.display.appendChild(node);
+};
+
+Modal.prototype.clearDisplay = function () {
+  var children = this.getChildren('', this.display);
+  if (children) {
+    children.forEach(function (child) {
+      child.remove();
+    });
+  }
+};
+
+Modal.prototype.hide = function () {
+  this.setStyle({ display: 'none' }, this.modal);
+};
+
+Modal.prototype.show = function () {
+  this.setStyle({ display: 'flex' }, this.modal);
+};
+
+/* harmony default export */ __webpack_exports__["a"] = Modal;
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_dom__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_Icons_edit__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_Icons_error__ = __webpack_require__(29);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_Icons_errorOutline__ = __webpack_require__(30);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_Icons_newWindow__ = __webpack_require__(21);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_Icons_warning__ = __webpack_require__(35);
+
+
+
+
+
+
+
+function ScannerPluginInterface (name, color) {
+  __WEBPACK_IMPORTED_MODULE_0_dom__["a" /* default */].call(this);
+  this.name = name;
+  this.color = color;
+}
+
+ScannerPluginInterface.prototype = Object.create(__WEBPACK_IMPORTED_MODULE_0_dom__["a" /* default */].prototype);
+ScannerPluginInterface.prototype.constructor = ScannerPluginInterface;
+
+/**
+  @param {DOM Node} dom - DOM Node to parse
+*/
+ScannerPluginInterface.prototype.parse = function (dom) {
+  new Error('Override: ScannerPluginInterface.parse()');
+};
+
+/**
+  @param {Item} item - Item to display results for.
+
+  @return {DOM Node} - DOM Node of the results.
+*/
+ScannerPluginInterface.prototype.getResults = function (item) {
+  new Error('Override: ScannerPluginInterface.getResults()');
+};
+
+ScannerPluginInterface.prototype.__addActionLinks__ = function (item, result) {
+  var newWindowNode = this.makeNode('a');
+  this.setAttr({ href: item.getLinks().Content, target: '_blank' }, newWindowNode);
+  newWindowNode.appendChild(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_Icons_newWindow__["a" /* default */])());
+
+  var editNode = this.makeNode('a');
+  this.setAttr({ href: item.getLinks().Edit, target: '_blank' }, editNode);
+  editNode.appendChild(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1_Icons_edit__["a" /* default */])());
+
+  result.appendChild(newWindowNode);
+  result.appendChild(editNode);
+};
+
+ScannerPluginInterface.prototype.getName = function () {
+  return this.name;
+};
+
+ScannerPluginInterface.prototype.getWarningIcon = function () {
+  return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_5_Icons_warning__["a" /* default */])(this.color);
+};
+
+ScannerPluginInterface.prototype.getErrorIcon = function () {
+  return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2_Icons_error__["a" /* default */])(this.color);
+};
+
+ScannerPluginInterface.prototype.getErrorOutlineIcon = function () {
+  return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3_Icons_errorOutline__["a" /* default */])(this.color);
+};
+
+/* harmony default export */ __webpack_exports__["a"] = ScannerPluginInterface;
+
+
+/***/ }),
+/* 8 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_Course_Page__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_Course_Item__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_Icons_item__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_Icons_folderClosed__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_Icons_folderOpen__ = __webpack_require__(19);
+
+
+
+
+
+
+
+function Course (id, LMSInterface, plugins) {
+  this.id = id;
+  this.__root__ = null;
+  this.LMSInterface = LMSInterface;
+  this.plugins = plugins;
+}
+
+/**
+  @return {Page[]} Pages of the course menu. 
+*/
+Course.prototype.getMenu = function () {
+  return this.__root__;
+};
+
+/**
+  @param {String} contentId - The content ID of the Page to find.
+
+  @return {Page} - The Page with the content ID that was passed. Null if not found.
+*/
+Course.prototype.getPage = function (contentId) {
+  var result = null;
+
+  this.getMenu().forEach(function (page) {
+    if (!result) {
+      result = this.__getPage__(page, contentId);
+    }
+  }, this);
+
+  return result;
+};
+
+Course.prototype.__getPage__ = function (page, contentId) {
+  var result = null;
+
+  if (page.id === contentId) {
+    return page;
+  }
+
+  page.getItems().forEach(function (item) {
+    if (!result && item instanceof __WEBPACK_IMPORTED_MODULE_0_Course_Page__["a" /* default */]) {
+      result = this.__getPage__(item, contentId);
+    }
+  }, this);
+
+  return result;
+};
+
+/**
+  @param {String} contentId - The content ID of the Item to find.
+
+  @return {Item} - The Item with the content ID that was passed. Null if not found.
+*/
+Course.prototype.getItem = function (contentId) {
+  var result = null;
+
+  this.getMenu().forEach(function (page) {
+    if (!result) {
+      result = this.__getItem__(page, contentId);
+    }
+  }, this);
+
+  return result;
+};
+
+Course.prototype.__getItem__ = function (page, contentId) {
+  var result = null;
+
+  if (page.id === contentId) {
+    return page;
+  }
+
+  page.getItems().forEach(function (item) {
+    if (!result) {
+      if (item.id === contentId) {
+        result = item;
+      } else if (item instanceof __WEBPACK_IMPORTED_MODULE_0_Course_Page__["a" /* default */]) {
+        result = this.__getItem__(item, contentId);
+      }
+    }
+  }, this);
+
+  return result;
+};
+
+/**
+  @param {String} contentId - The content ID of the Item to find.
+
+  @return {Page} - The Page that contains the found item.
+*/
+Course.prototype.getItemsPage = function (contentId) {
+  var result = null;
+  
+  this.getMenu().forEach(function (page) {
+    if (!result) {
+      result = this.__getItemsPage__(page, contentId);
+    }
+  }, this);
+
+  return result;
+};
+
+Course.prototype.__getItemsPage__ = function (page, contentId) {
+  var result = null;
+
+  page.getItems().forEach(function (item) {
+    if (!result) {
+      if (item.id === contentId) {
+        result = page;
+      } else if (item instanceof __WEBPACK_IMPORTED_MODULE_0_Course_Page__["a" /* default */]) {
+        result = this.__getItemsPage__(item, contentId);
+      }
+    }
+  }, this);
+
+  return result;
+};
+
+/**
+  Scans all top level pages
+*/
+Course.prototype.getCourse = function () {
+  var that = this;
+  return new Promise(function (resolve, reject) {
+    var menuLinks = that.LMSInterface.getMainPage(that.id);
+    menuLinks
+      .then(function (pages) {
+        that.__root__ = pages;
+        resolve();
+      })
+      .catch(function (err) {
+        reject(err);
+      });
+  });
+};
+
+Course.prototype.scan = function () {
+  return Promise.all(this.__root__.map(this.scanPage.bind(this)));
+};
+
+/**
+  Deep scan of the page.
+*/
+Course.prototype.scanPage = function (page) {
+  var that = this;
+  return new Promise(function (resolve, reject) {
+    var parsedPage = that.LMSInterface.getPage(page);
+    parsedPage
+      .then(function (p) {
+        // console.log(p);
+        var pages = []; // Array of pages on current page.
+        // var pageResults = p.getResults();
+        // console.log('start of page depth parsing');
+        // console.log(pageResults);
+        // iterate over the items that are pages
+        p.getItems().forEach(function (item) {
+          if (item instanceof __WEBPACK_IMPORTED_MODULE_0_Course_Page__["a" /* default */]) {
+            // Page
+            // that.scanPage(item);
+            pages.push(that.scanPage(item));
+          } else {
+            // Item
+          }
+        });
+        // p.addResult(pageResults);
+        // console.log('final results');
+        // console.log(p.getResults());
+        Promise.all(pages)
+          .then(function (values) {
+            // console.log('Done holding');
+            console.log(`parsing items for ${p.id}`, p.getItems());
+            var pageResults = p.getResults();
+            p.getItems().forEach(function (item) {
+            // values.forEach(function (item) {
+              // Run all plugins
+              that.plugins.forEach(function (plugin) {
+                item.addResult(plugin.parse(item.getDom()));
+                var pluginName = plugin.getName();
+                if (plugin.hasResults(item)) {
+                  // console.log('item has results');
+                  if (plugin.hasResults(p)) {
+                    if (pageResults[pluginName][0] instanceof Object) {
+                      // do nothing, has actual parser results
+                    } else {
+                    // console.log('adding to existing array');
+                      pageResults[pluginName].push(item.id);
+                    }
+                  } else {
+                    // console.log('creating new array');
+                    pageResults[pluginName] = [item.id];
+                  }
+                  // console.log(p.getResults());
+                }
+              });
+            });
+            p.addResult(pageResults);
+            console.log(`Resolving page ${p.id}`, p.getItems(), p.getResults());
+            resolve(p);
+          }).catch(function (err) {
+            reject(err);
+          });
+      })
+      .catch(function (err) {
+        reject(err);
+      });
+  });
+};
+
+Course.prototype.displayResults = function () {
+  var results = this.LMSInterface.makeNode(`section#${this.id}.class`);
+  
+  this.__root__.forEach(function (page) {
+    results.appendChild(this.displayPage(page));
+  }, this);
+
+  return results;
+};
+
+Course.prototype.displayPage = function (page) {
+  var pageNode = this.buildPageDisplay();
+  console.log('pageNode', pageNode);
+  var heading = this.LMSInterface.getChild('header', 0, pageNode);
+  var parent = this.LMSInterface.getChild('article', 0, pageNode);
+  console.log('parent', parent);
+  // Used incase the folder itself has results
+  var infoNode = this.LMSInterface.getChild('section', 0, pageNode);
+  console.log('infoNode', infoNode);
+  var folderOpen = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_Icons_folderOpen__["a" /* default */])();
+  var folderClosed = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3_Icons_folderClosed__["a" /* default */])();
+  this.LMSInterface.addClasses('open-folder', folderOpen);
+  this.LMSInterface.addClasses('close-folder', folderClosed);
+  heading.appendChild(folderOpen);
+  heading.appendChild(folderClosed);
+  this.LMSInterface.addText(page.title, heading);
+
+  page.getItems().forEach(function (item) {
+    if (item instanceof __WEBPACK_IMPORTED_MODULE_0_Course_Page__["a" /* default */]) {
+      parent.appendChild(this.displayPage(item));
+    } else {
+      parent.appendChild(this.displayItem(item));
+    }
+  }, this);
+
+  // var pageResults = page.getResults();
+
+  this.plugins.forEach(function (plugin) {
+    // console.log(page.getResults());
+    if (plugin.hasResults(page)) {
+      var pageResults = page.getResults()[plugin.getName()];
+      if (pageResults.length > 0 && pageResults[0] instanceof Object) {
+        // Actual results for the page
+        // infoNode
+
+        var icon = plugin.getErrorIcon();
+        icon.addEventListener('click', plugin.toggleResult.bind(plugin));
+        this.LMSInterface.getChild('header', 0, pageNode).appendChild(icon);
+        var foo = plugin.getResults(page);
+        console.log('plugin results', foo);
+        infoNode.appendChild(foo);
+      } else {
+        this.LMSInterface.getChild('header', 0, pageNode).appendChild(plugin.getErrorOutlineIcon());
+      }
+    }
+  }, this);
+
+  return pageNode;
+};
+
+Course.prototype.displayItem = function (item) {
+  var itemNode = this.buildItemDisplay();
+  var heading = this.LMSInterface.getChild('header', 0, itemNode);
+  var parent = this.LMSInterface.getChild('section', 0, itemNode);
+  heading.appendChild(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2_Icons_item__["a" /* default */])());
+  this.LMSInterface.addText(item.title, heading);
+
+  this.plugins.forEach(function (plugin) {
+    if (plugin.hasResults(item)) {
+      var icon = plugin.getErrorIcon();
+      icon.addEventListener('click', plugin.toggleResult.bind(plugin));
+      this.LMSInterface.getChild('header', 0, itemNode).appendChild(icon);
+
+      parent.appendChild(plugin.getResults(item));
+    }
+  }, this);
+
+  return itemNode;
+};
+
+Course.prototype.buildPageDisplay = function () {
+  var scaffold = this.LMSInterface.makeNode(`section.folder > header.collapse + section + article`);
+  this.LMSInterface.getChild('header', 0, scaffold).addEventListener('click', this.toggleCollapse);
+  return scaffold;
+};
+
+Course.prototype.buildItemDisplay = function () {
+  return this.LMSInterface.makeNode(`section > header + section`);
+};
+
+// clean up
+Course.prototype.toggleCollapse = function (e) {
+  var target = e.target;
+  target.classList.toggle('collapse');
+};
+
+Course.prototype.encode = function () {
+  var encoding = {};
+  encoding.id = this.id;
+  encoding.__root__ = this.__root__.map(this.encodePage, this);
+
+  return encoding;
+};
+
+Course.prototype.encodePage = function (page) {
+  var p = {};
+  p.isPage = true;
+  p.title = page.title;
+  p.courseId = page.courseId;
+  p.id = page.id;
+  p.links = page.getLinks();
+  p.results = page.getResults();
+  p.items = page.getItems().map(function (item) {
+    if (item instanceof __WEBPACK_IMPORTED_MODULE_0_Course_Page__["a" /* default */]) {
+      return this.encodePage(item);
+    } else {
+      return this.encodeItem(item);
+    }
+  }, this);
+
+  return p;
+};
+
+Course.prototype.encodeItem = function (item) {
+  var i = {};
+  i.isPage = false;
+  i.title = item.title;
+  i.courseId = item.courseId;
+  i.id = item.id;
+  i.links = item.getLinks();
+  i.result = item.getResults();
+
+  return i;
+};
+
+/**
+  Updates the course instance.
+*/
+Course.prototype.decode = function (encoding) {
+  this.id = encoding.id;
+  this.__root__ = encoding.__root__.map(this.decodePage, this);
+};
+
+Course.prototype.decodePage = function (page) {
+  var p = new __WEBPACK_IMPORTED_MODULE_0_Course_Page__["a" /* default */](page.courseId, page.id, page.title, null);
+
+  page.items.forEach(function (item) {
+    if (item.isPage) {
+      p.addItem(this.decodePage(item));
+    } else {
+      p.addItem(this.decodeItem(item));
+    }
+  }, this);
+  
+  p.addResult(page.results);
+  p.addLink(page.links);
+
+  return p;
+};
+
+Course.prototype.decodeItem = function (item) {
+  var i = new __WEBPACK_IMPORTED_MODULE_1_Course_Item__["a" /* default */](item.courseId, item.id, item.title, null);
+
+  for (var r in item.result) {
+    var foo = {};
+    foo[r] = item.result[r];
+    i.addResult(foo);
+  }
+
+  i.addLink(item.links);
+
+  return i;
+};
+
+/* harmony default export */ __webpack_exports__["a"] = Course;
+
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+/**
+ * Expose `Emitter`.
+ */
+
+if (true) {
+  module.exports = Emitter;
+}
+
+/**
+ * Initialize a new `Emitter`.
+ *
+ * @api public
+ */
+
+function Emitter(obj) {
+  if (obj) return mixin(obj);
+};
+
+/**
+ * Mixin the emitter properties.
+ *
+ * @param {Object} obj
+ * @return {Object}
+ * @api private
+ */
+
+function mixin(obj) {
+  for (var key in Emitter.prototype) {
+    obj[key] = Emitter.prototype[key];
+  }
+  return obj;
+}
+
+/**
+ * Listen on the given `event` with `fn`.
+ *
+ * @param {String} event
+ * @param {Function} fn
+ * @return {Emitter}
+ * @api public
+ */
+
+Emitter.prototype.on =
+Emitter.prototype.addEventListener = function(event, fn){
+  this._callbacks = this._callbacks || {};
+  (this._callbacks['$' + event] = this._callbacks['$' + event] || [])
+    .push(fn);
+  return this;
+};
+
+/**
+ * Adds an `event` listener that will be invoked a single
+ * time then automatically removed.
+ *
+ * @param {String} event
+ * @param {Function} fn
+ * @return {Emitter}
+ * @api public
+ */
+
+Emitter.prototype.once = function(event, fn){
+  function on() {
+    this.off(event, on);
+    fn.apply(this, arguments);
+  }
+
+  on.fn = fn;
+  this.on(event, on);
+  return this;
+};
+
+/**
+ * Remove the given callback for `event` or all
+ * registered callbacks.
+ *
+ * @param {String} event
+ * @param {Function} fn
+ * @return {Emitter}
+ * @api public
+ */
+
+Emitter.prototype.off =
+Emitter.prototype.removeListener =
+Emitter.prototype.removeAllListeners =
+Emitter.prototype.removeEventListener = function(event, fn){
+  this._callbacks = this._callbacks || {};
+
+  // all
+  if (0 == arguments.length) {
+    this._callbacks = {};
+    return this;
+  }
+
+  // specific event
+  var callbacks = this._callbacks['$' + event];
+  if (!callbacks) return this;
+
+  // remove all handlers
+  if (1 == arguments.length) {
+    delete this._callbacks['$' + event];
+    return this;
+  }
+
+  // remove specific handler
+  var cb;
+  for (var i = 0; i < callbacks.length; i++) {
+    cb = callbacks[i];
+    if (cb === fn || cb.fn === fn) {
+      callbacks.splice(i, 1);
+      break;
+    }
+  }
+  return this;
+};
+
+/**
+ * Emit `event` with the given args.
+ *
+ * @param {String} event
+ * @param {Mixed} ...
+ * @return {Emitter}
+ */
+
+Emitter.prototype.emit = function(event){
+  this._callbacks = this._callbacks || {};
+  var args = [].slice.call(arguments, 1)
+    , callbacks = this._callbacks['$' + event];
+
+  if (callbacks) {
+    callbacks = callbacks.slice(0);
+    for (var i = 0, len = callbacks.length; i < len; ++i) {
+      callbacks[i].apply(this, args);
+    }
+  }
+
+  return this;
+};
+
+/**
+ * Return array of callbacks for `event`.
+ *
+ * @param {String} event
+ * @return {Array}
+ * @api public
+ */
+
+Emitter.prototype.listeners = function(event){
+  this._callbacks = this._callbacks || {};
+  return this._callbacks['$' + event] || [];
+};
+
+/**
+ * Check if this emitter has `event` handlers.
+ *
+ * @param {String} event
+ * @return {Boolean}
+ * @api public
+ */
+
+Emitter.prototype.hasListeners = function(event){
+  return !! this.listeners(event).length;
+};
+
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * Root reference for iframes.
+ */
+
+var root;
+if (typeof window !== 'undefined') { // Browser window
+  root = window;
+} else if (typeof self !== 'undefined') { // Web Worker
+  root = self;
+} else { // Other environments
+  console.warn("Using browser-only version of superagent in non-browser environment");
+  root = this;
+}
+
+var Emitter = __webpack_require__(9);
+var RequestBase = __webpack_require__(12);
+var isObject = __webpack_require__(2);
+var isFunction = __webpack_require__(11);
+var ResponseBase = __webpack_require__(13);
+var shouldRetry = __webpack_require__(14);
+
+/**
+ * Noop.
+ */
+
+function noop(){};
+
+/**
+ * Expose `request`.
+ */
+
+var request = exports = module.exports = function(method, url) {
+  // callback
+  if ('function' == typeof url) {
+    return new exports.Request('GET', method).end(url);
+  }
+
+  // url first
+  if (1 == arguments.length) {
+    return new exports.Request('GET', method);
+  }
+
+  return new exports.Request(method, url);
+}
+
+exports.Request = Request;
+
+/**
+ * Determine XHR.
+ */
+
+request.getXHR = function () {
+  if (root.XMLHttpRequest
+      && (!root.location || 'file:' != root.location.protocol
+          || !root.ActiveXObject)) {
+    return new XMLHttpRequest;
+  } else {
+    try { return new ActiveXObject('Microsoft.XMLHTTP'); } catch(e) {}
+    try { return new ActiveXObject('Msxml2.XMLHTTP.6.0'); } catch(e) {}
+    try { return new ActiveXObject('Msxml2.XMLHTTP.3.0'); } catch(e) {}
+    try { return new ActiveXObject('Msxml2.XMLHTTP'); } catch(e) {}
+  }
+  throw Error("Browser-only verison of superagent could not find XHR");
+};
+
+/**
+ * Removes leading and trailing whitespace, added to support IE.
+ *
+ * @param {String} s
+ * @return {String}
+ * @api private
+ */
+
+var trim = ''.trim
+  ? function(s) { return s.trim(); }
+  : function(s) { return s.replace(/(^\s*|\s*$)/g, ''); };
+
+/**
+ * Serialize the given `obj`.
+ *
+ * @param {Object} obj
+ * @return {String}
+ * @api private
+ */
+
+function serialize(obj) {
+  if (!isObject(obj)) return obj;
+  var pairs = [];
+  for (var key in obj) {
+    pushEncodedKeyValuePair(pairs, key, obj[key]);
+  }
+  return pairs.join('&');
+}
+
+/**
+ * Helps 'serialize' with serializing arrays.
+ * Mutates the pairs array.
+ *
+ * @param {Array} pairs
+ * @param {String} key
+ * @param {Mixed} val
+ */
+
+function pushEncodedKeyValuePair(pairs, key, val) {
+  if (val != null) {
+    if (Array.isArray(val)) {
+      val.forEach(function(v) {
+        pushEncodedKeyValuePair(pairs, key, v);
+      });
+    } else if (isObject(val)) {
+      for(var subkey in val) {
+        pushEncodedKeyValuePair(pairs, key + '[' + subkey + ']', val[subkey]);
+      }
+    } else {
+      pairs.push(encodeURIComponent(key)
+        + '=' + encodeURIComponent(val));
+    }
+  } else if (val === null) {
+    pairs.push(encodeURIComponent(key));
+  }
+}
+
+/**
+ * Expose serialization method.
+ */
+
+ request.serializeObject = serialize;
+
+ /**
+  * Parse the given x-www-form-urlencoded `str`.
+  *
+  * @param {String} str
+  * @return {Object}
+  * @api private
+  */
+
+function parseString(str) {
+  var obj = {};
+  var pairs = str.split('&');
+  var pair;
+  var pos;
+
+  for (var i = 0, len = pairs.length; i < len; ++i) {
+    pair = pairs[i];
+    pos = pair.indexOf('=');
+    if (pos == -1) {
+      obj[decodeURIComponent(pair)] = '';
+    } else {
+      obj[decodeURIComponent(pair.slice(0, pos))] =
+        decodeURIComponent(pair.slice(pos + 1));
+    }
+  }
+
+  return obj;
+}
+
+/**
+ * Expose parser.
+ */
+
+request.parseString = parseString;
+
+/**
+ * Default MIME type map.
+ *
+ *     superagent.types.xml = 'application/xml';
+ *
+ */
+
+request.types = {
+  html: 'text/html',
+  json: 'application/json',
+  xml: 'application/xml',
+  urlencoded: 'application/x-www-form-urlencoded',
+  'form': 'application/x-www-form-urlencoded',
+  'form-data': 'application/x-www-form-urlencoded'
+};
+
+/**
+ * Default serialization map.
+ *
+ *     superagent.serialize['application/xml'] = function(obj){
+ *       return 'generated xml here';
+ *     };
+ *
+ */
+
+ request.serialize = {
+   'application/x-www-form-urlencoded': serialize,
+   'application/json': JSON.stringify
+ };
+
+ /**
+  * Default parsers.
+  *
+  *     superagent.parse['application/xml'] = function(str){
+  *       return { object parsed from str };
+  *     };
+  *
+  */
+
+request.parse = {
+  'application/x-www-form-urlencoded': parseString,
+  'application/json': JSON.parse
+};
+
+/**
+ * Parse the given header `str` into
+ * an object containing the mapped fields.
+ *
+ * @param {String} str
+ * @return {Object}
+ * @api private
+ */
+
+function parseHeader(str) {
+  var lines = str.split(/\r?\n/);
+  var fields = {};
+  var index;
+  var line;
+  var field;
+  var val;
+
+  lines.pop(); // trailing CRLF
+
+  for (var i = 0, len = lines.length; i < len; ++i) {
+    line = lines[i];
+    index = line.indexOf(':');
+    field = line.slice(0, index).toLowerCase();
+    val = trim(line.slice(index + 1));
+    fields[field] = val;
+  }
+
+  return fields;
+}
+
+/**
+ * Check if `mime` is json or has +json structured syntax suffix.
+ *
+ * @param {String} mime
+ * @return {Boolean}
+ * @api private
+ */
+
+function isJSON(mime) {
+  return /[\/+]json\b/.test(mime);
+}
+
+/**
+ * Initialize a new `Response` with the given `xhr`.
+ *
+ *  - set flags (.ok, .error, etc)
+ *  - parse header
+ *
+ * Examples:
+ *
+ *  Aliasing `superagent` as `request` is nice:
+ *
+ *      request = superagent;
+ *
+ *  We can use the promise-like API, or pass callbacks:
+ *
+ *      request.get('/').end(function(res){});
+ *      request.get('/', function(res){});
+ *
+ *  Sending data can be chained:
+ *
+ *      request
+ *        .post('/user')
+ *        .send({ name: 'tj' })
+ *        .end(function(res){});
+ *
+ *  Or passed to `.send()`:
+ *
+ *      request
+ *        .post('/user')
+ *        .send({ name: 'tj' }, function(res){});
+ *
+ *  Or passed to `.post()`:
+ *
+ *      request
+ *        .post('/user', { name: 'tj' })
+ *        .end(function(res){});
+ *
+ * Or further reduced to a single call for simple cases:
+ *
+ *      request
+ *        .post('/user', { name: 'tj' }, function(res){});
+ *
+ * @param {XMLHTTPRequest} xhr
+ * @param {Object} options
+ * @api private
+ */
+
+function Response(req) {
+  this.req = req;
+  this.xhr = this.req.xhr;
+  // responseText is accessible only if responseType is '' or 'text' and on older browsers
+  this.text = ((this.req.method !='HEAD' && (this.xhr.responseType === '' || this.xhr.responseType === 'text')) || typeof this.xhr.responseType === 'undefined')
+     ? this.xhr.responseText
+     : null;
+  this.statusText = this.req.xhr.statusText;
+  var status = this.xhr.status;
+  // handle IE9 bug: http://stackoverflow.com/questions/10046972/msie-returns-status-code-of-1223-for-ajax-request
+  if (status === 1223) {
+      status = 204;
+  }
+  this._setStatusProperties(status);
+  this.header = this.headers = parseHeader(this.xhr.getAllResponseHeaders());
+  // getAllResponseHeaders sometimes falsely returns "" for CORS requests, but
+  // getResponseHeader still works. so we get content-type even if getting
+  // other headers fails.
+  this.header['content-type'] = this.xhr.getResponseHeader('content-type');
+  this._setHeaderProperties(this.header);
+
+  if (null === this.text && req._responseType) {
+    this.body = this.xhr.response;
+  } else {
+    this.body = this.req.method != 'HEAD'
+      ? this._parseBody(this.text ? this.text : this.xhr.response)
+      : null;
+  }
+}
+
+ResponseBase(Response.prototype);
+
+/**
+ * Parse the given body `str`.
+ *
+ * Used for auto-parsing of bodies. Parsers
+ * are defined on the `superagent.parse` object.
+ *
+ * @param {String} str
+ * @return {Mixed}
+ * @api private
+ */
+
+Response.prototype._parseBody = function(str){
+  var parse = request.parse[this.type];
+  if(this.req._parser) {
+    return this.req._parser(this, str);
+  }
+  if (!parse && isJSON(this.type)) {
+    parse = request.parse['application/json'];
+  }
+  return parse && str && (str.length || str instanceof Object)
+    ? parse(str)
+    : null;
+};
+
+/**
+ * Return an `Error` representative of this response.
+ *
+ * @return {Error}
+ * @api public
+ */
+
+Response.prototype.toError = function(){
+  var req = this.req;
+  var method = req.method;
+  var url = req.url;
+
+  var msg = 'cannot ' + method + ' ' + url + ' (' + this.status + ')';
+  var err = new Error(msg);
+  err.status = this.status;
+  err.method = method;
+  err.url = url;
+
+  return err;
+};
+
+/**
+ * Expose `Response`.
+ */
+
+request.Response = Response;
+
+/**
+ * Initialize a new `Request` with the given `method` and `url`.
+ *
+ * @param {String} method
+ * @param {String} url
+ * @api public
+ */
+
+function Request(method, url) {
+  var self = this;
+  this._query = this._query || [];
+  this.method = method;
+  this.url = url;
+  this.header = {}; // preserves header name case
+  this._header = {}; // coerces header names to lowercase
+  this.on('end', function(){
+    var err = null;
+    var res = null;
+
+    try {
+      res = new Response(self);
+    } catch(e) {
+      err = new Error('Parser is unable to parse the response');
+      err.parse = true;
+      err.original = e;
+      // issue #675: return the raw response if the response parsing fails
+      if (self.xhr) {
+        // ie9 doesn't have 'response' property
+        err.rawResponse = typeof self.xhr.responseType == 'undefined' ? self.xhr.responseText : self.xhr.response;
+        // issue #876: return the http status code if the response parsing fails
+        err.status = self.xhr.status ? self.xhr.status : null;
+        err.statusCode = err.status; // backwards-compat only
+      } else {
+        err.rawResponse = null;
+        err.status = null;
+      }
+
+      return self.callback(err);
+    }
+
+    self.emit('response', res);
+
+    var new_err;
+    try {
+      if (!self._isResponseOK(res)) {
+        new_err = new Error(res.statusText || 'Unsuccessful HTTP response');
+        new_err.original = err;
+        new_err.response = res;
+        new_err.status = res.status;
+      }
+    } catch(e) {
+      new_err = e; // #985 touching res may cause INVALID_STATE_ERR on old Android
+    }
+
+    // #1000 don't catch errors from the callback to avoid double calling it
+    if (new_err) {
+      self.callback(new_err, res);
+    } else {
+      self.callback(null, res);
+    }
+  });
+}
+
+/**
+ * Mixin `Emitter` and `RequestBase`.
+ */
+
+Emitter(Request.prototype);
+RequestBase(Request.prototype);
+
+/**
+ * Set Content-Type to `type`, mapping values from `request.types`.
+ *
+ * Examples:
+ *
+ *      superagent.types.xml = 'application/xml';
+ *
+ *      request.post('/')
+ *        .type('xml')
+ *        .send(xmlstring)
+ *        .end(callback);
+ *
+ *      request.post('/')
+ *        .type('application/xml')
+ *        .send(xmlstring)
+ *        .end(callback);
+ *
+ * @param {String} type
+ * @return {Request} for chaining
+ * @api public
+ */
+
+Request.prototype.type = function(type){
+  this.set('Content-Type', request.types[type] || type);
+  return this;
+};
+
+/**
+ * Set Accept to `type`, mapping values from `request.types`.
+ *
+ * Examples:
+ *
+ *      superagent.types.json = 'application/json';
+ *
+ *      request.get('/agent')
+ *        .accept('json')
+ *        .end(callback);
+ *
+ *      request.get('/agent')
+ *        .accept('application/json')
+ *        .end(callback);
+ *
+ * @param {String} accept
+ * @return {Request} for chaining
+ * @api public
+ */
+
+Request.prototype.accept = function(type){
+  this.set('Accept', request.types[type] || type);
+  return this;
+};
+
+/**
+ * Set Authorization field value with `user` and `pass`.
+ *
+ * @param {String} user
+ * @param {String} [pass] optional in case of using 'bearer' as type
+ * @param {Object} options with 'type' property 'auto', 'basic' or 'bearer' (default 'basic')
+ * @return {Request} for chaining
+ * @api public
+ */
+
+Request.prototype.auth = function(user, pass, options){
+  if (typeof pass === 'object' && pass !== null) { // pass is optional and can substitute for options
+    options = pass;
+  }
+  if (!options) {
+    options = {
+      type: 'function' === typeof btoa ? 'basic' : 'auto',
+    }
+  }
+
+  switch (options.type) {
+    case 'basic':
+      this.set('Authorization', 'Basic ' + btoa(user + ':' + pass));
+    break;
+
+    case 'auto':
+      this.username = user;
+      this.password = pass;
+    break;
+      
+    case 'bearer': // usage would be .auth(accessToken, { type: 'bearer' })
+      this.set('Authorization', 'Bearer ' + user);
+    break;  
+  }
+  return this;
+};
+
+/**
+ * Add query-string `val`.
+ *
+ * Examples:
+ *
+ *   request.get('/shoes')
+ *     .query('size=10')
+ *     .query({ color: 'blue' })
+ *
+ * @param {Object|String} val
+ * @return {Request} for chaining
+ * @api public
+ */
+
+Request.prototype.query = function(val){
+  if ('string' != typeof val) val = serialize(val);
+  if (val) this._query.push(val);
+  return this;
+};
+
+/**
+ * Queue the given `file` as an attachment to the specified `field`,
+ * with optional `options` (or filename).
+ *
+ * ``` js
+ * request.post('/upload')
+ *   .attach('content', new Blob(['<a id="a"><b id="b">hey!</b></a>'], { type: "text/html"}))
+ *   .end(callback);
+ * ```
+ *
+ * @param {String} field
+ * @param {Blob|File} file
+ * @param {String|Object} options
+ * @return {Request} for chaining
+ * @api public
+ */
+
+Request.prototype.attach = function(field, file, options){
+  if (file) {
+    if (this._data) {
+      throw Error("superagent can't mix .send() and .attach()");
+    }
+
+    this._getFormData().append(field, file, options || file.name);
+  }
+  return this;
+};
+
+Request.prototype._getFormData = function(){
+  if (!this._formData) {
+    this._formData = new root.FormData();
+  }
+  return this._formData;
+};
+
+/**
+ * Invoke the callback with `err` and `res`
+ * and handle arity check.
+ *
+ * @param {Error} err
+ * @param {Response} res
+ * @api private
+ */
+
+Request.prototype.callback = function(err, res){
+  // console.log(this._retries, this._maxRetries)
+  if (this._maxRetries && this._retries++ < this._maxRetries && shouldRetry(err, res)) {
+    return this._retry();
+  }
+
+  var fn = this._callback;
+  this.clearTimeout();
+
+  if (err) {
+    if (this._maxRetries) err.retries = this._retries - 1;
+    this.emit('error', err);
+  }
+
+  fn(err, res);
+};
+
+/**
+ * Invoke callback with x-domain error.
+ *
+ * @api private
+ */
+
+Request.prototype.crossDomainError = function(){
+  var err = new Error('Request has been terminated\nPossible causes: the network is offline, Origin is not allowed by Access-Control-Allow-Origin, the page is being unloaded, etc.');
+  err.crossDomain = true;
+
+  err.status = this.status;
+  err.method = this.method;
+  err.url = this.url;
+
+  this.callback(err);
+};
+
+// This only warns, because the request is still likely to work
+Request.prototype.buffer = Request.prototype.ca = Request.prototype.agent = function(){
+  console.warn("This is not supported in browser version of superagent");
+  return this;
+};
+
+// This throws, because it can't send/receive data as expected
+Request.prototype.pipe = Request.prototype.write = function(){
+  throw Error("Streaming is not supported in browser version of superagent");
+};
+
+/**
+ * Compose querystring to append to req.url
+ *
+ * @api private
+ */
+
+Request.prototype._appendQueryString = function(){
+  var query = this._query.join('&');
+  if (query) {
+    this.url += (this.url.indexOf('?') >= 0 ? '&' : '?') + query;
+  }
+
+  if (this._sort) {
+    var index = this.url.indexOf('?');
+    if (index >= 0) {
+      var queryArr = this.url.substring(index + 1).split('&');
+      if (isFunction(this._sort)) {
+        queryArr.sort(this._sort);
+      } else {
+        queryArr.sort();
+      }
+      this.url = this.url.substring(0, index) + '?' + queryArr.join('&');
+    }
+  }
+};
+
+/**
+ * Check if `obj` is a host object,
+ * we don't want to serialize these :)
+ *
+ * @param {Object} obj
+ * @return {Boolean}
+ * @api private
+ */
+Request.prototype._isHost = function _isHost(obj) {
+  // Native objects stringify to [object File], [object Blob], [object FormData], etc.
+  return obj && 'object' === typeof obj && !Array.isArray(obj) && Object.prototype.toString.call(obj) !== '[object Object]';
+}
+
+/**
+ * Initiate request, invoking callback `fn(res)`
+ * with an instanceof `Response`.
+ *
+ * @param {Function} fn
+ * @return {Request} for chaining
+ * @api public
+ */
+
+Request.prototype.end = function(fn){
+  if (this._endCalled) {
+    console.warn("Warning: .end() was called twice. This is not supported in superagent");
+  }
+  this._endCalled = true;
+
+  // store callback
+  this._callback = fn || noop;
+
+  // querystring
+  this._appendQueryString();
+
+  return this._end();
+};
+
+Request.prototype._end = function() {
+  var self = this;
+  var xhr = this.xhr = request.getXHR();
+  var data = this._formData || this._data;
+
+  this._setTimeouts();
+
+  // state change
+  xhr.onreadystatechange = function(){
+    var readyState = xhr.readyState;
+    if (readyState >= 2 && self._responseTimeoutTimer) {
+      clearTimeout(self._responseTimeoutTimer);
+    }
+    if (4 != readyState) {
+      return;
+    }
+
+    // In IE9, reads to any property (e.g. status) off of an aborted XHR will
+    // result in the error "Could not complete the operation due to error c00c023f"
+    var status;
+    try { status = xhr.status } catch(e) { status = 0; }
+
+    if (!status) {
+      if (self.timedout || self._aborted) return;
+      return self.crossDomainError();
+    }
+    self.emit('end');
+  };
+
+  // progress
+  var handleProgress = function(direction, e) {
+    if (e.total > 0) {
+      e.percent = e.loaded / e.total * 100;
+    }
+    e.direction = direction;
+    self.emit('progress', e);
+  }
+  if (this.hasListeners('progress')) {
+    try {
+      xhr.onprogress = handleProgress.bind(null, 'download');
+      if (xhr.upload) {
+        xhr.upload.onprogress = handleProgress.bind(null, 'upload');
+      }
+    } catch(e) {
+      // Accessing xhr.upload fails in IE from a web worker, so just pretend it doesn't exist.
+      // Reported here:
+      // https://connect.microsoft.com/IE/feedback/details/837245/xmlhttprequest-upload-throws-invalid-argument-when-used-from-web-worker-context
+    }
+  }
+
+  // initiate request
+  try {
+    if (this.username && this.password) {
+      xhr.open(this.method, this.url, true, this.username, this.password);
+    } else {
+      xhr.open(this.method, this.url, true);
+    }
+  } catch (err) {
+    // see #1149
+    return this.callback(err);
+  }
+
+  // CORS
+  if (this._withCredentials) xhr.withCredentials = true;
+
+  // body
+  if (!this._formData && 'GET' != this.method && 'HEAD' != this.method && 'string' != typeof data && !this._isHost(data)) {
+    // serialize stuff
+    var contentType = this._header['content-type'];
+    var serialize = this._serializer || request.serialize[contentType ? contentType.split(';')[0] : ''];
+    if (!serialize && isJSON(contentType)) {
+      serialize = request.serialize['application/json'];
+    }
+    if (serialize) data = serialize(data);
+  }
+
+  // set header fields
+  for (var field in this.header) {
+    if (null == this.header[field]) continue;
+
+    if (this.header.hasOwnProperty(field))
+      xhr.setRequestHeader(field, this.header[field]);
+  }
+
+  if (this._responseType) {
+    xhr.responseType = this._responseType;
+  }
+
+  // send stuff
+  this.emit('request', this);
+
+  // IE11 xhr.send(undefined) sends 'undefined' string as POST payload (instead of nothing)
+  // We need null here if data is undefined
+  xhr.send(typeof data !== 'undefined' ? data : null);
+  return this;
+};
+
+/**
+ * GET `url` with optional callback `fn(res)`.
+ *
+ * @param {String} url
+ * @param {Mixed|Function} [data] or fn
+ * @param {Function} [fn]
+ * @return {Request}
+ * @api public
+ */
+
+request.get = function(url, data, fn){
+  var req = request('GET', url);
+  if ('function' == typeof data) fn = data, data = null;
+  if (data) req.query(data);
+  if (fn) req.end(fn);
+  return req;
+};
+
+/**
+ * HEAD `url` with optional callback `fn(res)`.
+ *
+ * @param {String} url
+ * @param {Mixed|Function} [data] or fn
+ * @param {Function} [fn]
+ * @return {Request}
+ * @api public
+ */
+
+request.head = function(url, data, fn){
+  var req = request('HEAD', url);
+  if ('function' == typeof data) fn = data, data = null;
+  if (data) req.send(data);
+  if (fn) req.end(fn);
+  return req;
+};
+
+/**
+ * OPTIONS query to `url` with optional callback `fn(res)`.
+ *
+ * @param {String} url
+ * @param {Mixed|Function} [data] or fn
+ * @param {Function} [fn]
+ * @return {Request}
+ * @api public
+ */
+
+request.options = function(url, data, fn){
+  var req = request('OPTIONS', url);
+  if ('function' == typeof data) fn = data, data = null;
+  if (data) req.send(data);
+  if (fn) req.end(fn);
+  return req;
+};
+
+/**
+ * DELETE `url` with optional `data` and callback `fn(res)`.
+ *
+ * @param {String} url
+ * @param {Mixed} [data]
+ * @param {Function} [fn]
+ * @return {Request}
+ * @api public
+ */
+
+function del(url, data, fn){
+  var req = request('DELETE', url);
+  if ('function' == typeof data) fn = data, data = null;
+  if (data) req.send(data);
+  if (fn) req.end(fn);
+  return req;
+};
+
+request['del'] = del;
+request['delete'] = del;
+
+/**
+ * PATCH `url` with optional `data` and callback `fn(res)`.
+ *
+ * @param {String} url
+ * @param {Mixed} [data]
+ * @param {Function} [fn]
+ * @return {Request}
+ * @api public
+ */
+
+request.patch = function(url, data, fn){
+  var req = request('PATCH', url);
+  if ('function' == typeof data) fn = data, data = null;
+  if (data) req.send(data);
+  if (fn) req.end(fn);
+  return req;
+};
+
+/**
+ * POST `url` with optional `data` and callback `fn(res)`.
+ *
+ * @param {String} url
+ * @param {Mixed} [data]
+ * @param {Function} [fn]
+ * @return {Request}
+ * @api public
+ */
+
+request.post = function(url, data, fn){
+  var req = request('POST', url);
+  if ('function' == typeof data) fn = data, data = null;
+  if (data) req.send(data);
+  if (fn) req.end(fn);
+  return req;
+};
+
+/**
+ * PUT `url` with optional `data` and callback `fn(res)`.
+ *
+ * @param {String} url
+ * @param {Mixed|Function} [data] or fn
+ * @param {Function} [fn]
+ * @return {Request}
+ * @api public
+ */
+
+request.put = function(url, data, fn){
+  var req = request('PUT', url);
+  if ('function' == typeof data) fn = data, data = null;
+  if (data) req.send(data);
+  if (fn) req.end(fn);
+  return req;
+};
+
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * Check if `fn` is a function.
+ *
+ * @param {Function} fn
+ * @return {Boolean}
+ * @api private
+ */
+var isObject = __webpack_require__(2);
+
+function isFunction(fn) {
+  var tag = isObject(fn) ? Object.prototype.toString.call(fn) : '';
+  return tag === '[object Function]';
+}
+
+module.exports = isFunction;
+
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * Module of mixed-in functions shared between node and client code
+ */
+var isObject = __webpack_require__(2);
+
+/**
+ * Expose `RequestBase`.
+ */
+
+module.exports = RequestBase;
+
+/**
+ * Initialize a new `RequestBase`.
+ *
+ * @api public
+ */
+
+function RequestBase(obj) {
+  if (obj) return mixin(obj);
+}
+
+/**
+ * Mixin the prototype properties.
+ *
+ * @param {Object} obj
+ * @return {Object}
+ * @api private
+ */
+
+function mixin(obj) {
+  for (var key in RequestBase.prototype) {
+    obj[key] = RequestBase.prototype[key];
+  }
+  return obj;
+}
+
+/**
+ * Clear previous timeout.
+ *
+ * @return {Request} for chaining
+ * @api public
+ */
+
+RequestBase.prototype.clearTimeout = function _clearTimeout(){
+  clearTimeout(this._timer);
+  clearTimeout(this._responseTimeoutTimer);
+  delete this._timer;
+  delete this._responseTimeoutTimer;
+  return this;
+};
+
+/**
+ * Override default response body parser
+ *
+ * This function will be called to convert incoming data into request.body
+ *
+ * @param {Function}
+ * @api public
+ */
+
+RequestBase.prototype.parse = function parse(fn){
+  this._parser = fn;
+  return this;
+};
+
+/**
+ * Set format of binary response body.
+ * In browser valid formats are 'blob' and 'arraybuffer',
+ * which return Blob and ArrayBuffer, respectively.
+ *
+ * In Node all values result in Buffer.
+ *
+ * Examples:
+ *
+ *      req.get('/')
+ *        .responseType('blob')
+ *        .end(callback);
+ *
+ * @param {String} val
+ * @return {Request} for chaining
+ * @api public
+ */
+
+RequestBase.prototype.responseType = function(val){
+  this._responseType = val;
+  return this;
+};
+
+/**
+ * Override default request body serializer
+ *
+ * This function will be called to convert data set via .send or .attach into payload to send
+ *
+ * @param {Function}
+ * @api public
+ */
+
+RequestBase.prototype.serialize = function serialize(fn){
+  this._serializer = fn;
+  return this;
+};
+
+/**
+ * Set timeouts.
+ *
+ * - response timeout is time between sending request and receiving the first byte of the response. Includes DNS and connection time.
+ * - deadline is the time from start of the request to receiving response body in full. If the deadline is too short large files may not load at all on slow connections.
+ *
+ * Value of 0 or false means no timeout.
+ *
+ * @param {Number|Object} ms or {response, read, deadline}
+ * @return {Request} for chaining
+ * @api public
+ */
+
+RequestBase.prototype.timeout = function timeout(options){
+  if (!options || 'object' !== typeof options) {
+    this._timeout = options;
+    this._responseTimeout = 0;
+    return this;
+  }
+
+  for(var option in options) {
+    switch(option) {
+      case 'deadline':
+        this._timeout = options.deadline;
+        break;
+      case 'response':
+        this._responseTimeout = options.response;
+        break;
+      default:
+        console.warn("Unknown timeout option", option);
+    }
+  }
+  return this;
+};
+
+/**
+ * Set number of retry attempts on error.
+ *
+ * Failed requests will be retried 'count' times if timeout or err.code >= 500.
+ *
+ * @param {Number} count
+ * @return {Request} for chaining
+ * @api public
+ */
+
+RequestBase.prototype.retry = function retry(count){
+  // Default to 1 if no count passed or true
+  if (arguments.length === 0 || count === true) count = 1;
+  if (count <= 0) count = 0;
+  this._maxRetries = count;
+  this._retries = 0;
+  return this;
+};
+
+/**
+ * Retry request
+ *
+ * @return {Request} for chaining
+ * @api private
+ */
+
+RequestBase.prototype._retry = function() {
+  this.clearTimeout();
+
+  // node
+  if (this.req) {
+    this.req = null;
+    this.req = this.request();
+  }
+
+  this._aborted = false;
+  this.timedout = false;
+
+  return this._end();
+};
+
+/**
+ * Promise support
+ *
+ * @param {Function} resolve
+ * @param {Function} [reject]
+ * @return {Request}
+ */
+
+RequestBase.prototype.then = function then(resolve, reject) {
+  if (!this._fullfilledPromise) {
+    var self = this;
+    if (this._endCalled) {
+      console.warn("Warning: superagent request was sent twice, because both .end() and .then() were called. Never call .end() if you use promises");
+    }
+    this._fullfilledPromise = new Promise(function(innerResolve, innerReject){
+      self.end(function(err, res){
+        if (err) innerReject(err); else innerResolve(res);
+      });
+    });
+  }
+  return this._fullfilledPromise.then(resolve, reject);
+}
+
+RequestBase.prototype.catch = function(cb) {
+  return this.then(undefined, cb);
+};
+
+/**
+ * Allow for extension
+ */
+
+RequestBase.prototype.use = function use(fn) {
+  fn(this);
+  return this;
+}
+
+RequestBase.prototype.ok = function(cb) {
+  if ('function' !== typeof cb) throw Error("Callback required");
+  this._okCallback = cb;
+  return this;
+};
+
+RequestBase.prototype._isResponseOK = function(res) {
+  if (!res) {
+    return false;
+  }
+
+  if (this._okCallback) {
+    return this._okCallback(res);
+  }
+
+  return res.status >= 200 && res.status < 300;
+};
+
+
+/**
+ * Get request header `field`.
+ * Case-insensitive.
+ *
+ * @param {String} field
+ * @return {String}
+ * @api public
+ */
+
+RequestBase.prototype.get = function(field){
+  return this._header[field.toLowerCase()];
+};
+
+/**
+ * Get case-insensitive header `field` value.
+ * This is a deprecated internal API. Use `.get(field)` instead.
+ *
+ * (getHeader is no longer used internally by the superagent code base)
+ *
+ * @param {String} field
+ * @return {String}
+ * @api private
+ * @deprecated
+ */
+
+RequestBase.prototype.getHeader = RequestBase.prototype.get;
+
+/**
+ * Set header `field` to `val`, or multiple fields with one object.
+ * Case-insensitive.
+ *
+ * Examples:
+ *
+ *      req.get('/')
+ *        .set('Accept', 'application/json')
+ *        .set('X-API-Key', 'foobar')
+ *        .end(callback);
+ *
+ *      req.get('/')
+ *        .set({ Accept: 'application/json', 'X-API-Key': 'foobar' })
+ *        .end(callback);
+ *
+ * @param {String|Object} field
+ * @param {String} val
+ * @return {Request} for chaining
+ * @api public
+ */
+
+RequestBase.prototype.set = function(field, val){
+  if (isObject(field)) {
+    for (var key in field) {
+      this.set(key, field[key]);
+    }
+    return this;
+  }
+  this._header[field.toLowerCase()] = val;
+  this.header[field] = val;
+  return this;
+};
+
+/**
+ * Remove header `field`.
+ * Case-insensitive.
+ *
+ * Example:
+ *
+ *      req.get('/')
+ *        .unset('User-Agent')
+ *        .end(callback);
+ *
+ * @param {String} field
+ */
+RequestBase.prototype.unset = function(field){
+  delete this._header[field.toLowerCase()];
+  delete this.header[field];
+  return this;
+};
+
+/**
+ * Write the field `name` and `val`, or multiple fields with one object
+ * for "multipart/form-data" request bodies.
+ *
+ * ``` js
+ * request.post('/upload')
+ *   .field('foo', 'bar')
+ *   .end(callback);
+ *
+ * request.post('/upload')
+ *   .field({ foo: 'bar', baz: 'qux' })
+ *   .end(callback);
+ * ```
+ *
+ * @param {String|Object} name
+ * @param {String|Blob|File|Buffer|fs.ReadStream} val
+ * @return {Request} for chaining
+ * @api public
+ */
+RequestBase.prototype.field = function(name, val) {
+
+  // name should be either a string or an object.
+  if (null === name ||  undefined === name) {
+    throw new Error('.field(name, val) name can not be empty');
+  }
+
+  if (this._data) {
+    console.error(".field() can't be used if .send() is used. Please use only .send() or only .field() & .attach()");
+  }
+
+  if (isObject(name)) {
+    for (var key in name) {
+      this.field(key, name[key]);
+    }
+    return this;
+  }
+
+  if (Array.isArray(val)) {
+    for (var i in val) {
+      this.field(name, val[i]);
+    }
+    return this;
+  }
+
+  // val should be defined now
+  if (null === val || undefined === val) {
+    throw new Error('.field(name, val) val can not be empty');
+  }
+  if ('boolean' === typeof val) {
+    val = '' + val;
+  }
+  this._getFormData().append(name, val);
+  return this;
+};
+
+/**
+ * Abort the request, and clear potential timeout.
+ *
+ * @return {Request}
+ * @api public
+ */
+RequestBase.prototype.abort = function(){
+  if (this._aborted) {
+    return this;
+  }
+  this._aborted = true;
+  this.xhr && this.xhr.abort(); // browser
+  this.req && this.req.abort(); // node
+  this.clearTimeout();
+  this.emit('abort');
+  return this;
+};
+
+/**
+ * Enable transmission of cookies with x-domain requests.
+ *
+ * Note that for this to work the origin must not be
+ * using "Access-Control-Allow-Origin" with a wildcard,
+ * and also must set "Access-Control-Allow-Credentials"
+ * to "true".
+ *
+ * @api public
+ */
+
+RequestBase.prototype.withCredentials = function(on){
+  // This is browser-only functionality. Node side is no-op.
+  if(on==undefined) on = true;
+  this._withCredentials = on;
+  return this;
+};
+
+/**
+ * Set the max redirects to `n`. Does noting in browser XHR implementation.
+ *
+ * @param {Number} n
+ * @return {Request} for chaining
+ * @api public
+ */
+
+RequestBase.prototype.redirects = function(n){
+  this._maxRedirects = n;
+  return this;
+};
+
+/**
+ * Convert to a plain javascript object (not JSON string) of scalar properties.
+ * Note as this method is designed to return a useful non-this value,
+ * it cannot be chained.
+ *
+ * @return {Object} describing method, url, and data of this request
+ * @api public
+ */
+
+RequestBase.prototype.toJSON = function(){
+  return {
+    method: this.method,
+    url: this.url,
+    data: this._data,
+    headers: this._header
+  };
+};
+
+
+/**
+ * Send `data` as the request body, defaulting the `.type()` to "json" when
+ * an object is given.
+ *
+ * Examples:
+ *
+ *       // manual json
+ *       request.post('/user')
+ *         .type('json')
+ *         .send('{"name":"tj"}')
+ *         .end(callback)
+ *
+ *       // auto json
+ *       request.post('/user')
+ *         .send({ name: 'tj' })
+ *         .end(callback)
+ *
+ *       // manual x-www-form-urlencoded
+ *       request.post('/user')
+ *         .type('form')
+ *         .send('name=tj')
+ *         .end(callback)
+ *
+ *       // auto x-www-form-urlencoded
+ *       request.post('/user')
+ *         .type('form')
+ *         .send({ name: 'tj' })
+ *         .end(callback)
+ *
+ *       // defaults to x-www-form-urlencoded
+ *      request.post('/user')
+ *        .send('name=tobi')
+ *        .send('species=ferret')
+ *        .end(callback)
+ *
+ * @param {String|Object} data
+ * @return {Request} for chaining
+ * @api public
+ */
+
+RequestBase.prototype.send = function(data){
+  var isObj = isObject(data);
+  var type = this._header['content-type'];
+
+  if (this._formData) {
+    console.error(".send() can't be used if .attach() or .field() is used. Please use only .send() or only .field() & .attach()");
+  }
+
+  if (isObj && !this._data) {
+    if (Array.isArray(data)) {
+      this._data = [];
+    } else if (!this._isHost(data)) {
+      this._data = {};
+    }
+  } else if (data && this._data && this._isHost(this._data)) {
+    throw Error("Can't merge these send calls");
+  }
+
+  // merge
+  if (isObj && isObject(this._data)) {
+    for (var key in data) {
+      this._data[key] = data[key];
+    }
+  } else if ('string' == typeof data) {
+    // default to x-www-form-urlencoded
+    if (!type) this.type('form');
+    type = this._header['content-type'];
+    if ('application/x-www-form-urlencoded' == type) {
+      this._data = this._data
+        ? this._data + '&' + data
+        : data;
+    } else {
+      this._data = (this._data || '') + data;
+    }
+  } else {
+    this._data = data;
+  }
+
+  if (!isObj || this._isHost(data)) {
+    return this;
+  }
+
+  // default to json
+  if (!type) this.type('json');
+  return this;
+};
+
+
+/**
+ * Sort `querystring` by the sort function
+ *
+ *
+ * Examples:
+ *
+ *       // default order
+ *       request.get('/user')
+ *         .query('name=Nick')
+ *         .query('search=Manny')
+ *         .sortQuery()
+ *         .end(callback)
+ *
+ *       // customized sort function
+ *       request.get('/user')
+ *         .query('name=Nick')
+ *         .query('search=Manny')
+ *         .sortQuery(function(a, b){
+ *           return a.length - b.length;
+ *         })
+ *         .end(callback)
+ *
+ *
+ * @param {Function} sort
+ * @return {Request} for chaining
+ * @api public
+ */
+
+RequestBase.prototype.sortQuery = function(sort) {
+  // _sort default to true but otherwise can be a function or boolean
+  this._sort = typeof sort === 'undefined' ? true : sort;
+  return this;
+};
+
+/**
+ * Invoke callback with timeout error.
+ *
+ * @api private
+ */
+
+RequestBase.prototype._timeoutError = function(reason, timeout, errno){
+  if (this._aborted) {
+    return;
+  }
+  var err = new Error(reason + timeout + 'ms exceeded');
+  err.timeout = timeout;
+  err.code = 'ECONNABORTED';
+  err.errno = errno;
+  this.timedout = true;
+  this.abort();
+  this.callback(err);
+};
+
+RequestBase.prototype._setTimeouts = function() {
+  var self = this;
+
+  // deadline
+  if (this._timeout && !this._timer) {
+    this._timer = setTimeout(function(){
+      self._timeoutError('Timeout of ', self._timeout, 'ETIME');
+    }, this._timeout);
+  }
+  // response timeout
+  if (this._responseTimeout && !this._responseTimeoutTimer) {
+    this._responseTimeoutTimer = setTimeout(function(){
+      self._timeoutError('Response timeout of ', self._responseTimeout, 'ETIMEDOUT');
+    }, this._responseTimeout);
+  }
+}
+
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+/**
+ * Module dependencies.
+ */
+
+var utils = __webpack_require__(15);
+
+/**
+ * Expose `ResponseBase`.
+ */
+
+module.exports = ResponseBase;
+
+/**
+ * Initialize a new `ResponseBase`.
+ *
+ * @api public
+ */
+
+function ResponseBase(obj) {
+  if (obj) return mixin(obj);
+}
+
+/**
+ * Mixin the prototype properties.
+ *
+ * @param {Object} obj
+ * @return {Object}
+ * @api private
+ */
+
+function mixin(obj) {
+  for (var key in ResponseBase.prototype) {
+    obj[key] = ResponseBase.prototype[key];
+  }
+  return obj;
+}
+
+/**
+ * Get case-insensitive `field` value.
+ *
+ * @param {String} field
+ * @return {String}
+ * @api public
+ */
+
+ResponseBase.prototype.get = function(field){
+    return this.header[field.toLowerCase()];
+};
+
+/**
+ * Set header related properties:
+ *
+ *   - `.type` the content type without params
+ *
+ * A response of "Content-Type: text/plain; charset=utf-8"
+ * will provide you with a `.type` of "text/plain".
+ *
+ * @param {Object} header
+ * @api private
+ */
+
+ResponseBase.prototype._setHeaderProperties = function(header){
+    // TODO: moar!
+    // TODO: make this a util
+
+    // content-type
+    var ct = header['content-type'] || '';
+    this.type = utils.type(ct);
+
+    // params
+    var params = utils.params(ct);
+    for (var key in params) this[key] = params[key];
+
+    this.links = {};
+
+    // links
+    try {
+        if (header.link) {
+            this.links = utils.parseLinks(header.link);
+        }
+    } catch (err) {
+        // ignore
+    }
+};
+
+/**
+ * Set flags such as `.ok` based on `status`.
+ *
+ * For example a 2xx response will give you a `.ok` of __true__
+ * whereas 5xx will be __false__ and `.error` will be __true__. The
+ * `.clientError` and `.serverError` are also available to be more
+ * specific, and `.statusType` is the class of error ranging from 1..5
+ * sometimes useful for mapping respond colors etc.
+ *
+ * "sugar" properties are also defined for common cases. Currently providing:
+ *
+ *   - .noContent
+ *   - .badRequest
+ *   - .unauthorized
+ *   - .notAcceptable
+ *   - .notFound
+ *
+ * @param {Number} status
+ * @api private
+ */
+
+ResponseBase.prototype._setStatusProperties = function(status){
+    var type = status / 100 | 0;
+
+    // status / class
+    this.status = this.statusCode = status;
+    this.statusType = type;
+
+    // basics
+    this.info = 1 == type;
+    this.ok = 2 == type;
+    this.redirect = 3 == type;
+    this.clientError = 4 == type;
+    this.serverError = 5 == type;
+    this.error = (4 == type || 5 == type)
+        ? this.toError()
+        : false;
+
+    // sugar
+    this.accepted = 202 == status;
+    this.noContent = 204 == status;
+    this.badRequest = 400 == status;
+    this.unauthorized = 401 == status;
+    this.notAcceptable = 406 == status;
+    this.forbidden = 403 == status;
+    this.notFound = 404 == status;
+};
+
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports) {
+
+var ERROR_CODES = [
+  'ECONNRESET',
+  'ETIMEDOUT',
+  'EADDRINFO',
+  'ESOCKETTIMEDOUT'
 ];
 
-var contentFolderController = '/webapps/blackboard/content/listContentEditable.jsp?';
+/**
+ * Determine if a request should be retried.
+ * (Borrowed from segmentio/superagent-retry)
+ *
+ * @param {Error} err
+ * @param {Response} [res]
+ * @returns {Boolean}
+ */
+module.exports = function shouldRetry(err, res) {
+  if (err && err.code && ~ERROR_CODES.indexOf(err.code)) return true;
+  if (res && res.status && res.status >= 500) return true;
+  // Superagent timeout
+  if (err && 'timeout' in err && err.code == 'ECONNABORTED') return true;
+  if (err && 'crossDomain' in err) return true;
+  return false;
+};
 
-(function() {
-  var url = window.location.href;
-  if (url.includes(contentFolderController)) {
-    scanner.init(scannerPlugins);
-  } else {
-    scanResults.init(scannerPlugins);
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports) {
+
+
+/**
+ * Return the mime type for the given `str`.
+ *
+ * @param {String} str
+ * @return {String}
+ * @api private
+ */
+
+exports.type = function(str){
+  return str.split(/ *; */).shift();
+};
+
+/**
+ * Return header field parameters.
+ *
+ * @param {String} str
+ * @return {Object}
+ * @api private
+ */
+
+exports.params = function(str){
+  return str.split(/ *; */).reduce(function(obj, str){
+    var parts = str.split(/ *= */);
+    var key = parts.shift();
+    var val = parts.shift();
+
+    if (key && val) obj[key] = val;
+    return obj;
+  }, {});
+};
+
+/**
+ * Parse Link header fields.
+ *
+ * @param {String} str
+ * @return {Object}
+ * @api private
+ */
+
+exports.parseLinks = function(str){
+  return str.split(/ *, */).reduce(function(obj, str){
+    var parts = str.split(/ *; */);
+    var url = parts[0].slice(1, -1);
+    var rel = parts[1].split(/ *= */)[1].slice(1, -1);
+    obj[rel] = url;
+    return obj;
+  }, {});
+};
+
+/**
+ * Strip content related fields from `header`.
+ *
+ * @param {Object} header
+ * @return {Object} header
+ * @api private
+ */
+
+exports.cleanHeader = function(header, shouldStripCookie){
+  delete header['content-type'];
+  delete header['content-length'];
+  delete header['transfer-encoding'];
+  delete header['host'];
+  if (shouldStripCookie) {
+    delete header['cookie'];
   }
-})();
+  return header;
+};
+
+/***/ }),
+/* 16 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_dom__ = __webpack_require__(1);
+
+
+function LMSInterface (domain) {
+  __WEBPACK_IMPORTED_MODULE_0_dom__["a" /* default */].call(this);
+  this.domain = domain;
+}
+
+LMSInterface.prototype = Object.create(__WEBPACK_IMPORTED_MODULE_0_dom__["a" /* default */].prototype);
+LMSInterface.prototype.constructor = LMSInterface;
+
+/**
+  @param {String} courseId - The ID of the course.
+  @return {Promise.<Page[]>} - Array of Pages that are at the top level of the course.
+*/
+LMSInterface.prototype.getMainPage = function (courseId) {
+  new Error('Override: LMSInterface.getMainPage()');
+};
+
+/**
+  @param {Page} page - Page to get content for.
+  @return {Promise.<Item[]>} - Array of Items found on the page.
+*/
+LMSInterface.prototype.getPage = function (page) {
+  new Error('Override: LMSInterface.getPage()');
+};
+
+/**
+  @param {Item} item - Item in which to find the content ID for.
+  @return {String} - Item's content ID.
+*/
+LMSInterface.prototype.getContentId = function (item) {
+  new Error('Override: LMSInterface.getContentId()');
+};
+
+/* harmony default export */ __webpack_exports__["a"] = LMSInterface;
+
+
+/***/ }),
+/* 17 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_Icons_makeIcon__ = __webpack_require__(0);
+/*
+  Google's Material Design Icon: Editor > mode edit
+*/
+
+
+
+function editIcon (color) {
+  var pathAttrs = [
+    {
+      d: 'M0 0h24v24H0z',
+      fill: 'none'
+    },
+    {
+      d: 'M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z'
+    }
+  ];
+
+  return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0_Icons_makeIcon__["a" /* default */])(color, pathAttrs);
+}
+
+/* harmony default export */ __webpack_exports__["a"] = editIcon;
+
+
+/***/ }),
+/* 18 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_Icons_makeIcon__ = __webpack_require__(0);
+/*
+  Google's Material Design Icon: File > folder
+*/
+
+
+
+function folderClosedIcon (color) {
+  var pathAttrs = [
+    {
+      d: 'M0 0h24v24H0z',
+      fill: 'none'
+    },
+    {
+      d: 'M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z'
+    }
+  ];
+
+  return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0_Icons_makeIcon__["a" /* default */])(color, pathAttrs);
+}
+
+/* harmony default export */ __webpack_exports__["a"] = folderClosedIcon;
+
+
+/***/ }),
+/* 19 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_Icons_makeIcon__ = __webpack_require__(0);
+/*
+  Google's Material Design Icon: File > folder open
+*/
+
+
+
+function folderOpenIcon (color) {
+  var pathAttrs = [
+    {
+      d: 'M0 0h24v24H0z',
+      fill: 'none'
+    },
+    {
+      d: 'M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z'
+    }
+  ];
+  
+  return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0_Icons_makeIcon__["a" /* default */])(color, pathAttrs);
+}
+
+/* harmony default export */ __webpack_exports__["a"] = folderOpenIcon;
+
+
+/***/ }),
+/* 20 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_Icons_makeIcon__ = __webpack_require__(0);
+/*
+  Google's Material Design Icon: Editor > insert drive file
+*/
+
+
+
+function itemIcon (color) {
+  var pathAttrs = [
+    {
+      d: 'M0 0h24v24H0z',
+      fill: 'none'
+    },
+    {
+      d: 'M6 2c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6H6zm7 7V3.5L18.5 9H13z'
+    }
+  ];
+
+  return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0_Icons_makeIcon__["a" /* default */])(color, pathAttrs);
+}
+
+/* harmony default export */ __webpack_exports__["a"] = itemIcon;
+
+
+/***/ }),
+/* 21 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_Icons_makeIcon__ = __webpack_require__(0);
+/*
+  Google's Material Design Icon: Action > open in new
+*/
+
+
+
+function newWindowIcon (color) {
+  var pathAttrs = [
+    {
+      d: 'M0 0h24v24H0z',
+      fill: 'none'
+    },
+    {
+      d: 'M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z'
+    }
+  ];
+
+  return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0_Icons_makeIcon__["a" /* default */])(color, pathAttrs);
+}
+
+/* harmony default export */ __webpack_exports__["a"] = newWindowIcon;
+
+
+/***/ }),
+/* 22 */,
+/* 23 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_Scanner_Plugins_ImageTextPlugin__ = __webpack_require__(36);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_Scanner_Plugins_NewWindowPlugin__ = __webpack_require__(37);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_Scanner_Plugins_OldMediasitesPlugin__ = __webpack_require__(38);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_Scanner_Plugins_OldVivoPlugin__ = __webpack_require__(39);
+
+
+
+
+
+var plugins = [
+  new __WEBPACK_IMPORTED_MODULE_1_Scanner_Plugins_NewWindowPlugin__["a" /* default */](),
+  new __WEBPACK_IMPORTED_MODULE_0_Scanner_Plugins_ImageTextPlugin__["a" /* default */](),
+  new __WEBPACK_IMPORTED_MODULE_2_Scanner_Plugins_OldMediasitesPlugin__["a" /* default */](),
+  new __WEBPACK_IMPORTED_MODULE_3_Scanner_Plugins_OldVivoPlugin__["a" /* default */]()
+];
+
+/* harmony default export */ __webpack_exports__["a"] = plugins;
+
+
+/***/ }),
+/* 24 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* unused harmony export default */
+function delFromStorage (key) {
+  GM_deleteValue(key);
+  // __storage__.removeItem(key);  
+}
+
+
+/***/ }),
+/* 25 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (immutable) */ __webpack_exports__["a"] = getFromStorage;
+function getFromStorage (key) {
+  // return JSON.parse(__storage__.getItem(key));
+  // console.log('get: ', key,GM_getValue(key, null));
+  // return JSON.parse(GM_getValue(key, null));
+  return GM_getValue(key, null);
+}
+
+
+/***/ }),
+/* 26 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (immutable) */ __webpack_exports__["a"] = setToStorage;
+function setToStorage (key, value) {
+  // __storage__.setItem(key, JSON.stringify(value));
+  GM_setValue(key, value);
+}
+
+
+/***/ }),
+/* 27 */,
+/* 28 */,
+/* 29 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_Icons_makeIcon__ = __webpack_require__(0);
+/*
+  Google's Material Design Icon: Alert > error
+*/
+
+
+
+function errorIcon (color) {
+  var pathAttrs = [
+    {
+      d: 'M0 0h24v24H0z',
+      fill: 'none'
+    },
+    {
+      d: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z'
+    }
+  ];
+  return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0_Icons_makeIcon__["a" /* default */])(color, pathAttrs);
+}
+
+/* harmony default export */ __webpack_exports__["a"] = errorIcon;
+
+
+/***/ }),
+/* 30 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_Icons_makeIcon__ = __webpack_require__(0);
+/*
+  Google's Material Design Icon: Alert > error outline
+*/
+
+
+
+function errorOutlineIcon (color) {
+  var pathAttrs = [
+    {
+      d: 'M0 0h24v24H0V0z',
+      fill: 'none'
+    },
+    {
+      d: 'M11 15h2v2h-2zm0-8h2v6h-2zm.99-5C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z'
+    }
+  ];
+  
+  return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0_Icons_makeIcon__["a" /* default */])(color, pathAttrs);
+}
+
+/* harmony default export */ __webpack_exports__["a"] = errorOutlineIcon;
+
+
+/***/ }),
+/* 31 */,
+/* 32 */,
+/* 33 */,
+/* 34 */,
+/* 35 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_Icons_makeIcon__ = __webpack_require__(0);
+/*
+  Google's Material Design Icon: Alert > warning
+*/
+
+
+
+function warningIcon (color) {
+  var pathAttrs = [
+    {
+      d: 'M0 0h24v24H0z',
+      fill: 'none'
+    },
+    {
+      d: 'M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z'
+    }
+  ];
+
+  return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0_Icons_makeIcon__["a" /* default */])(color, pathAttrs);
+}
+
+/* harmony default export */ __webpack_exports__["a"] = warningIcon;
+
+
+/***/ }),
+/* 36 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_Scanner_Plugins_ScannerPluginInterface__ = __webpack_require__(7);
+
+
+function ImageTextPlugin() {
+  __WEBPACK_IMPORTED_MODULE_0_Scanner_Plugins_ScannerPluginInterface__["a" /* default */].call(this, 'Image-Text', '#7d1e9a');
+  this.resultText = 'Images that do not have alt text:';
+}
+
+ImageTextPlugin.prototype = Object.create(__WEBPACK_IMPORTED_MODULE_0_Scanner_Plugins_ScannerPluginInterface__["a" /* default */].prototype);
+ImageTextPlugin.prototype.constructor = ImageTextPlugin;
+
+ImageTextPlugin.prototype.parse = function (dom) {
+  var images = this.getChildren('img', dom);
+  var result = {};
+  result[this.name] = [];
+
+  if (images) {
+    images.forEach(function (image) {
+      if (!this.__isValid__(image)) {
+        result[this.name].push(this.__encode__(image));
+      }
+    }, this);
+  }
+
+  return result;
+};
+
+ImageTextPlugin.prototype.hasResults = function (item) {
+  return item.getResults()[this.name] && item.getResults()[this.name].length > 0;
+};
+
+ImageTextPlugin.prototype.toggleResult = function (e) {
+  var target = e.target;
+  target = target.parentElement.parentElement.parentElement;
+  this.getChild(`div.${this.name}`, 0, target).classList.toggle('hide');
+};
+
+ImageTextPlugin.prototype.getResults = function (item) {
+  var results = item.getResults()[this.name];
+  var resultsNode = this.makeNode(`div.hide.${this.name}.plugin-result > p + ul > li * ${results.length} > p`);
+  var infoNode = this.getChild('p', 0, resultsNode);
+  infoNode.appendChild(this.getErrorIcon());
+  this.addText(this.resultText, infoNode);
+
+  results.forEach(function (r, i) {
+    var thisResult = this.getChild('p', 0, this.getChild('ul > li', i, resultsNode));
+    // this.addText(r.src, thisResult);
+    var imageNode = this.makeNode('a > img');
+    this.setAttr({ href: r.src }, imageNode);
+    this.setAttr({ src: r.src }, this.getChild('img', 0, imageNode));
+    thisResult.appendChild(imageNode);
+    this.__addActionLinks__(item, thisResult);
+  }, this);
+
+  return resultsNode;
+};
+
+/* Private */
+
+ImageTextPlugin.prototype.__isValid__ = function (image) {
+  var alt = this.getAttr('alt', image);
+  var src = this.getAttr('src', image);
+  var exlusions = [
+    '/images/ci/',
+    'BBLEARN'   // probably restrict this a bit more
+  ];
+
+  if (exlusions.every(function (exclusion) {
+    return !src.includes(exclusion);
+  })) {
+    return !!alt;
+  }
+
+  return true;
+};
+
+ImageTextPlugin.prototype.__encode__ = function (link) {
+  return {
+    src: this.getAttr('src', link)
+  };
+};
+
+/* harmony default export */ __webpack_exports__["a"] = ImageTextPlugin;
+
+
+/***/ }),
+/* 37 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_Scanner_Plugins_ScannerPluginInterface__ = __webpack_require__(7);
+
+
+function NewWindowPlugin() {
+  __WEBPACK_IMPORTED_MODULE_0_Scanner_Plugins_ScannerPluginInterface__["a" /* default */].call(this, 'New-Window', '#7d1c1c');
+  this.resultText = 'Links that do not open in a new window:';
+}
+
+NewWindowPlugin.prototype = Object.create(__WEBPACK_IMPORTED_MODULE_0_Scanner_Plugins_ScannerPluginInterface__["a" /* default */].prototype);
+NewWindowPlugin.prototype.constructor = NewWindowPlugin;
+
+NewWindowPlugin.prototype.parse = function (dom) {
+  var links = this.getChildren('a', dom);
+  var result = {};
+  result[this.name] = [];
+
+  if (links) {
+    links.forEach(function (link) {
+      if (!this.__validLink__(link)) {
+        result[this.name].push(this.__encode__(link));
+      }
+    }, this);
+  }
+
+  return result;
+};
+
+NewWindowPlugin.prototype.hasResults = function (item) {
+  return item.getResults()[this.name] && item.getResults()[this.name].length > 0;
+};
+
+NewWindowPlugin.prototype.toggleResult = function (e) {
+  var target = e.target;
+  target = target.parentElement.parentElement.parentElement;
+  this.getChild(`div.${this.name}`, 0, target).classList.toggle('hide');
+};
+
+NewWindowPlugin.prototype.getResults = function (item) {
+  var results = item.getResults()[this.name];
+  var resultsNode = this.makeNode(`div.hide.${this.name}.plugin-result > p + ul > li * ${results.length} > p`);
+  var infoNode = this.getChild('p', 0, resultsNode);
+  infoNode.appendChild(this.getErrorIcon());
+  this.addText(this.resultText, infoNode);
+
+  results.forEach(function (r, i) {
+    var thisResult = this.getChild('p', 0, this.getChild('ul > li', i, resultsNode));
+    this.addText(r.title, thisResult);
+    this.__addActionLinks__(item, thisResult);
+  }, this);
+
+  return resultsNode;
+};
+
+/* Private */
+
+NewWindowPlugin.prototype.__validLink__ = function (link) {
+  var target = link.getAttribute('target');
+  if (target) {
+    target = target.trim().toLowerCase();
+  }
+  
+  var href = this.getUrl(link);
+  var exclusions = [
+    new RegExp(/^#/g),
+    new RegExp(/^javascript/g),
+    new RegExp(/fiu\.blackboard\.com/g),
+    new RegExp(/^\/webapps\//g)
+  ];
+
+  if (!exclusions.every(function (regex) {
+    return !href.match(regex);
+  })) {
+    // Ignore Blackboard links
+    return true;
+  }
+  return target && (target === '_blank' || target === '_new');
+};
+
+NewWindowPlugin.prototype.__encode__ = function (link) {
+  return {
+    href: this.getUrl(link),
+    title: link.innerText
+  };
+};
+
+/* harmony default export */ __webpack_exports__["a"] = NewWindowPlugin;
+
+
+/***/ }),
+/* 38 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_Scanner_Plugins_ScannerPluginInterface__ = __webpack_require__(7);
+
+
+function OldMediasitesPlugin() {
+  __WEBPACK_IMPORTED_MODULE_0_Scanner_Plugins_ScannerPluginInterface__["a" /* default */].call(this, 'Old-Mediasites', '#373795');
+  this.resultText = 'Old Mediasites Links:';
+}
+
+OldMediasitesPlugin.prototype = Object.create(__WEBPACK_IMPORTED_MODULE_0_Scanner_Plugins_ScannerPluginInterface__["a" /* default */].prototype);
+OldMediasitesPlugin.prototype.constructor = OldMediasitesPlugin;
+
+OldMediasitesPlugin.prototype.parse = function (dom) {
+  var links = this.getChildren('a', dom);
+  var result = {};
+  result[this.name] = [];
+
+  if (links) {
+    links.forEach(function (link) {
+      if (!this.__isValid__(link)) {
+        result[this.name].push(this.__encode__(link));
+      }
+    }, this);
+  }
+
+  return result;
+};
+
+OldMediasitesPlugin.prototype.hasResults = function (item) {
+  return item.getResults()[this.name] && item.getResults()[this.name].length > 0;
+};
+
+OldMediasitesPlugin.prototype.toggleResult = function (e) {
+  var target = e.target;
+  target = target.parentElement.parentElement.parentElement;
+  this.getChild(`div.${this.name}`, 0, target).classList.toggle('hide');
+};
+
+OldMediasitesPlugin.prototype.getResults = function (item) {
+  var results = item.getResults()[this.name];
+  var resultsNode = this.makeNode(`div.hide.${this.name}.plugin-result > p + ul > li * ${results.length} > p`);
+  var infoNode = this.getChild('p', 0, resultsNode);
+  infoNode.appendChild(this.getErrorIcon());
+  this.addText(this.resultText, infoNode);
+
+  results.forEach(function (r, i) {
+    var thisResult = this.getChild('p', 0, this.getChild('ul > li', i, resultsNode));
+    this.addText(r.text, thisResult);
+    this.__addActionLinks__(item, thisResult);
+  }, this);
+
+  return resultsNode;
+};
+
+/* Private */
+
+OldMediasitesPlugin.prototype.__isValid__ = function (link) {
+  var href = this.getUrl(link);
+  return !href.includes('fiuonline.mediasite.com');
+};
+
+OldMediasitesPlugin.prototype.__encode__ = function (link) {
+  return {
+    href: this.getUrl(link),
+    text: link.innerText.trim() || 'Not a Text Link'
+  };
+};
+
+/* harmony default export */ __webpack_exports__["a"] = OldMediasitesPlugin;
+
+
+/***/ }),
+/* 39 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_Scanner_Plugins_ScannerPluginInterface__ = __webpack_require__(7);
+
+
+function OldVivoPlugin() {
+  __WEBPACK_IMPORTED_MODULE_0_Scanner_Plugins_ScannerPluginInterface__["a" /* default */].call(this, 'Old-Vivo', '#2c592c');
+  this.resultText = 'Old Vivo Links:';
+}
+
+OldVivoPlugin.prototype = Object.create(__WEBPACK_IMPORTED_MODULE_0_Scanner_Plugins_ScannerPluginInterface__["a" /* default */].prototype);
+OldVivoPlugin.prototype.constructor = OldVivoPlugin;
+
+OldVivoPlugin.prototype.parse = function (dom) {
+  var links = this.getChildren('a', dom);
+  var result = {};
+  result[this.name] = [];
+
+  if (links) {
+    links.forEach(function (link) {
+      if (!this.__isValid__(link)) {
+        result[this.name].push(this.__encode__(link));
+      }
+    }, this);
+  }
+
+  return result;
+};
+
+OldVivoPlugin.prototype.hasResults = function (item) {
+  return item.getResults()[this.name] && item.getResults()[this.name].length > 0;
+};
+
+OldVivoPlugin.prototype.toggleResult = function (e) {
+  var target = e.target;
+  target = target.parentElement.parentElement.parentElement;
+  this.getChild(`div.${this.name}`, 0, target).classList.toggle('hide');
+};
+
+OldVivoPlugin.prototype.getResults = function (item) {
+  var results = item.getResults()[this.name];
+  var resultsNode = this.makeNode(`div.hide.${this.name}.plugin-result > p + ul > li * ${results.length} > p`);
+  var infoNode = this.getChild('p', 0, resultsNode);
+  infoNode.appendChild(this.getErrorIcon());
+  this.addText(this.resultText, infoNode);
+
+  results.forEach(function (r, i) {
+    var thisResult = this.getChild('p', 0, this.getChild('ul > li', i, resultsNode));
+    this.addText(r.text, thisResult);
+    this.__addActionLinks__(item, thisResult);
+  }, this);
+
+  return resultsNode;
+};
+
+/* Private */
+
+OldVivoPlugin.prototype.__isValid__ = function (link) {
+  var href = this.getUrl(link);
+  return !href.includes('vivoId=');
+};
+
+OldVivoPlugin.prototype.__encode__ = function (link) {
+  return {
+    href: this.getUrl(link),
+    text: link.innerText.trim() || 'Not a Text Link'
+  };
+};
+
+/* harmony default export */ __webpack_exports__["a"] = OldVivoPlugin;
+
+
+/***/ }),
+/* 40 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_Blackboard__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_Course__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_Scanner_Plugins__ = __webpack_require__(23);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_Modal__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_Storage_get__ = __webpack_require__(25);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_Storage_set__ = __webpack_require__(26);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_Storage_del__ = __webpack_require__(24);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_Icons_newWindow__ = __webpack_require__(21);
+
+
+
+
+
+
+
+
+
+
+
+var BBI = new __WEBPACK_IMPORTED_MODULE_0_Blackboard__["a" /* default */]('https://fiu.blackboard.com');
+var course;
+var modal;
+
+if (document.URL.includes('redice44.github.io/bb-util-scripts/results.html')) {
+  var courseId = BBI.getCourseId(document.URL);
+  console.log(courseId);
+  var c = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_Storage_get__["a" /* default */])(courseId);
+  console.log(GM_listValues());
+  console.log(c);
+  if (c) {
+    course = new __WEBPACK_IMPORTED_MODULE_1_Course__["a" /* default */](null, BBI, __WEBPACK_IMPORTED_MODULE_2_Scanner_Plugins__["a" /* default */]);
+    course.decode(c);
+    var results = BBI.getId('results', document);
+    results.appendChild(course.displayResults());
+  }
+} else {
+  // modal = buildModal();
+  // document.body.appendChild(modal);
+  modal = new __WEBPACK_IMPORTED_MODULE_3_Modal__["a" /* default */]('Scan');
+  document.body.appendChild(modal.getModal());
+  BBI.addPrimaryMenuButton('Scan Course', makeCourse);
+}
+
+
+function makeCourse (e) {
+  e.preventDefault();
+  console.log('Building Course');
+  // scanningModal();
+  modal.show();
+  modal.updateDisplay(BBI.makeNode('div > p {Scanning Course}'));
+  course = new __WEBPACK_IMPORTED_MODULE_1_Course__["a" /* default */](BBI.getCourseId(), BBI, __WEBPACK_IMPORTED_MODULE_2_Scanner_Plugins__["a" /* default */]);
+  course.getCourse()
+    .then(scanCourse)
+    .catch(catchError);
+}
+
+function scanCourse () {
+  console.log('Scanning Course');
+  course.scan()
+    .then(saveResults)
+    .catch(catchError);
+}
+
+function saveResults () {
+  console.log('Orignal');
+  console.log(course);
+  var c = course.encode();
+  console.log(c);
+  __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_5_Storage_set__["a" /* default */])(c.id, c);
+  console.log('saved', c.id);
+  modal.updateDisplay(finishedModal(c.id));
+
+  console.log(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_Storage_get__["a" /* default */])(c.id));
+}
+
+function displayResults () {
+  var results = course.displayResults();
+  console.log(results);
+  document.getElementById('content_listContainer').appendChild(results);
+}
+
+function catchError (err) {
+  console.log(err);
+}
+
+function buildModal() {
+  var modalNode = BBI.makeNode('div#scanner-modal > div#scanner-modal-bg + div#scanner-modal-box');
+  console.log(modalNode);
+  var modalBox = BBI.getChild('#scanner-modal-box', 0, modalNode);
+  var attrs = {
+    modal: {
+      display: 'none',
+      position: 'absolute',
+      width: '100%',
+      height: '100%',
+      boxSizing: 'border-box',
+      top: '0',
+      left: '0',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    modalBg: {
+      position: 'absolute',
+      boxSizing: 'border-box',
+      width: '100%',
+      height: '100%',
+      backgroundColor: 'rgba(0, 0, 0, 0.4)',
+      top: '0',
+      left: '0',
+      zIndex: '1000'
+    },
+    modalBox: {
+      display: 'flex',
+      width: '200px',
+      height: '75px',
+      backgroundColor: '#333333',
+      color: '#DDDDDD',
+      borderRadius: '20px',
+      border: '3px solid #DDDDDD',
+      padding: '0 10px',
+      fontSize: '24px',
+      lineHeight: '24px',
+      justifyContent: 'center',
+      alignItems: 'center',
+      zIndex: '1001'
+    }
+  };
+
+  BBI.setStyle(attrs.modal, modalNode);
+  BBI.setStyle(attrs.modalBg, BBI.getChild('#scanner-modal-bg', 0, modalNode));
+  BBI.setStyle(attrs.modalBox, modalBox);
+  BBI.getChild('#scanner-modal-bg', 0, modalNode).addEventListener('click', function (e) {
+    BBI.setStyle({ display: 'none' }, e.target.parentElement);
+  }.bind(this));
+  return modalNode;
+}
+
+function scanningModal () {
+  BBI.setStyle({ display: 'flex' }, modal);
+  BBI.deleteChild('#scanner-modal-box > div', 0, modal);
+  var scanningNode = BBI.makeNode('div > p {Scanning Course}');
+  BBI.getChild('#scanner-modal-box', 0, modal).appendChild(scanningNode);
+}
+
+function finishedModal(courseId) {
+  var resultsPage = 'https://redice44.github.io/bb-util-scripts/results.html?course_id=';
+  // BBI.setStyle({ display: 'flex' }, modal);
+  // BBI.deleteChild('#scanner-modal-box > div', 0, modal);
+  var modalNode = BBI.makeNode('div > a {View Results}');
+  var linkNode = BBI.getChild('a', 0, modalNode);
+  BBI.setAttr({ href: `${resultsPage}${courseId}`, target: '_blank'}, linkNode);
+  BBI.setStyle({ color: '#DDDDDD' }, linkNode);
+  linkNode.appendChild(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_7_Icons_newWindow__["a" /* default */])('#DDDDDD'));
+  // BBI.getChild('#scanner-modal-box', 0, modal).appendChild(modalNode);
+  return modalNode;
+}
+
+/***/ })
+/******/ ]);
