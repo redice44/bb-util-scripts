@@ -17,7 +17,9 @@ function BlackboardInterface(domain) {
     contentItems: 'li.liItem',            // Content Items
     itemLink: 'div.item > h3 > a',        // Content Item Link
     contentItemTitle: 'div.item > h3',    // Content Item Title
-    contentItemId: 'div.item'             // Content Item Id
+    contentItemId: 'div.item',            // Content Item Id
+    nonceAjax: 'input[name="blackboard.platform.security.NonceUtil.nonce.ajax"]',
+    nonce: 'input[name="blackboard.platform.security.NonceUtil.nonce"]'
   };
 
   this.endpoints = {
@@ -43,8 +45,7 @@ BlackboardInterface.prototype.getMainPage = function (id) {
         if (err) {
           reject(err);
         } else {
-          var parser = new DOMParser();
-          var doc = parser.parseFromString(res.text, "text/html");
+          var doc = that.stringToDom(res.text);
           var links = that.getChildren(that.q.courseMenuLink, that.getId(that.ids.courseMenu, doc))
             .filter(function (link) {
               return that.getUrl(link).includes(that.endpoints.contentFolder);
@@ -73,29 +74,35 @@ BlackboardInterface.prototype.getPage = function (page) {
         if (err) {
           reject(err);
         } else {
-          var parser = new DOMParser();
-          var doc = parser.parseFromString(res.text, "text/html");
-          var items = that.getChildren(that.q.contentItems, that.getId(that.ids.contentItems, doc));
-          if (items) {
-            items.forEach(function (dom) {
-              var contentId = that.getContentId(dom);
-              var tempItem;
-              // console.log(dom);
-              if (that.isPage(dom)) {
-                tempItem = new Page(page.courseId, contentId, that.getContentTitle(dom), dom);
-              } else {
-                tempItem = new Item(page.courseId, contentId, that.getContentTitle(dom), dom);
-              }
-              tempItem.addLink(that.__getActionLinks__(dom));
-              tempItem.addLink(that.makeContentLink(tempItem));
-              page.addItem(tempItem);
-            });
-          }
+          var doc = that.stringToDom(res.text);
+          page.addItems(that.parsePage(doc, page.courseId));
 
           resolve(page);
         }
       });
   });
+};
+
+BlackboardInterface.prototype.parsePage = function (doc, courseId) {
+  var items = this.getChildren(this.q.contentItems, this.getId(this.ids.contentItems, doc));
+  var results = [];
+  if (items) {
+    items.forEach(function (dom) {
+      var contentId = this.getContentId(dom);
+      var tempItem;
+      // console.log(dom);
+      if (this.isPage(dom)) {
+        tempItem = new Page(courseId, contentId, this.getContentTitle(dom), dom);
+      } else {
+        tempItem = new Item(courseId, contentId, this.getContentTitle(dom), dom);
+      }
+      tempItem.addLink(this.__getActionLinks__(dom));
+      tempItem.addLink(this.makeContentLink(tempItem));
+      results.push(tempItem);
+    }, this);
+  }
+
+  return results;
 };
 
 /**
@@ -126,7 +133,6 @@ BlackboardInterface.prototype.addPrimarySubMenuButton = function (linkName, subI
   menuBtn.appendChild(subMenu);
   navNode.appendChild(menuBtn);
 };
-
 
 /**
   @param {Item} item - Item in which to find the content ID for.
@@ -193,7 +199,6 @@ BlackboardInterface.prototype.__getActionLinks__ = function (dom) {
   return actionLinks;
 };
 
-
 BlackboardInterface.prototype.makeContentLink = function (item) {
   var courseId = item.courseId;
   var contentId = item.id;
@@ -202,4 +207,368 @@ BlackboardInterface.prototype.makeContentLink = function (item) {
   };
 };
 
+BlackboardInterface.prototype.getNonce = function (doc) {
+  doc = doc || document;
+  return this.getChild(this.q.nonce, 0, doc).value;
+};
+
+BlackboardInterface.prototype.getNonceAjax = function (doc) {
+  doc = doc || document;
+  return this.getChild(this.q.nonceAjax, 0, doc).value;
+};
+
+
+/*
+  Current known list of values for items
+  key - query
+
+  nonce - input[name="blackboard.platform.security.NonceUtil.nonce"]
+  contentId - input[name="content_id"]
+  courseId - input[name="course_id"]
+  type - input[name="type"]
+  ??? - input[name="do"]
+  dispatch - input[name="dispatch"]
+  ???- input[name="remove_file_id"]
+  ??? - input[name="modify_file_id"]
+  ??? - input[name="tab_id"]
+  ??? - input[name="area"]
+  ??? - input[name="btype"]
+
+  item title - input[name="user_title"]
+  title color - input[name="title_color"]
+  item body - textarea[name="htmlData_text"]
+
+  stuff to handle attachments...omit for now
+
+  availability
+    yes - input#isAvailable_true
+    no - input#isAvailable_false
+
+  tracking
+    yes - input#isTrack_true
+    no - input#isTrack_false
+
+  date availability
+    start - input#bbDateTimePickerstart.value format: YYYY-M-D HH:MM:SS Only double digits if needed
+    end - input#bbDateTimePickerend.value
+*/
+
+
+
+BlackboardInterface.prototype.startEdit = function (item) {
+  var that = this;
+  return new Promise(function (resolve, reject) {
+    request
+      .get(item.getLinks().Edit)
+      .end(function (err, res) {
+        if (err) {
+          reject(err);
+        }
+        var doc = that.stringToDom(res.text);
+        var scriptDates = that.getChildren('script', doc);
+        scriptDates = scriptDates[scriptDates.length - 3].innerText.split(';');
+
+        scriptDates = scriptDates.filter(function (d) {
+          return d.includes('new calendar.DatePicker');
+        });
+
+        scriptDates = scriptDates.map(function (d) {
+          return d.trim().split(',')[1];
+        });
+
+        scriptDates = scriptDates.map(function (d) {
+          return d.substr(1, d.length-2);
+        });
+
+
+
+        doc = that.getId('the_form', doc);
+        var results = {};
+
+        results.contentId = item.id;
+        results.courseId = item.courseId;
+
+        results.nonce = that.getChild('input[name="blackboard.platform.security.NonceUtil.nonce"]', 0, doc);
+        if (results.nonce) {
+          results.nonce = results.nonce.value;
+        }
+
+        results.type = that.getChild('input[name="type"]', 0, doc);
+        if (results.type) {
+          results.type = results.type.value;
+        }
+
+        results.title = that.getChild('input[name="user_title"]', 0, doc);
+        if (results.title) {
+            results.title = results.title.value;
+        }
+
+        results.titleColor = that.getChild('input[name="title_color"]', 0, doc);
+        if (results.titleColor) {
+          results.titleColor = results.titleColor.value;
+        }
+
+        results.body = that.getChild('textarea[name="htmlData_text"]', 0, doc);
+        if (results.body) {
+          results.body = results.body.getValue();
+        }
+
+        results.isVisible = that.getChild('#isAvailable_true', 0, doc);
+        if (results.isVisible) {
+          results.isVisible = results.isVisible.checked;
+        }
+
+        results.isTracking = that.getChild('#isTrack_true', 0, doc);
+        if(results.isTracking) {
+          results.isTracking = results.isTracking.checked;
+        }
+
+        results.dateStart = scriptDates[0];
+
+        // results.dateStart = that.getChild('#bbDateTimePickerstart', 0, doc);
+        // if (results.dateStart) {
+        //   results.dateStart = results.dateStart.value;
+        // }
+
+        results.dateEnd = scriptDates[1];
+
+        // results.dateEnd = that.getChild('#bbDateTimePickerend', 0, doc);
+        // if (results.dateEnd) {
+        //   results.dateEnd = results.dateEnd.value;
+        // }
+
+        resolve(results);
+      });
+    });
+};
+
+
+/* Content Folder
+content_id:_6030145_1
+course_id:_44712_1
+blackboard.platform.security.NonceUtil.nonce:f1d1b86a-b887-4003-8e5c-0835ad8db0c7
+user_title:depth lv 1
+title_color:#000000
+htmlData_text:<p>sadfasdfasfdsadf</p>
+contentView:T
+
+
+do:
+area:
+top_Submit:Submit
+htmlData_text_f:/usr/local/blackboard/content/vi/BBLEARN/courses/1/Matthew_Thomson_SandBox/content/_6030145_1/embedded
+htmlData_text_w:https://fiu.blackboard.com/courses/1/Matthew_Thomson_SandBox/content/_6030145_1/embedded/
+htmlData_type:H
+textbox_prefix:htmlData_text
+isAvailable:true
+isTrack:false
+bbDateTimePicker_start_date:
+bbDateTimePicker_start_datetime:
+pickdate:
+pickname:
+bbDateTimePicker_start_time:
+bbDateTimePicker_end_date:
+bbDateTimePicker_end_datetime:
+pickdate:
+pickname:
+bbDateTimePicker_end_time:
+*/
+
+
+BlackboardInterface.prototype.startEditFolder = function (item) {
+  var that = this;
+  return new Promise(function (resolve, reject) {
+    request
+      .get(item.getLinks().Edit)
+      .end(function (err, res) {
+        if (err) {
+          reject(err);
+        }
+        var doc = that.stringToDom(res.text);
+        console.log(doc);
+        var scriptDates = that.getChildren('script', doc);
+
+        scriptDates = scriptDates[scriptDates.length - 3].innerText.split(';');
+
+        scriptDates = scriptDates.filter(function (d) {
+          return d.includes('new calendar.DatePicker');
+        });
+
+        scriptDates = scriptDates.map(function (d) {
+          return d.trim().split(',')[1];
+        });
+
+        scriptDates = scriptDates.map(function (d) {
+          return d.substr(1, d.length-2);
+        });
+
+        doc = that.getId('the_form', doc);
+        var results = {};
+        results.contentId = item.id;
+        results.courseId = item.courseId;
+
+        results.nonce = that.getChild('input[name="blackboard.platform.security.NonceUtil.nonce"]', 0, doc);
+        if (results.nonce) {
+          results.nonce = results.nonce.value;
+        }
+
+        results.title = that.getChild('input[name="user_title"]', 0, doc);
+        if (results.title) {
+          results.title = results.title.value;
+        }
+
+        results.titleColor = that.getChild('input[name="title_color"]', 0, doc);
+        if (results.titleColor) {
+          results.titleColor = results.titleColor.value;
+        }
+
+        results.body = that.getChild('textarea[name="htmlData_text"]', 0, doc);
+        if (results.body) {
+          results.body = results.body.getValue();
+        }
+
+        results.contentView = that.getChild('#iconOnlyView', 0, doc);
+        if (results.contentView && results.contentView.checked) {
+          // I
+          results.contentView = results.contentView.value;
+        }
+
+        results.contentView = that.getChild('#textOnlyView', 0, doc);
+        if (results.contentView && results.contentView.checked) {
+          // T
+          results.contentView = results.contentView.value;
+        }
+
+        results.contentView = that.getChild('#iconAndTextView', 0, doc);
+        if (results.contentView && results.contentView.checked) {
+          // X
+          results.contentView = results.contentView.value;
+        }
+
+        results.isVisible = that.getChild('#availableYes', 0, doc);
+        if (results.isVisible) {
+          results.isVisible = results.isVisible.checked;
+        }
+
+        results.isTracking = that.getChild('#trackYes', 0, doc);
+        if(results.isTracking) {
+          results.isTracking = results.isTracking.checked;
+        }
+
+        results.dateStart = scriptDates[0];
+
+        results.dateEnd = scriptDates[1];
+
+        resolve(results);
+      });
+  });
+};
+
+
+BlackboardInterface.prototype.editFolder = function (item) {
+  var that = this;
+  return new Promise (function (resolve, reject) {
+    var content = item.getEditContent();
+    console.log('sending content', content);
+    request
+      .post(`https://fiu.blackboard.com/webapps/blackboard/content/manageFolder_proc.jsp?btype=null`)
+      .type('form')
+      .send({ 'blackboard.platform.security.NonceUtil.nonce': content.nonce})
+      .send({ 'course_id': item.courseId })
+      .send({ 'content_id': item.id })
+      // .send({ 'type': 'item' })
+      // .send({ 'dispatch': 'save' })
+      .send({ 'user_title': content.title })
+      .send({ 'htmlData_text': content.body })
+      .send({ 'isAvailable': content.isVisible })
+      .send({ 'isTrack': content.isTracking })
+      .send({ 'title_color': content.titleColor })
+      .send({ 'bbDateTimePicker_start_datetime': content.dateStart })
+      .send({ 'bbDateTimePicker_end_datetime': content.dateEnd })
+      // .send({ 'bbDateTimePicker_start_date': content.startDate })
+      // .send({ 'bbDateTimePicker_start_time': content.startTime })
+      .send({ 'bbDateTimePicker_start_checkbox': content.startCheck })
+      // .send({ 'bbDateTimePicker_end_date': content.endDate })
+      // .send({ 'bbDateTimePicker_end_time': content.endTime })
+      .send({ 'bbDateTimePicker_end_checkbox': content.endCheck })
+      .end(function (err, res) {
+        console.log('edit response');
+        var doc = that.stringToDom(res.text);
+        // DOMInterface doesn't handle the . in the ID.
+        var errText = doc.getElementById('bbNG.receiptTag.content');
+        if (errText) {
+          // console.log(errText.innerText);
+          console.log('Error in saving edit');
+          reject(errText.innerText);
+        } else {
+          console.log('Saved');
+          var items = that.parsePage(doc, item.courseId);
+          items = items.filter(function (i) {
+            return i.id === item.id;
+          });
+          console.log('Returning ', items[0]);
+          resolve(items[0].getDom());
+        }
+      });
+  });
+};
+
+
+
+
+
+/**
+  @param {Item} item - Item being sent.
+  @return {Promise.<DOM Node>} - DOM Node of the resulting page. 
+    The content page that the item is located in.
+*/
+BlackboardInterface.prototype.editItem = function (item) {
+  var that = this;
+  return new Promise (function (resolve, reject) {
+    var content = item.getEditContent();
+    console.log('sending content', content);
+    request
+      .post(`https://fiu.blackboard.com/webapps/blackboard/execute/manageCourseItem?content_id=${item.id}&btype=&course_id=${item.courseId}`)
+      .field('blackboard.platform.security.NonceUtil.nonce', content.nonce)
+      .field('course_id', item.courseId)
+      .field('content_id', item.id)
+      .field('type', 'item')
+      .field('dispatch', 'save')
+      .field('user_title', content.title)
+      .field('htmlData_text', content.body)
+      .field('isAvailable', content.isVisible)
+      .field('isTrack', content.isTracking)
+      .field('title_color', content.titleColor)
+      .field('bbDateTimePicker_start_datetime', content.dateStart)
+      .field('bbDateTimePicker_end_datetime', content.dateEnd)
+      // .field('bbDateTimePicker_start_date', content.startDate)
+      // .field('bbDateTimePicker_start_time', content.startTime)
+      .field('bbDateTimePicker_start_checkbox', content.startCheck)
+      // .field('bbDateTimePicker_end_date', content.endDate)
+      // .field('bbDateTimePicker_end_time', content.endTime)
+      .field('bbDateTimePicker_end_checkbox', content.endCheck)
+      .end(function (err, res) {
+        console.log('edit response');
+        // console.log(res);
+        var doc = that.stringToDom(res.text);
+        // DOMInterface doesn't handle the . in the ID.
+        var errText = doc.getElementById('bbNG.receiptTag.content');
+        if (errText) {
+          // console.log(errText.innerText);
+          console.log('Error in saving edit');
+          reject(errText.innerText);
+        } else {
+          console.log('Saved');
+          var items = that.parsePage(doc, item.courseId);
+          items = items.filter(function (i) {
+            return i.id === item.id;
+          });
+          console.log('Returning ', items[0]);
+          resolve(items[0].getDom());
+        }
+      });
+  });
+};
+
 export default BlackboardInterface;
+

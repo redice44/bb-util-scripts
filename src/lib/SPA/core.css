@@ -1,0 +1,22 @@
+/* BB Overrides */
+
+/* My styles */
+
+#main-content {
+  display: flex;
+}
+
+#main-content > nav > ul > li {
+  padding: 10px;
+  box-sizing: border-box;
+  font-size: 20px;
+  line-height: 20px;
+  background-color: #dddddd;
+}
+
+#main-content > nav > ul > li:hover {
+  background-color: #cccccc;
+}
+.collapse {
+  display: none;
+}

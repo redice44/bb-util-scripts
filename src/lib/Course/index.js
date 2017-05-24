@@ -1,9 +1,9 @@
 import Page from 'Course/Page';
 import Item from 'Course/Item';
 
-import itemIcon from 'Icons/itemIcon';
-import folderClosedIcon from 'Icons/folderClosedIcon';
-import folderOpenIcon from 'Icons/folderOpenIcon';
+import itemIcon from 'Icons/item';
+import folderClosedIcon from 'Icons/folderClosed';
+import folderOpenIcon from 'Icons/folderOpen';
 
 function Course (id, LMSInterface, plugins) {
   this.id = id;
@@ -11,6 +11,98 @@ function Course (id, LMSInterface, plugins) {
   this.LMSInterface = LMSInterface;
   this.plugins = plugins;
 }
+
+Course.prototype.getMenu = function () {
+  return this.__root__;
+};
+
+Course.prototype.getPage = function (contentId) {
+  var result = null;
+
+  this.getMenu().forEach(function (page) {
+    if (!result) {
+      result = this.__getPage__(page, contentId);
+    }
+  }, this);
+
+  return result;
+};
+
+Course.prototype.__getPage__ = function (page, contentId) {
+  var result = null;
+
+  if (page.id === contentId) {
+    return page;
+  }
+
+  page.getItems().forEach(function (item) {
+    if (!result && item instanceof Page) {
+      result = this.__getPage__(item, contentId);
+    }
+  }, this);
+
+  return result;
+};
+
+Course.prototype.getItem = function (contentId) {
+  var result = null;
+
+  this.getMenu().forEach(function (page) {
+    if (!result) {
+      result = this.__getItem__(page, contentId);
+    }
+  }, this);
+
+  return result;
+};
+
+Course.prototype.__getItem__ = function (page, contentId) {
+  var result = null;
+
+  if (page.id === contentId) {
+    return page;
+  }
+
+  page.getItems().forEach(function (item) {
+    if (!result) {
+      if (item.id === contentId) {
+        result = item;
+      } else if (item instanceof Page) {
+        result = this.__getItem__(item, contentId);
+      }
+    }
+  }, this);
+
+  return result;
+};
+
+Course.prototype.getItemsPage = function (contentId) {
+  var result = null;
+  
+  this.getMenu().forEach(function (page) {
+    if (!result) {
+      result = this.__getItemsPage__(page, contentId);
+    }
+  }, this);
+
+  return result;
+};
+
+Course.prototype.__getItemsPage__ = function (page, contentId) {
+  var result = null;
+
+  page.getItems().forEach(function (item) {
+    if (!result) {
+      if (item.id === contentId) {
+        result = page;
+      } else if (item instanceof Page) {
+        result = this.__getItemsPage__(item, contentId);
+      }
+    }
+  }, this);
+
+  return result;
+};
 
 /**
   Scans all top level pages
