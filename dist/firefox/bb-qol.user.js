@@ -5,7 +5,7 @@
 // @updateURL    https://github.com/redice44/bb-util-scripts/dist/firefox/bb-qol.user.js
 // @supportURL   https://github.com/redice44/bb-util-scripts/issues
 // @version      0.1.0
-// @description  Adds Quick Access Icons
+// @description  Adds Quality of Life features
 // @author       Matt Thomson <red.cataclysm@gmail.com>
 // @match        https://fiu.blackboard.com/webapps/blackboard/content/listContentEditable.jsp?*
 // @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/dom/primary-menu-button.js
@@ -26,6 +26,7 @@ var STYLE_DENSE_TOGGLE = '__bbqol__dense-toggle';
 var ACTIONS = '__bbqol__actions';
 var denseAllState = false;
 var request = superagent;
+
 var nonceQuery = 'input[name="blackboard.platform.security.NonceUtil.nonce.ajax"]';
 
 function ContentObject (config) {
@@ -36,6 +37,10 @@ function ContentObject (config) {
   this.title = temp.title;
   this.availability = temp.availability;
   this.editLink = this.getActionLink(config.actionNode, 'Edit');
+  if (!this.editLink) {
+    // This is for assessments
+    this.editLink = this.getActionLink(config.actionNode, 'Edit the Test Options');
+  }
   this.copyLink = this.getActionLink(config.actionNode, 'Copy');
   this.moveLink = this.getActionLink(config.actionNode, 'Move');
   this.deleteLink = this.getActionLink(config.actionNode, 'Delete');
@@ -187,7 +192,7 @@ ContentObject.prototype.__modDOM = function () {
   this.__addActions(co);
   this.__addDenseToggle(co);
   this.addActionIcons();
-};
+}
 
 ContentObject.prototype.__addActions = function (co) {
   var q = 'div.item';
@@ -196,7 +201,7 @@ ContentObject.prototype.__addActions = function (co) {
   actions.classList.add(ACTIONS);
 
   parent.insertBefore(actions, parent.firstChild);
-};
+}
 
 ContentObject.prototype.__addDenseToggle = function (co) {
   var q = {
@@ -213,13 +218,13 @@ ContentObject.prototype.__addDenseToggle = function (co) {
   // Add Blackboard class
   toggle.classList.add('u_floatThis-right', STYLE_DENSE_TOGGLE);
   toggleParent.appendChild(toggle);
-};
+}
 
 ContentObject.prototype.__updateStyles = function () {
   var co = document.getElementById(this.domId);
   this.__setAvailability(co);
   this.__setDense(co);
-};
+}
 
 ContentObject.prototype.__setAvailability = function (co) {
   if (this.availability) {
@@ -227,7 +232,7 @@ ContentObject.prototype.__setAvailability = function (co) {
   } else {
     co.classList.add(STYLE_AVAILABILITY);
   }
-};
+}
 
 ContentObject.prototype.__setDense = function (co) {
   if (this.dense) {
@@ -235,7 +240,7 @@ ContentObject.prototype.__setDense = function (co) {
   } else {
     co.classList.remove(STYLE_DENSE);
   }
-};
+}
 
 ContentObject.prototype.__build = function (raw) {
   // if (process.env.DEBUG) {
@@ -255,8 +260,7 @@ ContentObject.prototype.__build = function (raw) {
   var avail = raw.querySelector(q.availability);
   contentObject.availability = !(avail && avail.innerText.includes('Availability'));
   return contentObject;
-};
-
+}
 
 var CO_ROOT_ID = 'content_listContainer';
 var CO;
@@ -312,7 +316,7 @@ function toggleAll (e) {
       item.setDense(denseAllState);
     }
   });
-}
+};
 
 /*
   Observes as the DOM loads and checks to see when the Content Objects
