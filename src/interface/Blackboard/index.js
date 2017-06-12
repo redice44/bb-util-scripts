@@ -203,7 +203,7 @@ BlackboardInterface.prototype.makeContentLink = function (item) {
   var courseId = item.courseId;
   var contentId = item.id;
   return {
-    Content: `${domain}${this.endpoints.contentFolder}content_id=${contentId}&course_id=${courseId}#${contentId}`
+    Content: `${this.domain}${this.endpoints.contentFolder}content_id=${contentId}&course_id=${courseId}#${contentId}`
   };
 };
 

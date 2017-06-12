@@ -4,7 +4,7 @@
 // @source       https://github.com/redice44/bb-util-scripts/dist/firefox/bb-qol.user.js
 // @updateURL    https://github.com/redice44/bb-util-scripts/dist/firefox/bb-qol.user.js
 // @supportURL   https://github.com/redice44/bb-util-scripts/issues
-// @version      0.1.0
+// @version      0.2.0
 // @description  Adds Quality of Life features
 // @author       Matt Thomson <red.cataclysm@gmail.com>
 // @match        https://fiu.blackboard.com/webapps/blackboard/content/listContentEditable.jsp?*

@@ -26,9 +26,9 @@ GM_addStyle (GM_getResourceText('coreCSS'));
 /******/  function __webpack_require__(moduleId) {
 /******/
 /******/    // Check if module is in cache
-/******/    if(installedModules[moduleId])
+/******/    if(installedModules[moduleId]) {
 /******/      return installedModules[moduleId].exports;
-/******/
+/******/    }
 /******/    // Create a new module (and put it into the cache)
 /******/    var module = installedModules[moduleId] = {
 /******/      i: moduleId,
@@ -114,7 +114,7 @@ function makeIcon (color, pathAttrs) {
   return icon;
 }
 
-/* harmony default export */ __webpack_exports__["a"] = makeIcon;
+/* harmony default export */ __webpack_exports__["a"] = (makeIcon);
 
 
 /***/ }),
@@ -716,7 +716,7 @@ function toArray (arrayCollection) {
   return foo;
 }
 
-/* harmony default export */ __webpack_exports__["a"] = DOMInterface;
+/* harmony default export */ __webpack_exports__["a"] = (DOMInterface);
 
 
 /***/ }),
@@ -789,7 +789,7 @@ Item.prototype.getResults = function () {
   return Object.assign({}, this.__results__);
 };
 
-/* harmony default export */ __webpack_exports__["a"] = Item;
+/* harmony default export */ __webpack_exports__["a"] = (Item);
 
 
 /***/ }),
@@ -824,7 +824,7 @@ Page.prototype.getItems = function () {
   return this.__items__;
 };
 
-/* harmony default export */ __webpack_exports__["a"] = Page;
+/* harmony default export */ __webpack_exports__["a"] = (Page);
 
 
 /***/ }),
@@ -1042,7 +1042,7 @@ BlackboardInterface.prototype.makeContentLink = function (item) {
   var courseId = item.courseId;
   var contentId = item.id;
   return {
-    Content: `${domain}${this.endpoints.contentFolder}content_id=${contentId}&course_id=${courseId}#${contentId}`
+    Content: `${this.domain}${this.endpoints.contentFolder}content_id=${contentId}&course_id=${courseId}#${contentId}`
   };
 };
 
@@ -1409,7 +1409,7 @@ BlackboardInterface.prototype.editItem = function (item) {
   });
 };
 
-/* harmony default export */ __webpack_exports__["a"] = BlackboardInterface;
+/* harmony default export */ __webpack_exports__["a"] = (BlackboardInterface);
 
 
 
@@ -1466,7 +1466,7 @@ Modal.prototype.show = function () {
   this.setStyle({ display: 'flex' }, this.modal);
 };
 
-/* harmony default export */ __webpack_exports__["a"] = Modal;
+/* harmony default export */ __webpack_exports__["a"] = (Modal);
 
 
 /***/ }),
@@ -1541,7 +1541,7 @@ ScannerPluginInterface.prototype.getErrorOutlineIcon = function () {
   return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3_Icons_errorOutline__["a" /* default */])(this.color);
 };
 
-/* harmony default export */ __webpack_exports__["a"] = ScannerPluginInterface;
+/* harmony default export */ __webpack_exports__["a"] = (ScannerPluginInterface);
 
 
 /***/ }),
@@ -1925,7 +1925,7 @@ Course.prototype.decodeItem = function (item) {
   return i;
 };
 
-/* harmony default export */ __webpack_exports__["a"] = Course;
+/* harmony default export */ __webpack_exports__["a"] = (Course);
 
 
 /***/ }),
@@ -3961,7 +3961,7 @@ LMSInterface.prototype.getContentId = function (item) {
   new Error('Override: LMSInterface.getContentId()');
 };
 
-/* harmony default export */ __webpack_exports__["a"] = LMSInterface;
+/* harmony default export */ __webpack_exports__["a"] = (LMSInterface);
 
 
 /***/ }),
@@ -3990,7 +3990,7 @@ function editIcon (color) {
   return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0_Icons_makeIcon__["a" /* default */])(color, pathAttrs);
 }
 
-/* harmony default export */ __webpack_exports__["a"] = editIcon;
+/* harmony default export */ __webpack_exports__["a"] = (editIcon);
 
 
 /***/ }),
@@ -4019,7 +4019,7 @@ function folderClosedIcon (color) {
   return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0_Icons_makeIcon__["a" /* default */])(color, pathAttrs);
 }
 
-/* harmony default export */ __webpack_exports__["a"] = folderClosedIcon;
+/* harmony default export */ __webpack_exports__["a"] = (folderClosedIcon);
 
 
 /***/ }),
@@ -4048,7 +4048,7 @@ function folderOpenIcon (color) {
   return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0_Icons_makeIcon__["a" /* default */])(color, pathAttrs);
 }
 
-/* harmony default export */ __webpack_exports__["a"] = folderOpenIcon;
+/* harmony default export */ __webpack_exports__["a"] = (folderOpenIcon);
 
 
 /***/ }),
@@ -4077,7 +4077,7 @@ function itemIcon (color) {
   return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0_Icons_makeIcon__["a" /* default */])(color, pathAttrs);
 }
 
-/* harmony default export */ __webpack_exports__["a"] = itemIcon;
+/* harmony default export */ __webpack_exports__["a"] = (itemIcon);
 
 
 /***/ }),
@@ -4107,7 +4107,7 @@ function newWindowIcon (color) {
   return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0_Icons_makeIcon__["a" /* default */])(color, pathAttrs);
 }
 
-/* harmony default export */ __webpack_exports__["a"] = newWindowIcon;
+/* harmony default export */ __webpack_exports__["a"] = (newWindowIcon);
 
 
 /***/ }),
@@ -4134,7 +4134,7 @@ var plugins = [
   new __WEBPACK_IMPORTED_MODULE_3_Scanner_Plugins_OldVivoPlugin__["a" /* default */]()
 ];
 
-/* harmony default export */ __webpack_exports__["a"] = plugins;
+/* harmony default export */ __webpack_exports__["a"] = (plugins);
 
 
 /***/ }),
@@ -4176,7 +4176,7 @@ function errorIcon (color) {
   return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0_Icons_makeIcon__["a" /* default */])(color, pathAttrs);
 }
 
-/* harmony default export */ __webpack_exports__["a"] = errorIcon;
+/* harmony default export */ __webpack_exports__["a"] = (errorIcon);
 
 
 /***/ }),
@@ -4205,7 +4205,7 @@ function errorOutlineIcon (color) {
   return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0_Icons_makeIcon__["a" /* default */])(color, pathAttrs);
 }
 
-/* harmony default export */ __webpack_exports__["a"] = errorOutlineIcon;
+/* harmony default export */ __webpack_exports__["a"] = (errorOutlineIcon);
 
 
 /***/ }),
@@ -4238,7 +4238,7 @@ function warningIcon (color) {
   return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0_Icons_makeIcon__["a" /* default */])(color, pathAttrs);
 }
 
-/* harmony default export */ __webpack_exports__["a"] = warningIcon;
+/* harmony default export */ __webpack_exports__["a"] = (warningIcon);
 
 
 /***/ }),
@@ -4328,7 +4328,7 @@ ImageTextPlugin.prototype.__encode__ = function (link) {
   };
 };
 
-/* harmony default export */ __webpack_exports__["a"] = ImageTextPlugin;
+/* harmony default export */ __webpack_exports__["a"] = (ImageTextPlugin);
 
 
 /***/ }),
@@ -4421,7 +4421,7 @@ NewWindowPlugin.prototype.__encode__ = function (link) {
   };
 };
 
-/* harmony default export */ __webpack_exports__["a"] = NewWindowPlugin;
+/* harmony default export */ __webpack_exports__["a"] = (NewWindowPlugin);
 
 
 /***/ }),
@@ -4496,7 +4496,7 @@ OldMediasitesPlugin.prototype.__encode__ = function (link) {
   };
 };
 
-/* harmony default export */ __webpack_exports__["a"] = OldMediasitesPlugin;
+/* harmony default export */ __webpack_exports__["a"] = (OldMediasitesPlugin);
 
 
 /***/ }),
@@ -4571,7 +4571,7 @@ OldVivoPlugin.prototype.__encode__ = function (link) {
   };
 };
 
-/* harmony default export */ __webpack_exports__["a"] = OldVivoPlugin;
+/* harmony default export */ __webpack_exports__["a"] = (OldVivoPlugin);
 
 
 /***/ }),
