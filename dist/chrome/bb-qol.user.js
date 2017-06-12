@@ -8,7 +8,7 @@
 // @description  Adds Quality of Life features
 // @author       Matt Thomson <red.cataclysm@gmail.com>
 // @match        https://fiu.blackboard.com/webapps/blackboard/content/listContentEditable.jsp?*
-// @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/dom/primary-menu-button.js
+// @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/old-src/dom/primary-menu-button.js
 // @require      https://raw.githubusercontent.com/redice44/bb-util-scripts/master/lib/superagent/superagent.js
 // @resource     iconCss https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/quick-icons/quick-icons.css
 // @run-at       document-start

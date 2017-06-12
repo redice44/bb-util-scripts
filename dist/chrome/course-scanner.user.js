@@ -9,7 +9,7 @@
 // @author       Matt Thomson <red.cataclysm@gmail.com>
 // @match        https://fiu.blackboard.com/webapps/blackboard/content/listContentEditable.jsp?*
 // @match        https://redice44.github.io/bb-util-scripts/results.html*
-// @resource     coreCSS https://raw.githubusercontent.com/redice44/bb-util-scripts/dev/src/lib/Modal/core.css
+// @resource     coreCSS https://raw.githubusercontent.com/redice44/bb-util-scripts/master/src/lib/Modal/core.css
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_deleteValue
