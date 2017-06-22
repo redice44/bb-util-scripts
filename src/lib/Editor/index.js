@@ -1,10 +1,11 @@
 import DOMInterface from 'dom';
 import TinymceInterface from 'TinyMCE';
-import getFromStorage from 'Storage/get';
-import setToStorage from 'Storage/set';
+// import getFromStorage from 'Storage/get';
+// import setToStorage from 'Storage/set';
 
 var DOM = new DOMInterface(); // NOTE: Should tinyMCE inherit DOMInterface?
 var MCE = new TinymceInterface(); // NOTE: Should TextEditor inherit TinyMCE?
+
 
 
 function TextEditor(tinymceInstance) {
@@ -216,5 +217,19 @@ function setSelection(key, selectBox) {
     selectBox.dispatchEvent(new Event('change'));
   }
 }
+
+function setToStorage (key, value) {
+  localStorage.setItem(key, JSON.stringify(value));
+  // GM_setValue(key, value);
+}
+
+function getFromStorage (key) {
+  return JSON.parse(localStorage.getItem(key));
+  // console.log('get: ', key,GM_getValue(key, null));
+  // return JSON.parse(GM_getValue(key, null));
+  // return GM_getValue(key, null);
+}
+
+
 
 export default TextEditor;

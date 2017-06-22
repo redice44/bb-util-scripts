@@ -3,12 +3,16 @@ function TinymceInterface() {
 
 // Fires event with editor details as editors are rendered (async)
 TinymceInterface.prototype.getInstances = function () {
-  return tinyMCE.onAddEditor.add( function(mgr,ed) {
-            ed.onPostRender.add( function(ed, cm) {
-              var event = new CustomEvent('EditorAdded', {'detail': ed});
-              return document.dispatchEvent(event);
-            });
-          });
+  try {
+    return tinyMCE.onAddEditor.add( function(mgr,ed) {
+      ed.onPostRender.add( function(ed, cm) {
+        var event = new CustomEvent('EditorAdded', {'detail': ed});
+        return document.dispatchEvent(event);
+      });
+    });
+  } catch(e) {
+    console.log('error', e);
+  }
 };
 
 // Gets the HTML content of editor instance
